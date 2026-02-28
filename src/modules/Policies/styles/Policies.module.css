@@ -43,11 +43,20 @@ h2 {
   border: 1px solid red;
 }
 
+.filterAndFileNumContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  border: 1px solid red;
+  width: 100%;
+}
 .filterContainer {
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 0.5rem;
-  border: 1px solid red;
+  flex-direction: row;
+  margin-right: 1rem;
+  border: 1px solid rgb(89, 0, 255);
 }
     
 
@@ -83,6 +92,7 @@ h2 {
   flex-direction: column;
   align-items: center;
   padding: 0.5rem;
+  gap: 1rem;
 }
 
 .documentItem{
@@ -91,16 +101,26 @@ h2 {
   background-color: #E7E7E7;
   border-radius: 0.3rem;
   width: 100%;
+  height: fit-content;
   min-height: 3rem;
-  margin: 0.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   line-height: 1rem;
   padding: 1rem;
+  border: 1px solid rgb(38, 0, 255);
 }
 
+.documentTextContainer{
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid red;
+  margin: 1rem;
+  width: 100%;
+}
 
 /* footer stays pinned at bottom */
 .paginationContainer {

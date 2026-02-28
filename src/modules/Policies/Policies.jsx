@@ -50,15 +50,21 @@ const BodyContent = () => {
                     <SearchBar placeholder="Search documents..." />
 
                     {/*filter btn*/}
-                    <div className={styles.filterContainer}>
-                        <button className={styles.filterButton}>Filter</button>
+                    <div className={styles.filterAndFileNumContainer}>
+                        <div className={styles.filterContainer}>
+                            <button className={styles.filterButton}>Filter</button>
+                        </div>
+                        <span className={styles.fileNumText}>{documents.length} Files</span>
                     </div>
 
                     <div className={styles.documentAndFooterContainer}>
                         <div className={styles.documentsContainer}>
                             {paginatedDocuments.map((doc) => (
                                 <div key={doc.id} className={styles.documentItem}>
-                                    <p>{doc.name}</p>
+                                    <div className={styles.documentTextContainer}>
+                                        <p>{doc.name}</p>
+                                    </div>
+
                                 </div>
                             ))}
                         </div>
