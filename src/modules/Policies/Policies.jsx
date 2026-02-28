@@ -64,15 +64,32 @@ const BodyContent = () => {
                             {paginatedDocuments.map((doc) => (
                                 <div key={doc.id} className={styles.documentItem}>
                                     <p>{doc.name}</p>
-
                                 </div>
                             ))}
                         </div>
                         <div className={styles.paginationContainer}>
                             <div className={styles.pagination}>
-                                {currentPage > 1 && <button className={styles.pageButton} onClick={handlePrevPage}>{"<"}</button>}
-                                <span className={styles.pageNumber}> Page {currentPage} of {totalPages} </span>
-                                {currentPage < totalPages && <button className={styles.pageButton} onClick={handleNextPage}>{">"}</button>}
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={handlePrevPage}
+                                    disabled={currentPage <= 1}
+                                    aria-hidden={currentPage <= 1}
+                                >
+                                    {"<"}
+                                </button>
+
+                                <span className={styles.pageNumber}>
+                                    Page {currentPage} of {totalPages}
+                                </span>
+
+                                <button
+                                    className={styles.pageButton}
+                                    onClick={handleNextPage}
+                                    disabled={currentPage >= totalPages}
+                                    aria-hidden={currentPage >= totalPages}
+                                >
+                                    {">"}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -106,8 +106,8 @@ h2 {
   border-top: 1px solid rgb(184, 184, 184);
   border-bottom: 1px solid rgb(184, 184, 184);
 
-  {/*scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;*/}
+  /*scrollbar-width: thin;
+  scrollbar-color: #94A9C6 transparent;*/
 }
 
 
@@ -185,4 +185,10 @@ h2 {
   border: none;
   font-size: 1rem;
   cursor: pointer;
+  padding: 0rem 0.5rem;
 } 
+
+.pageButton:disabled {
+  visibility: hidden;   /* keeps space, hides button */
+  pointer-events: none;
+}
