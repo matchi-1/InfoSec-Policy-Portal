@@ -2,11 +2,11 @@
 
 :root {
   /* color variables */
-  --light-teal-background: #eff8f9;
+  --light-blue-background: #E9F2FF;
   --light-grey-selected: #dde0e2;
   --light-grey-lines: #d2d2d2;
   --light-grey-text: #787878;
-  --primary-teal: #00a8a8;
+  --primary-teal: #204C8B;
 
   /* size variables */
   --header-navi-height: 4rem;
@@ -33,7 +33,7 @@ img {
   flex-direction: row;
   height: 100vh;
   width: 100vw;
-  background-color: var(--light-teal-background);
+  background-color: var(--light-blue-background);
   overflow: auto;
 }
 
@@ -272,13 +272,13 @@ img {
 .sidebar-submodule-item.hovered,
 .sidebar-module-icons-item.opened.hovered,
 .sidebar-module-icons-item.opened.hovered {
-  background-color: #e0f2f5;
+  background-color: #e0ebf5;
 }
 
 .sidebar-module-icons-item.active,
 .sidebar-module-desc-item.active,
 .sidebar-submodule-item.active {
-  background-color: var(--light-grey-selected);
+  background-color: var(--primary-teal);
 }
 
 .sidebar-module-icons-item.active.hovered,
@@ -286,7 +286,7 @@ img {
 .sidebar-submodule-item.active.hovered,
 .sidebar-module-icons-item.opened.active.hovered,
 .sidebar-module-icons-item.opened.active.hovered {
-  background-color: #c2c2c2;
+  background-color: #153c73;
 }
 
 .sidebar-submodule-item-empty {
@@ -316,7 +316,7 @@ img {
 }
 
 .sidebar-submodule-item.active {
-  background-color: var(--light-grey-selected);
+  background-color: var(--primary-teal);
   border-radius: 0.5rem;
 }
 
