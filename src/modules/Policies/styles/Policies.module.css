@@ -10,14 +10,21 @@
       height: 100%;
       border-radius: 0.5rem;
       background-color: white;
-      padding: 1rem;
+      padding: 2rem 1rem 1rem 1rem;
       box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
       display: flex;
       flex-direction: column;
-      align-items: center;
+      align-items: start;
       justify-content: center;
       min-width: 40rem;
       min-height: 30rem;
+    }
+
+    .filterContainer{
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 0.5rem;
+      border: 1px solid red;
     }
     
     .sideDocumentContainer,
@@ -25,19 +32,35 @@
         display: flex;
         flex-wrap: wrap;
         flex-direction: column;
-        justify-content: center;
-        margin-top: 1rem;
+        justify-content: start;
     }
 
     .sideDocumentContainer{
       border: 1px solid red;
+      width: 13rem;
+      max-width: 13rem;
+      align-items: start;
+      gap: 0.75rem;
+    }
+
+    .documentAndFooterContainer{
+      border: 4px solid rgb(0, 179, 255);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      gap: 0;
     }
 
     .documentsContainer{
-      border: 1px solid blue;
+      border: 1px solid rgb(114, 49, 5);
+      width: 100%;
+      max-width: 100%;
+      align-items: center;
     }
 
-    .document{
+    .documentItem{
       border: 1px solid green;
       width: 10rem;
       height: auto;
@@ -45,4 +68,14 @@
       display: flex;
       align-items: center;
       justify-content: center;
+    }
+
+    .paginationContainer{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgb(255, 0, 0);
+      width: 100%;
+      height: 2rem;
     }

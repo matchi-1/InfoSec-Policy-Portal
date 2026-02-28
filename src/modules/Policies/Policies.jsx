@@ -42,28 +42,35 @@ const BodyContent = () => {
     return (
         <div className={styles.policies}>
             <div className={styles.bodyContentContainer}>
+
                 <div className={styles.sideDocumentContainer}>
+
                     <p>Documents</p>
+
                     <SearchBar placeholder="Search documents..." />
+
                     {/*filter btn*/}
+                    <div className={styles.filterContainer}>
+                        <button className={styles.filterButton}>Filter</button>
+                    </div>
 
-                    <div className={styles.documentsContainer}>
-                        {paginatedDocuments.map((doc) => (
-                            <div key={doc.id} className={styles.document}>
-                                <p>{doc.name}</p>
+                    <div className={styles.documentAndFooterContainer}>
+                        <div className={styles.documentsContainer}>
+                            {paginatedDocuments.map((doc) => (
+                                <div key={doc.id} className={styles.documentItem}>
+                                    <p>{doc.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                        <div className={styles.paginationContainer}>
+                            <div className={styles.pagination}>
+                                {currentPage > 1 && <button className={styles.pageButton} onClick={handlePrevPage}>{"<"}</button>}
+                                <span className={styles.pageNumber}> Page {currentPage} of {totalPages} </span>
+                                {currentPage < totalPages && <button className={styles.pageButton} onClick={handleNextPage}>{">"}</button>}
                             </div>
-                        ))}
+                        </div>
                     </div>
 
-                    <div className={styles.pagination}>
-                        {currentPage > 1 && <button className={styles.pageButton} onClick={handlePrevPage}>{"<"}</button>}
-                        <span className={styles.pageNumber}> Page {currentPage} of {totalPages} </span>
-                        {currentPage < totalPages && <button className={styles.pageButton} onClick={handleNextPage}>{">"}</button>}
-                    </div>
-
-                    {/* <div className={styles.FileCountContainer}>
-                            <p>Showing 10 of 10 documents</p> 
-                        </div>*/}
                 </div>
             </div>
         </div>
