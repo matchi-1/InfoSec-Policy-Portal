@@ -1,81 +1,105 @@
 
 .policies {
-    display: flex;
-    width: 100%;
-    height: 100%;
-  }
-  
+  display: flex;
+  width: 100%;
+  height: 100%;
+}
+
+
 .bodyContentContainer {
-      width: 100%;
-      height: 100%;
-      border-radius: 0.5rem;
-      background-color: white;
-      padding: 2rem 1rem 1rem 1rem;
-      box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
-      display: flex;
-      flex-direction: column;
-      align-items: start;
-      justify-content: center;
-      min-width: 40rem;
-      min-height: 30rem;
-    }
+  width: 100%;
+  height: 100%;
+  border-radius: 0.5rem;
+  background-color: white;
+  padding: 2rem 1rem 1rem 1rem;
+  box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: start;
 
-    .filterContainer{
-      display: flex;
-      justify-content: flex-start;
-      margin-bottom: 0.5rem;
-      border: 1px solid red;
-    }
+  justify-content: flex-start;
+
+  min-width: 40rem;
+  min-height: 30rem;
+}
+
+.sideDocumentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  gap: 0.75rem;
+
+  height: 100%;
+  width: 13rem;
+  max-width: 13rem;
+
+  /* IMPORTANT for scroll layouts */
+  min-height: 0;
+
+  border: 1px solid red;
+}
+
+.filterContainer {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 0.5rem;
+  border: 1px solid red;
+}
     
-    .sideDocumentContainer,
-    .documentsContainer{
-        display: flex;
-        flex-wrap: wrap;
-        flex-direction: column;
-        justify-content: start;
-    }
 
-    .sideDocumentContainer{
-      border: 1px solid red;
-      width: 13rem;
-      max-width: 13rem;
-      align-items: start;
-      gap: 0.75rem;
-    }
+/* document container should take the remaining height */
+.documentAndFooterContainer {
+  border: 4px solid rgb(0, 179, 255);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+  width: 100%;
+  /* fills remaining space */
+  flex: 1;
+  min-height: 0;
+}
 
-    .documentAndFooterContainer{
-      border: 4px solid rgb(0, 179, 255);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      gap: 0;
-    }
 
-    .documentsContainer{
-      border: 1px solid rgb(114, 49, 5);
-      width: 100%;
-      max-width: 100%;
-      align-items: center;
-    }
+/* Area that  expands (and scroll) */
+.documentsContainer {
+  border: 1px solid rgb(114, 49, 5);
+  width: 100%;
+  max-width: 100%;
 
-    .documentItem{
-      border: 1px solid green;
-      width: 10rem;
-      height: auto;
-      margin: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+  /* fill available space inside documentAndFooterContainer */
+  flex: 1;
 
-    .paginationContainer{
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgb(255, 0, 0);
-      width: 100%;
-      height: 2rem;
-    }
+  /* so it can scroll instead of pushing footer off-screen */
+  overflow-y: auto;
+
+  /* IMPORTANT in nested flex columns */
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.documentItem{
+  border: 1px solid green;
+  width: 10rem;
+  height: auto;
+  margin: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* footer stays pinned at bottom */
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid rgb(255, 0, 0);
+  width: 100%;
+  height: 2rem;
+
+  /* won't make it shrink away */
+  flex-shrink: 0;
+}
