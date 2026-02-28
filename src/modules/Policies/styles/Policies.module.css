@@ -154,7 +154,7 @@ h2 {
   min-height: 3.75rem;
   height: 3.75rem;          
   padding: 0.5rem;
-  border: 1px solid rgb(109, 109, 109);
+  border: 1px solid rgb(172, 172, 172);
 
   display: flex;
   align-items: center;
@@ -298,4 +298,38 @@ h2 {
   font-size: 0.75rem;
   color: rgb(220, 220, 220);
   margin-left: 2rem;
+}
+
+
+.documentButtonsAndSearchContainer{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: row;
+  width: 100%;
+  padding: 1rem 1.5rem 1rem 0.75rem;
+}
+
+.documentButtonsContainer{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  gap: 1.25rem;
+}
+
+.documentButton{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.1rem 1rem;
+  border: 1px solid var(--primary-blue);
+  border-radius: 1rem;
+  color: var(--primary-blue);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.documentSearchContainer{
+  width: 35rem;
 }

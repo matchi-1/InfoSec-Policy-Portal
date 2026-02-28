@@ -142,6 +142,24 @@ const BodyContent = () => {
                         )}
                     </div>
 
+                    <div className={styles.documentButtonsAndSearchContainer}>
+
+                        <div className={styles.documentSearchContainer}>
+                            <SearchBar placeholder="Search standards, policies, procedures..." />
+                        </div>
+
+                        <div className={styles.documentButtonsContainer}>
+                            <button className={styles.documentButton}>View PDF</button>
+                            <button className={styles.documentButton}>Download PDF</button>
+                        </div>
+
+                    </div>
+
+                    <div className={styles.documentContentContainer}>
+                        <div className={styles.documentContent}>
+                            <p>docu content lalalal</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
