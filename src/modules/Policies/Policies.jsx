@@ -56,7 +56,8 @@ const BodyContent = () => {
                     {/*filter btn*/}
                     <div className={styles.filterAndFileNumContainer}>
                         <div className={styles.filterContainer}>
-                            <button className={styles.filterButton}>Filter</button>
+                            <img src={"/icons/filter-blue.png"} alt={"Filter Icon"} className={styles.filterIcon} />
+                            <p>Filter</p>
                         </div>
                         <span className={styles.fileNumText}>{documents.length} Files</span>
                     </div>
