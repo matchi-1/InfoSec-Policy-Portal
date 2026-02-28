@@ -279,6 +279,7 @@ img {
 .sidebar-module-icons-item.active,
 .sidebar-module-desc-item.active {
   background-color: var(--primary-blue);
+  color: white;
 }
 
 .sidebar-submodule-item.active {
