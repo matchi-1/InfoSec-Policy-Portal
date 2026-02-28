@@ -1,13 +1,12 @@
 import React from "react";
-import "../styles/Others-dsh.css";
+import styles from "../styles/OthersDsh.module.css";
 
 const BodyContent = () => {
   return (
-    <div className="others-dsh">
-      <div className="body-content-container">
+    <div className={styles.othersDsh}>
+      <div className={styles.bodyContentContainer}>
         <p>Hello Others Dashboard SubModule!</p>
         <p>Fill this container with your elements, change the display if need be.</p>
-        <p>If you're going to style with css, use your unique namespace '.others-dsh' at the start.</p>
       </div>
     </div>
   );

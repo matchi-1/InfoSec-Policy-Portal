@@ -1,11 +1,11 @@
 /* REMINDER! All of your elements must use your unique namespace '.others-dsh' at the start to avoid leaking */
-.others-dsh {
+.othersDsh {
     display: flex;
     width: 100%;
     height: 100%;
   }
-  
-  .others-dsh .body-content-container {
+
+  .bodyContentContainer {
       width: 100%;
       height: 100%;
       border-radius: 0.5rem;
