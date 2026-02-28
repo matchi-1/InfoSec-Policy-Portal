@@ -471,7 +471,7 @@ function App() {
           </div>
 
           <div className="sidebar-kinetiq-footer">
-            <img src={"src/public/icons/header-module-icons/Administration.png"} alt={"Security Lock Logo"}></img>
+            <img src={"public/icons/InfoSecLogo.png"} alt={"InfoSec Logo"}></img>
           </div>
         </div>
 
