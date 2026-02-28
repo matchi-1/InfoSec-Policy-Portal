@@ -249,15 +249,16 @@ h2 {
   background-color: var(--primary-blue);
   border-radius: 0.5rem 0.5rem 0 0;
   color: white;
-  padding: 0.75rem 0.75rem 1rem 0.75rem;
+  padding: 0.75rem 1.5rem 1rem 0.75rem;
 }
 
 .documentDetails{
   display: flex;
+  flex: 1;
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  width: 40rem;
+  width: 100%;
 }
 
 .documentDetails h2{
@@ -286,4 +287,15 @@ h2 {
 .documentDescription{
   scrollbar-width: thin;
   scrollbar-color: #94A9C6 transparent;
+}
+
+.documentMetadata{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+  gap: 0.1rem;
+  font-size: 0.75rem;
+  color: rgb(220, 220, 220);
+  margin-left: 2rem;
 }
