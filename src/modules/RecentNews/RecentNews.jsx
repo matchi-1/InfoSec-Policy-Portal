@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "./styles/RecentNews.css";
+import styles from "./styles/RecentNews.module.css";
 
 const BodyContent = () => {
     return (

@@ -1,5 +1,5 @@
 import React from "react";
-import styles from "../styles/RecentNews-dsh.css";
+import styles from "../styles/RecentNews-dsh.module.css";
 
 const BodyContent = () => {
   return (
