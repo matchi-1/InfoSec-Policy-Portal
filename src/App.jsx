@@ -373,11 +373,9 @@ function App() {
   console.log(filteredModuleFileNames);
 
 
-
-
   const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
     id: module,
-    icon: `/icons/module-icons/${moduleFileNames[module]}.png`,
+    file: `${moduleFileNames[module]}.png`,
   }));
 
   console.log('module icons...')
@@ -446,7 +444,14 @@ function App() {
                   onMouseEnter={() => setHoveredModule(module.id)}
                   onMouseLeave={() => setHoveredModule(null)}
                 >
-                  <img src={module.icon} alt={module.id} />
+                  <img
+                    src={
+                      activeModule === module.id
+                        ? `/icons/module-icons-selected/${module.file}`
+                        : `/icons/module-icons/${module.file}`
+                    }
+                    alt={module.id}
+                  />
                 </div>
 
                 <div
