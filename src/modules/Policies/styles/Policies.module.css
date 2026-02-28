@@ -146,7 +146,23 @@ h2 {
   align-items: center;
   justify-content: center;
 
-  overflow: hidden;       
+  overflow: hidden;      
+  cursor: pointer; 
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.documentItem.selected{
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.documentItem.selected:hover{
+  background-color: #0d3673;
+  color: white;
+}
+
+.documentItem:hover{
+  background-color: #dde5f1;
 }
 
 /* target the text directly */

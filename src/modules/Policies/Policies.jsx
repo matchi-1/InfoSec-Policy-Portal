@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 
@@ -22,7 +22,9 @@ const documents = [
     { id: 16, name: "Third-Party Risk ManagementManagementManagementManagementManagementManagementManagementManagement" },
 ];
 
+
 const BodyContent = () => {
+    const [selectedDocId, setSelectedDocId] = useState(null);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 8;
     const totalPages = Math.ceil(documents.length / itemsPerPage);
@@ -62,7 +64,14 @@ const BodyContent = () => {
                     <div className={styles.documentAndFooterContainer}>
                         <div className={styles.documentsContainer}>
                             {paginatedDocuments.map((doc) => (
-                                <div key={doc.id} className={styles.documentItem}>
+                                <div
+                                    key={doc.id}
+                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""}`}
+                                    onClick={() => setSelectedDocId(doc.id)}
+                                    role="button"
+                                    tabIndex={0}
+                                    onKeyDown={(e) => e.key === "Enter" && setSelectedDocId(doc.id)}
+                                >
                                     <p>{doc.name}</p>
                                 </div>
                             ))}
