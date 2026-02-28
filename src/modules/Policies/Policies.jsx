@@ -19,7 +19,7 @@ const documents = [
     { id: 13, name: "Email Security and Protection" },
     { id: 14, name: "Mobile Security and Device Management" },
     { id: 15, name: "Cloud Security and Infrastructure" },
-    { id: 16, name: "Third-Party Risk Management" },
+    { id: 16, name: "Third-Party Risk ManagementManagementManagementManagement" },
 ];
 
 const BodyContent = () => {
@@ -46,8 +46,10 @@ const BodyContent = () => {
                 <div className={styles.sideDocumentContainer}>
 
                     <h2>Documents</h2>
+                    <div className={styles.searchBarContainer}>
+                        <SearchBar placeholder="Search documents..." />
+                    </div>
 
-                    <SearchBar placeholder="Search documents..." />
 
                     {/*filter btn*/}
                     <div className={styles.filterAndFileNumContainer}>
