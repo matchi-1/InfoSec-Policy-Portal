@@ -132,12 +132,14 @@ const BodyContent = () => {
                             </div>
                         )}
 
-                        <div className={styles.documentMetadata}>
-                            <p>Authored by: Jeffrey S. Kawabata</p>
-                            <p>Last Updated: 2024-06-01</p>
-                            <p>Reviewed by: John Doe</p>
-                            <p>Last Reviewed: 2024-06-01</p>
-                        </div>
+                        {selectedDocId && (
+                            <div className={styles.documentMetadata}>
+                                <p>Authored by: Jeffrey S. Kawabata</p>
+                                <p>Last Updated: 2024-06-01</p>
+                                <p>Reviewed by: John Doe</p>
+                                <p>Last Reviewed: 2024-06-01</p>
+                            </div>
+                        )}
                     </div>
 
                 </div>
