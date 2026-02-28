@@ -20,3 +20,29 @@
       min-height: 30rem;
     }
     
+    .sideDocumentContainer,
+    .documentsContainer{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        justify-content: center;
+        margin-top: 1rem;
+    }
+
+    .sideDocumentContainer{
+      border: 1px solid red;
+    }
+
+    .documentsContainer{
+      border: 1px solid blue;
+    }
+
+    .document{
+      border: 1px solid green;
+      width: 10rem;
+      height: auto;
+      margin: 0.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }

@@ -8,8 +8,8 @@ const SearchBar = () => {
     <div
       style={{
         ...styles.container,
-        //border: isFocused ? "1px solid rgba(11, 129, 125, 0.62)" : "none", // Add border on focus
-        boxShadow: isFocused ? "0 0 5px rgba(0, 155, 149, 0.61)" : "none", // Add glow effect
+        border: isFocused ? "1px solid rgb(88, 88, 88)" : "1px solid rgb(178, 178, 178)", // Add border on focus
+        //boxShadow: isFocused ? "0 0 10px rgba(0, 100, 97, 0.55)" : "none", // Add glow effect
       }}
     >
       <img src="/icons/search-icon.png" alt="Search" style={styles.icon} />
@@ -28,14 +28,13 @@ const styles = {
   container: {
     display: "flex",
     backgroundColor: "#F7F9FB",
-    border: "1px solid rgb(239, 239, 239)",
     borderRadius: "0.5rem",
     width: "100%",
     height: "2rem",
     maxWidth: "20rem",
     justifyContent: "center",
-    transition: "border 0.2s ease, box-shadow 0.2s ease",
-    boxSizing: "border-box",
+    //transition: "border 0.2s ease, box-shadow 0.2s ease",
+    //boxSizing: "border-box",
     alignItems: "center",
     paddingLeft: "0.5rem",
   },
