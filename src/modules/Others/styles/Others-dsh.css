@@ -1,11 +1,11 @@
-/* REMINDER! All of your elements must use your unique namespace '.management' at the start to avoid leaking */
-.management-dsh {
+/* REMINDER! All of your elements must use your unique namespace '.others-dsh' at the start to avoid leaking */
+.others-dsh {
     display: flex;
     width: 100%;
     height: 100%;
   }
   
-  .management-dsh .body-content-container {
+  .others-dsh .body-content-container {
       width: 100%;
       height: 100%;
       border-radius: 0.5rem;

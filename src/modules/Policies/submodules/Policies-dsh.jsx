@@ -1,13 +1,13 @@
 import React from "react";
-import "../styles/ManagementDashboard.css";
+import "../styles/Policies-dsh.css";
 
 const BodyContent = () => {
   return (
-    <div className="management-dsh">
+    <div className="policies-dsh">
       <div className="body-content-container">
-        <p>Hello Management Dashboard SubModule!</p>
+        <p>Hello Policies Dashboard SubModule!</p>
         <p>Fill this container with your elements, change the display if need be.</p>
-        <p>If you're going to style with css, use your unique namespace '.management-dsh' at the start.</p>
+        <p>If you're going to style with css, use your unique namespace '.policies-dsh' at the start.</p>
       </div>
     </div>
   );

@@ -1,13 +1,13 @@
 import React from "react";
-import "./styles/Management.css";
+import "./styles/Home.css";
 
 const BodyContent = () => {
     return (
-        <div className="management">
+        <div className="home">
             <div className="body-content-container">
-                <p>Hello Management Module!</p>
+                <p>Hello Home Module!</p>
                 <p>Fill this container with your elements, change the display if need be.</p>
-                <p>If you're going to style with css, use your unique namespace '.management' at the start.</p>
+                <p>If you're going to style with css, use your unique namespace '.home' at the start.</p>
             </div>
         </div>
     );
