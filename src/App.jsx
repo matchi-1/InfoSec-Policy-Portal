@@ -305,24 +305,22 @@ function App() {
 
 
   const moduleFileNames = {
-    "Management": "Management",
-    "Administration": "Administration",
-    "Accounting": "Accounting",
-    "Human Resources": "HumanResources",
+    "Home": "Home",
+    "Policies": "Policies",
+    "Recent News": "RecentNews",
+    "Others": "Others",
   };
 
   const moduleSubmoduleFileNames = {
-    Management: {
-      "Dashboard": "ManagementDashboard",
+    "Home": {},
+    "Policies": {
+      "Policies Dashboard": "Policies-dsh",
     },
-    Administration: {
-      "User": "User",
+    "Recent News": {
+      "Recent News Dashboard": "RecentNews-dsh",
     },
-    "Accounting": {
-      "Chart of Accounts": "ChartOfAccounts",
-    },
-    "Human Resources": {
-      "Employees": "Employees",
+    "Others": {
+      "Others Dashboard": "Others-dsh",
     }
   };
 
@@ -473,7 +471,7 @@ function App() {
           </div>
 
           <div className="sidebar-kinetiq-footer">
-            <img src={"/icons/Kinetiq-Logo.png"} alt={"Kinetiq Logo"}></img>
+            <img src={"src/public/icons/header-module-icons/Administration.png"} alt={"Security Lock Logo"}></img>
           </div>
         </div>
 
@@ -556,7 +554,7 @@ function App() {
           </div>
 
           <div className="sidebar-kinetiq-footer-desc">
-            <p>Kinetiq</p>
+            <p>InfoSec Department</p>
           </div>
         </div>
 
