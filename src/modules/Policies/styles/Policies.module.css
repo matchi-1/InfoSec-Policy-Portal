@@ -103,8 +103,29 @@ h2 {
   padding: 1rem 0.5rem;
   gap: 1rem;
 
-  border-top: 1px solid rgb(109, 109, 109);
-  border-bottom: 1px solid rgb(109, 109, 109);
+  border-top: 1px solid rgb(184, 184, 184);
+  border-bottom: 1px solid rgb(184, 184, 184);
+
+  {/*scrollbar-width: thin;
+  scrollbar-color: #94A9C6 transparent;*/}
+}
+
+
+.documentsContainer::-webkit-scrollbar{
+  width: 0.3rem;
+}
+
+.documentsContainer::-webkit-scrollbar-track{
+  background: transparent;   /* no visible track */
+}
+
+.documentsContainer::-webkit-scrollbar-thumb{
+  background: #94A9C6;
+  border-radius: 5rem;      /* rounded rectangle */
+}
+
+.documentsContainer::-webkit-scrollbar-thumb:hover{
+  background: #8399ba;       
 }
 
 .documentItem {
@@ -116,32 +137,34 @@ h2 {
   width: 100%;
   box-sizing: border-box;
 
-  min-height: 3.5rem; 
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  padding: 0.5rem 0.5rem;
+  min-height: 3.75rem;
+  height: 3.75rem;          
+  padding: 0.5rem;
   border: 1px solid rgb(109, 109, 109);
-  box-sizing: border-box;
-}
 
-.documentTextContainer {
-  width: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  box-sizing: border-box;
+  justify-content: center;
+
+  overflow: hidden;       
 }
 
-.documentTextContainer p {
+/* target the text directly */
+.documentItem p {
   margin: 0;
-  padding: 0;
+  width: 100%;
+  min-width: 0;            
   text-align: center;
   line-height: 1rem;
-  word-break: break-word; 
-  box-sizing: border-box;
+
+  /* multi-line ellipsis */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;   /* change to 1, 2, 3 lines */
+  overflow: hidden;
+
+  /* use this instead of word-break */
+  overflow-wrap: anywhere;
 }
 
 /* footer stays pinned at bottom */

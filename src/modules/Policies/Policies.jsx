@@ -19,7 +19,7 @@ const documents = [
     { id: 13, name: "Email Security and Protection" },
     { id: 14, name: "Mobile Security and Device Management" },
     { id: 15, name: "Cloud Security and Infrastructure" },
-    { id: 16, name: "Third-Party Risk ManagementManagementManagementManagement" },
+    { id: 16, name: "Third-Party Risk ManagementManagementManagementManagementManagementManagementManagementManagement" },
 ];
 
 const BodyContent = () => {
@@ -63,9 +63,7 @@ const BodyContent = () => {
                         <div className={styles.documentsContainer}>
                             {paginatedDocuments.map((doc) => (
                                 <div key={doc.id} className={styles.documentItem}>
-                                    <div className={styles.documentTextContainer}>
-                                        <p>{doc.name}</p>
-                                    </div>
+                                    <p>{doc.name}</p>
 
                                 </div>
                             ))}
