@@ -234,12 +234,12 @@ h2 {
   flex: 1;
   min-height: 0;
   height:100%;
-  color: white;
   background-color: #F5F9FF;
   border: 1px solid #a8a8a8;
   border-radius: 0.5rem;
   margin-left: 1rem;
 }
+
 .documentHeaderContainer{
   display: flex;
   justify-content: space-between;
@@ -248,4 +248,42 @@ h2 {
   width: 100%;
   background-color: var(--primary-blue);
   border-radius: 0.5rem 0.5rem 0 0;
+  color: white;
+  padding: 0.75rem 0.75rem 1rem 0.75rem;
+}
+
+.documentDetails{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  width: 40rem;
+}
+
+.documentDetails h2{
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 400;
+}
+
+.documentDescription{
+  font-size: 0.8rem;
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: 0.02rem;
+  line-height: 1rem;
+  margin-top: 0.4rem;
+  min-height: 0;
+  max-height: 3rem;              /* fixed 3 lines (since line-height is 1rem) */
+  overflow-y: auto;          /* scroll only when needed */
+  overflow-x: hidden;
+  padding-right: 0.4rem;     /* small gap so text doesn't touch scrollbar */
+  background: transparent;  
+}
+
+/* SIMPLE SCROLLBAR (Chrome/Edge/Safari) */
+/* Firefox */
+.documentDescription{
+  scrollbar-width: thin;
+  scrollbar-color: #94A9C6 transparent;
 }

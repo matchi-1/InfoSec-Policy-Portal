@@ -114,14 +114,21 @@ const BodyContent = () => {
                         {selectedDocId ? (
                             <div className={styles.documentDetails}>
                                 <h2>{documents.find((doc) => doc.id === selectedDocId)?.name}</h2>
-                                <p>
-                                    This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-                                </p>
+                                <div className={styles.documentDescription}>
+                                    <p>
+                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+                                    </p>
+                                </div>
+
                             </div>
                         ) : (
-                            <div className={styles.noSelection}>
+                            <div className={styles.documentDetails}>
                                 <h2>No Document Selected</h2>
-                                <p>Please select a document from the list to view its details.</p>
+                                <div className={styles.documentDescription}>
+                                    <p>Please select a document from the list to view its details.</p>
+                                </div>
                             </div>
                         )}
                     </div>
