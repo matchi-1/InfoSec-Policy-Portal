@@ -4,22 +4,22 @@ import SearchBar from "../../shared/components/SearchBar";
 
 
 const documents = [
-    { id: 1, name: "Access Control" },
-    { id: 2, name: "Data Protection" },
-    { id: 3, name: "Incident Response" },
-    { id: 4, name: "Network Security" },
-    { id: 5, name: "Authentication" },
-    { id: 6, name: "Encryption" },
-    { id: 7, name: "Compliance" },
-    { id: 8, name: "Risk Management" },
-    { id: 9, name: "Vulnerability Assessment" },
-    { id: 10, name: "Security Policies" },
-    { id: 11, name: "Disaster Recovery" },
-    { id: 12, name: "Physical Security" },
-    { id: 13, name: "Email Security" },
-    { id: 14, name: "Mobile Security" },
-    { id: 15, name: "Cloud Security" },
-    { id: 16, name: "Third-Party Management" },
+    { id: 1, name: "Access Control Policy and Implementation" },
+    { id: 2, name: "Data Protection and Privacy Guidelines" },
+    { id: 3, name: "Incident Response and Management" },
+    { id: 4, name: "Network Security Standards" },
+    { id: 5, name: "Authentication and Authorization Methods" },
+    { id: 6, name: "Encryption and Data Confidentiality" },
+    { id: 7, name: "Compliance and Regulatory Requirements" },
+    { id: 8, name: "Risk Management Framework" },
+    { id: 9, name: "Vulnerability Assessment Procedures" },
+    { id: 10, name: "Security Policies and Standards" },
+    { id: 11, name: "Disaster Recovery and Continuity Planning" },
+    { id: 12, name: "Physical Security Controls" },
+    { id: 13, name: "Email Security and Protection" },
+    { id: 14, name: "Mobile Security and Device Management" },
+    { id: 15, name: "Cloud Security and Infrastructure" },
+    { id: 16, name: "Third-Party Risk Management" },
 ];
 
 const BodyContent = () => {
@@ -45,7 +45,7 @@ const BodyContent = () => {
 
                 <div className={styles.sideDocumentContainer}>
 
-                    <p>Documents</p>
+                    <h2>Documents</h2>
 
                     <SearchBar placeholder="Search documents..." />
 

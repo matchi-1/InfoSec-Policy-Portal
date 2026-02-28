@@ -30,7 +30,7 @@ const styles = {
     backgroundColor: "#F7F9FB",
     borderRadius: "0.5rem",
     width: "100%",
-    height: "2rem",
+    height: "1.75rem",
     maxWidth: "20rem",
     justifyContent: "center",
     //transition: "border 0.2s ease, box-shadow 0.2s ease",
