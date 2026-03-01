@@ -178,17 +178,21 @@ const BodyContent = () => {
                                 {isPdfViewActive ? "View Mode" : "View PDF"}
                             </button>
 
-                            <button
+                            <a
                                 className={styles.documentButton}
-                                disabled={!selectedDocId}
-                                type="button"
-                                onClick={() => {
-                                    // example: we can use selectedDoc.pdfUrl later
-                                    // window.open(selectedDoc?.pdfUrl, "_blank");
+                                href={selectedDoc?.pdfUrl ?? "#"}
+                                download
+                                onClick={(e) => {
+                                    if (!selectedDoc?.pdfUrl) e.preventDefault();
+                                }}
+                                aria-disabled={!selectedDocId}
+                                style={{
+                                    pointerEvents: selectedDocId ? "auto" : "none",
+                                    opacity: selectedDocId ? 1 : 0.5,
                                 }}
                             >
                                 Download PDF
-                            </button>
+                            </a>
 
                             {isPdfViewActive && (
                                 <button
