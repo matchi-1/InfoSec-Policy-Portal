@@ -199,16 +199,24 @@ const BodyContent = () => {
 
                     <div className={styles.documentContentContainer}>
                         {isPdfViewActive ? (
-                            <div className={styles.pdfViewerPlaceholder}>
-                                <p>PDF Viewer goes here…</p>
-                                <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
-                                    Source: {selectedDoc?.pdfUrl ?? "(no pdfUrl in dummy data)"}
-                                </p>
-                            </div>
+                            selectedDoc ? (
+                                <div className={styles.pdfViewerContainer}>
+                                    <iframe
+                                        className={styles.pdfIframe}
+                                        src={`${selectedDoc.pdfUrl}#view=FitH&toolbar=1&navpanes=0`}
+                                        title={selectedDoc.title}
+                                    />
+                                </div>
+                            ) : (
+                                <div className={styles.pdfViewerPlaceholder}>
+                                    <p>Select a document first.</p>
+                                </div>
+                            )
                         ) : (
-                            // IMPORTANT: pass the selected doc’s sections
-                            // key={selectedDocId} forces a clean reset of accordion state per document
-                            <PolicySections key={selectedDocId ?? "no-doc"} data={selectedDoc?.sections ?? []} />
+                            <PolicySections
+                                key={selectedDocId ?? "no-doc"}
+                                data={selectedDoc?.sections ?? []}
+                            />
                         )}
                     </div>
                 </div>
