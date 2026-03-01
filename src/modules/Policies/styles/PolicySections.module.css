@@ -13,6 +13,8 @@
 
   scrollbar-width: thin;
   scrollbar-color: #94A9C6 transparent;
+
+  border-top: 1px solid #bdc8d6;
 }
 
 .policyAccordion::-webkit-scrollbar{ width: 10px; }
@@ -63,6 +65,7 @@
 
 /* --- OUTER/INNER accordion animation --- */
 .policyPanelOuter{
+    
   display: grid;
   grid-template-rows: 0fr;
 
@@ -160,6 +163,8 @@
 
   font-size: 0.85rem;
   color: #3b4a63;
+
+  border-bottom: 1px solid #bdc8d6;
 
   cursor: pointer;
   user-select: none;
