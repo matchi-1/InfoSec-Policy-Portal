@@ -189,9 +189,15 @@ const BodyContent = () => {
 
 
                     <div className={styles.documentContentContainer}>
-                        <div className={styles.documentContent}>
-                            <p>docu content lalalal</p>
-                        </div>
+                        {isPdfViewActive ? (
+                            <div className={styles.pdfViewerPlaceholder}>
+                                <p>PDF Viewer goes here…</p>
+                            </div>
+                        ) : (
+                            <div className={styles.documentContent}>
+                                <p>docu content lalalal</p>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
