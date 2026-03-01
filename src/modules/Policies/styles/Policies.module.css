@@ -4,11 +4,11 @@
   height: 100%;
 }
 
-
 h2 {
   color:var(--primary-blue);
   font-weight: 600;
 }
+
 .bodyContentContainer {
   width: 100%;
   height: 100%;
@@ -24,6 +24,7 @@ h2 {
 
   min-width: 40rem;
   min-height: 30rem;
+  
 }
 
 .sideDocumentContainer {
@@ -197,7 +198,6 @@ h2 {
   -webkit-line-clamp: 3;   /* change to 1, 2, 3 lines */
   overflow: hidden;
 
-  /* use this instead of word-break */
   overflow-wrap: anywhere;
 }
 
@@ -279,7 +279,7 @@ h2 {
   color: white;
   font-size: 1.3rem;
   font-weight: 400;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 .documentDescription{
@@ -328,6 +328,7 @@ h2 {
 
 /* Button row */
 .documentButtonsContainer{
+  max-width: fit-content;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -335,7 +336,7 @@ h2 {
 
 /* Base button */
 .documentButton{
-  height: 2.25rem;
+  height: 2rem;
   padding: 0 0.9rem;
   border-radius: 0.3rem;
   width: max-content;

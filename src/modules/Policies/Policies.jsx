@@ -9,6 +9,7 @@ import { policyDocumentsDb } from "./data/policyDocumentsDb";
 const BodyContent = () => {
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
+    const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -41,6 +42,7 @@ const BodyContent = () => {
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
         setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
+        setIsHeaderCollapsed(false); // reset header collapse state when changing docs
     };
 
     return (
@@ -116,37 +118,40 @@ const BodyContent = () => {
 
                 {/* RIGHT */}
                 <div className={styles.rightContentContainer}>
-                    <div className={styles.documentHeaderContainer}>
-                        {selectedDoc ? (
-                            <div className={styles.documentDetails}>
-                                <div className={styles.documentTitleContainer}>
-                                    <h2>{selectedDoc?.title}</h2>
-                                </div>
 
-                                {/* doc details from DB */}
-                                <div className={styles.documentDescription}>
-                                    <p>{selectedDoc.details}</p>
-                                </div>
-                            </div>
-                        ) : (
-                            <div className={styles.documentDetails}>
-                                <h2>No Document Selected</h2>
-                                <div className={styles.documentDescription}>
-                                    <p>Please select a document from the list to view its details.</p>
-                                </div>
-                            </div>
-                        )}
+                    {!isHeaderCollapsed && (
+                        <div className={styles.documentHeaderContainer}>
+                            {selectedDoc ? (
+                                <div className={styles.documentDetails}>
+                                    <div className={styles.documentTitleContainer}>
+                                        <h2>{selectedDoc?.title}</h2>
+                                    </div>
 
-                        {selectedDoc && (
-                            <div className={styles.documentMetadata}>
-                                {/* metadata from DB */}
-                                <p>Authored by: {selectedDoc.authoredBy}</p>
-                                <p>Last Updated: {selectedDoc.lastUpdated}</p>
-                                <p>Reviewed by: {selectedDoc.reviewedBy}</p>
-                                <p>Last Reviewed: {selectedDoc.lastReviewed}</p>
-                            </div>
-                        )}
-                    </div>
+                                    {/* doc details from DB */}
+                                    <div className={styles.documentDescription}>
+                                        <p>{selectedDoc.details}</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className={styles.documentDetails}>
+                                    <h2>No Document Selected</h2>
+                                    <div className={styles.documentDescription}>
+                                        <p>Please select a document from the list to view its details.</p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {selectedDoc && (
+                                <div className={styles.documentMetadata}>
+                                    {/* metadata from DB */}
+                                    <p>Authored by: {selectedDoc.authoredBy}</p>
+                                    <p>Last Updated: {selectedDoc.lastUpdated}</p>
+                                    <p>Reviewed by: {selectedDoc.reviewedBy}</p>
+                                    <p>Last Reviewed: {selectedDoc.lastReviewed}</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
 
                     <div className={styles.documentButtonsAndSearchContainer}>
                         <div className={styles.documentSearchFilterContainer}>
@@ -192,6 +197,16 @@ const BodyContent = () => {
                                     type="button"
                                 >
                                     Back
+                                </button>
+                            )}
+
+                            {isPdfViewActive && selectedDoc && (
+                                <button
+                                    type="button"
+                                    className={styles.documentButton}
+                                    onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                                >
+                                    {isHeaderCollapsed ? "↓" : "↑"}
                                 </button>
                             )}
                         </div>
