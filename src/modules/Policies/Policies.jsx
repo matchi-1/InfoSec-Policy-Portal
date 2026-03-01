@@ -54,7 +54,7 @@ const BodyContent = () => {
                     </div>
 
 
-                    {/*filter btn*/}
+                    {/*filter btn for side docu container*/}
                     <div className={styles.filterAndFileNumContainer}>
                         <div className={styles.filterContainer}>
                             <img src={"/icons/filter-blue.png"} alt={"Filter Icon"} className={styles.filterIcon} />
@@ -143,9 +143,20 @@ const BodyContent = () => {
                         )}
                     </div>
                     <div className={styles.documentButtonsAndSearchContainer}>
-                        <div className={styles.documentSearchContainer}>
+
+                        <div className={styles.documentSearchFilterContainer}>
+
                             <SearchBar placeholder="Search standards, policies, procedures..." />
+
+                            {/*filter btn for side docu container*/}
+                            <div className={styles.filterContainer}>
+                                <img src={"/icons/filter-blue.png"} alt={"Filter Icon"} className={styles.filterIcon} />
+                                <p>Filter</p>
+                            </div>
+
+
                         </div>
+
                         <div className={styles.documentButtonsContainer}>
                             <button
                                 className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}

@@ -60,6 +60,7 @@ h2 {
 }
 
 .filterContainer {
+  font-size: 0.75rem;
   display: flex;
   justify-content: flex-start;
   align-items: center;
@@ -382,6 +383,10 @@ h2 {
 }
 
 
-.documentSearchContainer{
+.documentSearchFilterContainer{
   width: 35rem;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 1.5rem;
 }
