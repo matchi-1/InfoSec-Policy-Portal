@@ -142,7 +142,7 @@ export default function PolicySections({ data = [], query = "" }) {
         });
     };
 
-    // If nothing matches, show a simple empty state
+    // if nothing matches, show a simple empty state
     if (filteredSections.length === 0) {
         return (
             <div className={styles.policyAccordion}>

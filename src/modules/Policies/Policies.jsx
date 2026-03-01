@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import PolicySections from "./components/PolicySections";
+import { highlightText } from "../../utils/highlightText";
 
 //  DB-like dummy source
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
@@ -116,7 +117,7 @@ const BodyContent = () => {
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
                                 >
-                                    <p>{doc.title}</p>
+                                    <p>{highlightText(doc.title, docSearch, styles.highlight)}</p>
                                 </div>
                             ))}
 
