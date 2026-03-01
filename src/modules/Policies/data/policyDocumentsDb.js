@@ -2,11 +2,11 @@
    Dummy “database-like” source of truth for InfoSec policies.
    - Each document includes: id, title, authoredBy, lastUpdated, reviewedBy, lastReviewed,
      documentDetails, sections, subsections, and content per subsection.
-   - Content is stored as a single string with newlines + bullets (•) so your current
+   - Content is stored as a single string with newlines + bullets (•) so our current
      renderContent() can still parse it later.
 */
 
-export const policyDb = {
+export const policyDocumentsDb = {
   meta: {
     org: "ExampleCorp Information Security",
     classificationDefault: "Internal",

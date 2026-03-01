@@ -1,66 +1,70 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import PolicySections from "./components/PolicySections";
-import { policySectionsData } from "./components/policySectionsData";
 
-const documents = [
-    { id: 1, name: "Access Control Policy and Implementation" },
-    { id: 2, name: "Data Protection and Privacy Guidelines" },
-    { id: 3, name: "Incident Response and Management" },
-    { id: 4, name: "Network Security Standards" },
-    { id: 5, name: "Authentication and Authorization Methods" },
-    { id: 6, name: "Encryption and Data Confidentiality" },
-    { id: 7, name: "Compliance and Regulatory Requirements" },
-    { id: 8, name: "Risk Management Framework" },
-    { id: 9, name: "Vulnerability Assessment Procedures" },
-    { id: 10, name: "Security Policies and Standards" },
-    { id: 11, name: "Disaster Recovery and Continuity Planning" },
-    { id: 12, name: "Physical Security Controls" },
-    { id: 13, name: "Email Security and Protection" },
-    { id: 14, name: "Mobile Security and Device Management" },
-    { id: 15, name: "Cloud Security and Infrastructure" },
-    { id: 16, name: "Third-Party Risk ManagementManagementManagem entManagementManag ementManagementManagementManagement ManagementManagementManagementManagementManagement ManagementManagementManagementManagementManagementManage mentManagementManagementManagementManagementManagement ManagementManagementMa nagementManagementManagementManagementManagementManagement ManagementManagementManagem ntManagementManagementManagementManagementManagement" },
-];
-
+//  DB-like dummy source
+import { policyDocumentsDb } from "./data/policyDocumentsDb";
 
 const BodyContent = () => {
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
-    const [currentPage, setCurrentPage] = React.useState(1);
+
+    const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
+
+    // derive list from dummy DB
+    const documents = useMemo(() => {
+        const dbDocs = policyDocumentsDb?.documents ?? [];
+        return dbDocs.map((d) => ({ id: d.id, name: d.title }));
+    }, [policyDocumentsDb?.documents]);
+
     const totalPages = Math.ceil(documents.length / itemsPerPage);
 
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedDocuments = documents.slice(startIndex, endIndex);
 
+    // selected document objects (for header/details/sections)
+    const selectedDoc = useMemo(() => {
+        return (policyDocumentsDb?.documents ?? []).find((d) => d.id === selectedDocId) ?? null;
+    }, [selectedDocId]);
+
     const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+        if (currentPage < totalPages) setCurrentPage((p) => p + 1);
     };
 
     const handlePrevPage = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
+        if (currentPage > 1) setCurrentPage((p) => p - 1);
+    };
+
+    const handleSelectDoc = (docId) => {
+        setSelectedDocId(docId);
+        setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
     };
 
     return (
         <div className={styles.policies}>
             <div className={styles.bodyContentContainer}>
-
+                {/* LEFT */}
                 <div className={styles.sideDocumentContainer}>
-
                     <h2>Documents</h2>
+
                     <div className={styles.searchBarContainer}>
                         <SearchBar placeholder="Search documents..." />
                     </div>
 
-
-                    {/*filter btn for side docu container*/}
                     <div className={styles.filterAndFileNumContainer}>
                         <div className={styles.filterContainer}>
-                            <img src={"/icons/filter-blue.png"} alt={"Filter Icon"} className={styles.filterIcon} />
+                            <img
+                                src={"/icons/filter-blue.png"}
+                                alt={"Filter Icon"}
+                                className={styles.filterIcon}
+                            />
                             <p>Filter</p>
                         </div>
+
+                        {/* reflect DB */}
                         <span className={styles.fileNumText}>{documents.length} Files</span>
                     </div>
 
@@ -69,16 +73,18 @@ const BodyContent = () => {
                             {paginatedDocuments.map((doc) => (
                                 <div
                                     key={doc.id}
-                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""}`}
-                                    onClick={() => setSelectedDocId(doc.id)}
+                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""
+                                        }`}
+                                    onClick={() => handleSelectDoc(doc.id)}
                                     role="button"
                                     tabIndex={0}
-                                    onKeyDown={(e) => e.key === "Enter" && setSelectedDocId(doc.id)}
+                                    onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
                                 >
                                     <p>{doc.name}</p>
                                 </div>
                             ))}
                         </div>
+
                         <div className={styles.paginationContainer}>
                             <div className={styles.pagination}>
                                 <button
@@ -106,30 +112,21 @@ const BodyContent = () => {
                             </div>
                         </div>
                     </div>
-
                 </div>
 
-
-
-                {/*right content*/}
+                {/* RIGHT */}
                 <div className={styles.rightContentContainer}>
                     <div className={styles.documentHeaderContainer}>
-                        {selectedDocId ? (
+                        {selectedDoc ? (
                             <div className={styles.documentDetails}>
                                 <div className={styles.documentTitleContainer}>
-                                    <h2>{documents.find((doc) => doc.id === selectedDocId)?.name}</h2>
+                                    <h2>{selectedDoc?.title}</h2>
                                 </div>
+
+                                {/* doc details from DB */}
                                 <div className={styles.documentDescription}>
-                                    <p>
-                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
-
-                                    </p>
+                                    <p>{selectedDoc.details}</p>
                                 </div>
-
                             </div>
                         ) : (
                             <div className={styles.documentDetails}>
@@ -140,33 +137,35 @@ const BodyContent = () => {
                             </div>
                         )}
 
-                        {selectedDocId && (
+                        {selectedDoc && (
                             <div className={styles.documentMetadata}>
-                                <p>Authored by: Jeffrey S. Kawabata</p>
-                                <p>Last Updated: 2024-06-01</p>
-                                <p>Reviewed by: John Doe</p>
-                                <p>Last Reviewed: 2024-06-01</p>
+                                {/* metadata from DB */}
+                                <p>Authored by: {selectedDoc.authoredBy}</p>
+                                <p>Last Updated: {selectedDoc.lastUpdated}</p>
+                                <p>Reviewed by: {selectedDoc.reviewedBy}</p>
+                                <p>Last Reviewed: {selectedDoc.lastReviewed}</p>
                             </div>
                         )}
                     </div>
+
                     <div className={styles.documentButtonsAndSearchContainer}>
-
                         <div className={styles.documentSearchFilterContainer}>
-
                             <SearchBar placeholder="Search standards, policies, procedures..." />
 
-                            {/*filter btn for side docu container*/}
                             <div className={styles.filterContainer}>
-                                <img src={"/icons/filter-blue.png"} alt={"Filter Icon"} className={styles.filterIcon} />
+                                <img
+                                    src={"/icons/filter-blue.png"}
+                                    alt={"Filter Icon"}
+                                    className={styles.filterIcon}
+                                />
                                 <p>Filter</p>
                             </div>
-
-
                         </div>
 
                         <div className={styles.documentButtonsContainer}>
                             <button
-                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}
+                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""
+                                    }`}
                                 onClick={() => setIsPdfViewActive(true)}
                                 disabled={!selectedDocId || isPdfViewActive}
                                 type="button"
@@ -178,6 +177,10 @@ const BodyContent = () => {
                                 className={styles.documentButton}
                                 disabled={!selectedDocId}
                                 type="button"
+                                onClick={() => {
+                                    // example: we can use selectedDoc.pdfUrl later
+                                    // window.open(selectedDoc?.pdfUrl, "_blank");
+                                }}
                             >
                                 Download PDF
                             </button>
@@ -194,16 +197,18 @@ const BodyContent = () => {
                         </div>
                     </div>
 
-
                     <div className={styles.documentContentContainer}>
                         {isPdfViewActive ? (
                             <div className={styles.pdfViewerPlaceholder}>
                                 <p>PDF Viewer goes here…</p>
+                                <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
+                                    Source: {selectedDoc?.pdfUrl ?? "(no pdfUrl in dummy data)"}
+                                </p>
                             </div>
                         ) : (
-
-                            <PolicySections data={policySectionsData} />
-
+                            // IMPORTANT: pass the selected doc’s sections
+                            // key={selectedDocId} forces a clean reset of accordion state per document
+                            <PolicySections key={selectedDocId ?? "no-doc"} data={selectedDoc?.sections ?? []} />
                         )}
                     </div>
                 </div>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/PolicySections.module.css";
 
 /**
@@ -12,6 +12,12 @@ export default function PolicySections({ data = [] }) {
 
     const [openSectionId, setOpenSectionId] = useState(null);
     const [activeSubBySection, setActiveSubBySection] = useState({}); // { [sectionId]: subId }
+
+    // reset when we load a different document (data changes)
+    useEffect(() => {
+        setOpenSectionId(null);
+        setActiveSubBySection({});
+    }, [sections]);
 
     const toggleSection = (sectionId) => {
         setOpenSectionId((prev) => {
@@ -33,6 +39,7 @@ export default function PolicySections({ data = [] }) {
 
     const openSection = sections.find((s) => s.id === openSectionId);
     const activeSubId = openSection ? activeSubBySection[openSection.id] : null;
+
     const activeSub =
         openSection?.subsections?.find((sub) => sub.id === activeSubId) ??
         openSection?.subsections?.[0];
@@ -42,7 +49,6 @@ export default function PolicySections({ data = [] }) {
         const lines = text.split("\n");
         return lines.map((line, idx) => {
             const trimmed = line.trim();
-
             if (!trimmed) return <div key={idx} className={styles.policySpacer} />;
 
             if (trimmed.startsWith("•")) {
@@ -55,7 +61,10 @@ export default function PolicySections({ data = [] }) {
 
             const isHeading = /:$/.test(trimmed) || /^\d+\./.test(trimmed);
             return (
-                <p key={idx} className={isHeading ? styles.policyLineHeading : styles.policyLine}>
+                <p
+                    key={idx}
+                    className={isHeading ? styles.policyLineHeading : styles.policyLine}
+                >
                     {trimmed}
                 </p>
             );
@@ -71,15 +80,24 @@ export default function PolicySections({ data = [] }) {
                     <div key={section.id} className={styles.policySection}>
                         <button
                             type="button"
-                            className={`${styles.policySectionHeader} ${isOpen ? styles.policySectionHeaderOpen : ""}`}
+                            className={`${styles.policySectionHeader} ${isOpen ? styles.policySectionHeaderOpen : ""
+                                }`}
                             onClick={() => toggleSection(section.id)}
                         >
-                            <span className={`${styles.policyChevron} ${isOpen ? styles.policyChevronOpen : ""}`}>▶</span>
+                            <span
+                                className={`${styles.policyChevron} ${isOpen ? styles.policyChevronOpen : ""
+                                    }`}
+                            >
+                                ▶
+                            </span>
                             <span className={styles.policySectionTitle}>{section.title}</span>
                         </button>
 
                         {/* always render wrapper so height can animate */}
-                        <div className={`${styles.policyPanelOuter} ${isOpen ? styles.policyPanelOuterOpen : ""}`}>
+                        <div
+                            className={`${styles.policyPanelOuter} ${isOpen ? styles.policyPanelOuterOpen : ""
+                                }`}
+                        >
                             <div className={styles.policyPanelInner}>
                                 <div className={styles.policyPanel}>
                                     <div className={styles.policySubnav}>
@@ -89,7 +107,8 @@ export default function PolicySections({ data = [] }) {
                                                 <button
                                                     key={sub.id}
                                                     type="button"
-                                                    className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""}`}
+                                                    className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""
+                                                        }`}
                                                     onClick={() =>
                                                         setActiveSubBySection((old) => ({
                                                             ...old,
