@@ -21,27 +21,6 @@ const BodyContent = () => {
         return dbDocs.map((d) => ({ id: d.id, name: d.title }));
     }, [policyDocumentsDb?.documents]);
 
-    const totalPages = Math.ceil(documents.length / itemsPerPage);
-
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    const paginatedDocuments = documents.slice(startIndex, endIndex);
-
-    // selected document objects (for header/details/sections)
-    const selectedDoc = useMemo(() => {
-        return (policyDocumentsDb?.documents ?? []).find((d) => d.id === selectedDocId) ?? null;
-    }, [selectedDocId]);
-
-
-
-    const handleNextPage = () => {
-        if (currentPage < totalPages) setCurrentPage((p) => p + 1);
-    };
-    const handlePrevPage = () => {
-        if (currentPage > 1) setCurrentPage((p) => p - 1);
-    };
-
-
 
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
@@ -52,24 +31,42 @@ const BodyContent = () => {
 
 
 
-    const dbDocs = policyDocumentsDb?.documents ?? [];
+    // DB docs (full objects)
+    const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
+
+    // Filter by title
     const filteredDocs = useMemo(() => {
         const q = docSearch.trim().toLowerCase();
         if (!q) return dbDocs;
-
-        return dbDocs.filter((d) => {
-            const title = (d.title ?? "").toLowerCase();
-            return title.includes(q);
-        });
+        return dbDocs.filter((d) => (d.title ?? "").toLowerCase().includes(q));
     }, [dbDocs, docSearch]);
 
-
-
-
-
+    // reset page when searching
     useEffect(() => {
         setCurrentPage(1);
     }, [docSearch]);
+
+    // paginate the filtered list
+    const totalPages = Math.max(1, Math.ceil(filteredDocs.length / itemsPerPage));
+    const safePage = Math.min(currentPage, totalPages);
+
+    const startIndex = (safePage - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, filteredDocs.length);
+
+    const paginatedDocuments = filteredDocs.slice(startIndex, startIndex + itemsPerPage);
+
+    // Selected document (use dbDocs so it matches the real object)
+    const selectedDoc = useMemo(() => {
+        return dbDocs.find((d) => d.id === selectedDocId) ?? null;
+    }, [dbDocs, selectedDocId]);
+
+    const handleNextPage = () => {
+        setCurrentPage((p) => Math.min(p + 1, totalPages));
+    };
+
+    const handlePrevPage = () => {
+        setCurrentPage((p) => Math.max(p - 1, 1));
+    };
 
 
 
@@ -100,7 +97,11 @@ const BodyContent = () => {
                         </div>
 
                         {/* reflect DB */}
-                        <span className={styles.fileNumText}>{documents.length} Files</span>
+                        <span className={styles.fileNumText}>
+                            {docSearch.trim()
+                                ? `${filteredDocs.length} of ${dbDocs.length} Files`
+                                : `${dbDocs.length} Files`}
+                        </span>
                     </div>
 
                     <div className={styles.documentAndFooterContainer}>
@@ -108,16 +109,21 @@ const BodyContent = () => {
                             {paginatedDocuments.map((doc) => (
                                 <div
                                     key={doc.id}
-                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""
-                                        }`}
+                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""}`}
                                     onClick={() => handleSelectDoc(doc.id)}
                                     role="button"
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
                                 >
-                                    <p>{doc.name}</p>
+                                    <p>{doc.title}</p>
                                 </div>
                             ))}
+
+                            {paginatedDocuments.length === 0 && (
+                                <div className={styles.noResults}>
+                                    <p style={{ fontSize: "0.875rem", color: "#888" }}>No documents found.</p>
+                                </div>
+                            )}
                         </div>
 
                         <div className={styles.paginationContainer}>
@@ -132,8 +138,7 @@ const BodyContent = () => {
                                 </button>
 
                                 <span className={styles.pageNumber}>
-                                    Showing {documents.length === 0 ? 0 : startIndex + 1}–
-                                    {Math.min(endIndex, documents.length)} of {documents.length}
+                                    Showing {filteredDocs.length === 0 ? 0 : startIndex + 1}–{endIndex} of {filteredDocs.length}
                                 </span>
 
                                 <button
