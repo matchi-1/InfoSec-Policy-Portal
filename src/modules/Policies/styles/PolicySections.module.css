@@ -119,6 +119,7 @@
 
 /* open state */
 .policyPanelOpen{
+  min-height: 16rem;
   max-height: 16rem;  
   opacity: 1;
   transform: translateY(0);
@@ -137,6 +138,7 @@
   display: flex;
   flex-direction: column;
 
+  min-height: 16rem;
   max-height: 16rem;
   overflow-y: auto;
 
@@ -178,7 +180,7 @@
   background: white;
   font-weight: 600;
   color: var(--primary-blue);
-
+  width: 100%;
   border-left: 0.2rem solid var(--primary-blue);
 }
 
@@ -194,6 +196,7 @@
   background: white;
 
   /* match height with subnav */
+  min-height: 16rem;
   max-height: 16rem;
 }
 

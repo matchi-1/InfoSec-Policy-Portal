@@ -5,7 +5,7 @@ export const policyDocumentsDb = {
   meta: {
     org: "ExampleCorp Information Security Office",
     classificationDefault: "Internal",
-    seededAt: "2026-03-01",
+    seededAt: "2026-03-02",
     notes:
       "Placeholder dataset for UI wiring. Replace with API/DB later. Dates and names are illustrative.",
   },
@@ -60,6 +60,27 @@ export const policyDocumentsDb = {
                 "Evidence:\n" +
                 "• Maintain an auditable record of approvals, reviews, and remediation commitments.",
             },
+            {
+              id: "FND-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "FND-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -96,6 +117,27 @@ export const policyDocumentsDb = {
                 "Records:\n" +
                 "• Maintain a repository with access controls and an auditable history of revisions.",
             },
+            {
+              id: "FND-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "FND-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -131,6 +173,27 @@ export const policyDocumentsDb = {
                 "• Security metrics (e.g., patch SLAs, MFA coverage, log coverage) are reviewed regularly.\n" +
                 "• Recurrent findings trigger targeted training or control redesign.",
             },
+            {
+              id: "FND-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "FND-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -164,6 +227,27 @@ export const policyDocumentsDb = {
                 "Documentation:\n" +
                 "• Actions and decisions must be documented for audit and HR governance purposes.",
             },
+            {
+              id: "FND-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "FND-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -217,6 +301,27 @@ export const policyDocumentsDb = {
                 "• Maintain tickets/workflow records, role definitions, and audit logs of grants/revocations.\n" +
                 "• Periodic audits must be able to trace access back to an approved request.",
             },
+            {
+              id: "IAM-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IAM-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -250,6 +355,27 @@ export const policyDocumentsDb = {
                 "Monitoring:\n" +
                 "• Alert on abnormal login patterns and repeated failures.",
             },
+            {
+              id: "IAM-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IAM-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -284,6 +410,27 @@ export const policyDocumentsDb = {
                 "Evidence:\n" +
                 "• Record review outcomes and remediation actions taken.",
             },
+            {
+              id: "IAM-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IAM-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -317,6 +464,27 @@ export const policyDocumentsDb = {
                 "Assurance:\n" +
                 "• Periodic tests validate that IAM logs are complete and centrally collected.",
             },
+            {
+              id: "IAM-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IAM-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -369,6 +537,27 @@ export const policyDocumentsDb = {
                 "Exceptions:\n" +
                 "• Any deviation from required controls must follow the exception workflow and include compensating controls.",
             },
+            {
+              id: "DATA-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DATA-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -403,6 +592,27 @@ export const policyDocumentsDb = {
                 "Recordkeeping:\n" +
                 "• Maintain records of data sharing for Restricted datasets as required.",
             },
+            {
+              id: "DATA-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DATA-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -435,6 +645,27 @@ export const policyDocumentsDb = {
                 "Verification:\n" +
                 "• Periodic validation confirms that retention and disposal automation works as intended.",
             },
+            {
+              id: "DATA-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DATA-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -468,6 +699,27 @@ export const policyDocumentsDb = {
                 "Incident Handling:\n" +
                 "• Potential personal data exposure triggers incident response and legal escalation.",
             },
+            {
+              id: "DATA-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DATA-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -522,6 +774,27 @@ export const policyDocumentsDb = {
                 "• Implement request tracing identifiers to support investigation.\n" +
                 "• Maintain service ownership and on-call routing for log pipelines.",
             },
+            {
+              id: "LOG-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "LOG-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -556,6 +829,27 @@ export const policyDocumentsDb = {
                 "Legal Hold:\n" +
                 "• Support preservation under legal hold requirements when requested.",
             },
+            {
+              id: "LOG-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "LOG-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -590,6 +884,27 @@ export const policyDocumentsDb = {
                 "Documentation:\n" +
                 "• Record containment actions and recommendations for recurrence prevention.",
             },
+            {
+              id: "LOG-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "LOG-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -621,6 +936,27 @@ export const policyDocumentsDb = {
                 "Metrics:\n" +
                 "• Track coverage, alert quality, and mean time to detect/respond over time.",
             },
+            {
+              id: "LOG-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "LOG-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -674,6 +1010,27 @@ export const policyDocumentsDb = {
                 "• Confirm findings are actionable (false positive review).\n" +
                 "• Maintain evidence of scanning operations and coverage reports.",
             },
+            {
+              id: "VULN-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "VULN-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -706,6 +1063,27 @@ export const policyDocumentsDb = {
                 "Exceptions:\n" +
                 "• SLA exceptions require compensating controls and re-review before expiry.",
             },
+            {
+              id: "VULN-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "VULN-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -739,6 +1117,27 @@ export const policyDocumentsDb = {
                 "Escalation:\n" +
                 "• Failed patches or unexpected impact must trigger incident management if availability/security is affected.",
             },
+            {
+              id: "VULN-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "VULN-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -770,6 +1169,27 @@ export const policyDocumentsDb = {
                 "Traceability:\n" +
                 "• Auditors must be able to trace a finding from discovery through remediation and validation.",
             },
+            {
+              id: "VULN-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "VULN-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -825,6 +1245,27 @@ export const policyDocumentsDb = {
                 "Maintenance:\n" +
                 "• Update models when data flows, auth mechanisms, or exposure changes.",
             },
+            {
+              id: "SDLC-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "SDLC-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -859,6 +1300,27 @@ export const policyDocumentsDb = {
                 "Gates:\n" +
                 "• High-risk findings block release unless approved exceptions exist.",
             },
+            {
+              id: "SDLC-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "SDLC-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -892,6 +1354,27 @@ export const policyDocumentsDb = {
                 "Post-Release:\n" +
                 "• Monitor for anomalies and address urgent issues through incident process.",
             },
+            {
+              id: "SDLC-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "SDLC-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -925,6 +1408,27 @@ export const policyDocumentsDb = {
                 "Learning:\n" +
                 "• Post-incident findings must feed back into design and testing improvements.",
             },
+            {
+              id: "SDLC-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "SDLC-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -980,6 +1484,27 @@ export const policyDocumentsDb = {
                 "Criteria:\n" +
                 "• Assess data sensitivity, scope, persistence, and operational impact.",
             },
+            {
+              id: "IR-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IR-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1014,6 +1539,27 @@ export const policyDocumentsDb = {
                 "Records:\n" +
                 "• Maintain timelines, actions, and outcomes as part of the incident record.",
             },
+            {
+              id: "IR-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IR-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1046,6 +1592,27 @@ export const policyDocumentsDb = {
                 "Cadence:\n" +
                 "• Provide updates based on severity and stakeholder needs.",
             },
+            {
+              id: "IR-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IR-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1078,6 +1645,27 @@ export const policyDocumentsDb = {
                 "Learning:\n" +
                 "• Incorporate lessons into training and standards updates.",
             },
+            {
+              id: "IR-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "IR-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -1133,6 +1721,27 @@ export const policyDocumentsDb = {
                 "Approval:\n" +
                 "• System Owner and Security must approve access scope and constraints.",
             },
+            {
+              id: "TPRM-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "TPRM-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1167,6 +1776,27 @@ export const policyDocumentsDb = {
                 "Retention:\n" +
                 "• Vendor retention must follow agreed schedules and legal constraints.",
             },
+            {
+              id: "TPRM-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "TPRM-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1199,6 +1829,27 @@ export const policyDocumentsDb = {
                 "Escalation:\n" +
                 "• Risk increases may require mitigation, limitation, or termination of services.",
             },
+            {
+              id: "TPRM-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "TPRM-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1231,6 +1882,27 @@ export const policyDocumentsDb = {
                 "Follow-up:\n" +
                 "• Address any outstanding findings or corrective actions prior to closure.",
             },
+            {
+              id: "TPRM-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "TPRM-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -1286,6 +1958,27 @@ export const policyDocumentsDb = {
                 "Verification:\n" +
                 "• Compliance checks must be performed regularly.",
             },
+            {
+              id: "END-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "END-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1321,6 +2014,27 @@ export const policyDocumentsDb = {
                 "Coordination:\n" +
                 "• System owners must cooperate with containment and remediation activities.",
             },
+            {
+              id: "END-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "END-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1353,6 +2067,27 @@ export const policyDocumentsDb = {
                 "Enforcement:\n" +
                 "• High-risk behavior may trigger containment actions and investigation.",
             },
+            {
+              id: "END-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "END-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1387,6 +2122,27 @@ export const policyDocumentsDb = {
                 "Prevention:\n" +
                 "• Ensure device-based encryption and strong access controls reduce exposure.",
             },
+            {
+              id: "END-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "END-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
@@ -1441,6 +2197,27 @@ export const policyDocumentsDb = {
                 "Improvement:\n" +
                 "• Update plans when architecture changes or tests reveal gaps.",
             },
+            {
+              id: "DR-01-03",
+              title: "1.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DR-01-04",
+              title: "1.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1473,6 +2250,27 @@ export const policyDocumentsDb = {
                 "Monitoring:\n" +
                 "• Alert on unusual backup deletions or mass restore attempts.",
             },
+            {
+              id: "DR-02-03",
+              title: "2.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DR-02-04",
+              title: "2.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1506,6 +2304,27 @@ export const policyDocumentsDb = {
                 "Governance:\n" +
                 "• Ensure approval and sign-off for major DR plan changes.",
             },
+            {
+              id: "DR-03-03",
+              title: "3.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DR-03-04",
+              title: "3.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
         {
@@ -1539,6 +2358,27 @@ export const policyDocumentsDb = {
                 "Closure:\n" +
                 "• Ensure corrective actions are tracked to completion.",
             },
+            {
+              id: "DR-04-03",
+              title: "4.3 Implementation Guidance",
+              content:
+                "Implementation Guidance:\n" +
+                "• Clarify scope, systems, and roles that must comply with this section.\n" +
+                "• Provide step-by-step guidance or references to supporting procedures.\n" +
+                "• Define required artifacts (tickets, approvals, configurations) to prove execution.\n" +
+                "• Include a minimum review/maintenance cadence for ongoing compliance.",
+            },
+            {
+              id: "DR-04-04",
+              title: "4.4 Monitoring, Evidence, and Metrics",
+              content:
+                "Monitoring and Evidence:\n" +
+                "• Identify measurable indicators (coverage %, SLA adherence, exception count).\n" +
+                "• Specify log sources and retention needed for audits and investigations.\n" +
+                "• Require periodic sampling/spot checks to validate controls remain effective.\n" +
+                "• Track findings to closure with owners, due dates, and remediation proof.",
+            },
+
           ],
         },
       ],
