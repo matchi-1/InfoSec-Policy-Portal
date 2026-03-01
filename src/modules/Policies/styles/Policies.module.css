@@ -102,6 +102,7 @@ h2 {
 .documentsContainer {
   width: 100%;
   max-width: 100%;
+  background-color: #F5F9FF;
 
   /* fill available space inside documentAndFooterContainer */
   flex: 1;

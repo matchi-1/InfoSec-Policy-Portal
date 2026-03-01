@@ -91,7 +91,8 @@ const BodyContent = () => {
                                 </button>
 
                                 <span className={styles.pageNumber}>
-                                    Page {currentPage} of {totalPages}
+                                    Showing {documents.length === 0 ? 0 : startIndex + 1}–
+                                    {Math.min(endIndex, documents.length)} of {documents.length}
                                 </span>
 
                                 <button
