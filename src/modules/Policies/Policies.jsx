@@ -193,7 +193,10 @@ const BodyContent = () => {
                             {isPdfViewActive && (
                                 <button
                                     className={styles.documentButton}
-                                    onClick={() => setIsPdfViewActive(false)}
+                                    onClick={() => {
+                                        setIsPdfViewActive(false);
+                                        setIsHeaderCollapsed(false);
+                                    }}
                                     type="button"
                                 >
                                     Back
