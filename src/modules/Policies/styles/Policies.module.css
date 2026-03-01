@@ -323,7 +323,7 @@ h2 {
   flex-direction: row;
   width: 100%;
   max-width: 100%;
-  padding: 1rem 1rem 1rem 0.75rem;
+  padding: 0.75rem 1rem 0.75rem 0.75rem;
 }
 
 /* Button row */
