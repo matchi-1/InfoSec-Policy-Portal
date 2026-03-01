@@ -5,8 +5,7 @@ const BodyContent = () => {
     return (
         <div className={styles.others}>
             <div className={styles.bodyContentContainer}>
-                <p>Hello Others Module!</p>
-                <p>Fill this container with your elements, change the display if need be.</p>
+                <p>Others Module</p>
             </div>
         </div>
     );

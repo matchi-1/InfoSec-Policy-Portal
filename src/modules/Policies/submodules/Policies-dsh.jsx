@@ -5,8 +5,7 @@ const BodyContent = () => {
   return (
     <div className={styles.policiesDsh}>
       <div className={styles.bodyContentContainer}>
-        <p>Hello Policies Dashboard SubModule!</p>
-        <p>Fill this container with your elements, change the display if need be.</p>
+        <p>Policies Dashboard -- Just a sample submodule</p>
       </div>
     </div>
   );
