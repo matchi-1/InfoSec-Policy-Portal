@@ -22,7 +22,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-01-22",
       reviewedBy: "IT Risk and Compliance",
       lastReviewed: "2026-02-01",
-      pdfUrl: "/dummy-pdfs/enterprise-infosec-policy-framework.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Establishes the organization’s overarching information security principles, governance model, and minimum control requirements. This framework defines roles and accountability, risk-based decision-making, control enforcement expectations, and the baseline policy hierarchy that all departments must follow.",
@@ -264,7 +264,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-02-08",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-02-15",
-      pdfUrl: "/dummy-pdfs/iam-access-control-standard.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines enforceable requirements for authentication, authorization, access provisioning, access reviews, and privileged access. This standard supports least privilege, segregation of duties, and auditability across all corporate systems.",
@@ -501,7 +501,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-01-10",
       reviewedBy: "Legal and Compliance",
       lastReviewed: "2026-01-31",
-      pdfUrl: "/dummy-pdfs/data-classification-protection-privacy.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines data classification levels and mandatory handling requirements, including encryption, storage, transmission, retention, and disposal. Includes privacy-by-design requirements for systems processing personal or sensitive data.",
@@ -736,7 +736,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-02-18",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-02-20",
-      pdfUrl: "/dummy-pdfs/security-logging-monitoring-alerting.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines minimum logging coverage, centralized collection requirements, alerting rules, and log retention. Establishes the operational expectations needed for detection, investigation, and auditability across infrastructure and applications.",
@@ -973,7 +973,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-01-28",
       reviewedBy: "IT Operations",
       lastReviewed: "2026-02-05",
-      pdfUrl: "/dummy-pdfs/vulnerability-management-patch-governance.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines processes for vulnerability discovery, prioritization, remediation timelines, patch deployment, and verification. Establishes severity-based SLAs and requirements for exception handling and validation evidence.",
@@ -1206,8 +1206,8 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-02-02",
       reviewedBy: "Engineering Leadership",
       lastReviewed: "2026-02-12",
-      pdfUrl: "/dummy-pdfs/ssdlc-standard.pdf",
-
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
+      
       details:
         "Defines mandatory security activities across the software lifecycle, including threat modeling, code review, dependency management, secret handling, security testing, and release gates for applications and services.",
       documentDetails:
@@ -1445,7 +1445,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-01-30",
       reviewedBy: "Information Security Governance",
       lastReviewed: "2026-02-10",
-      pdfUrl: "/dummy-pdfs/incident-response-policy.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines how security events are reported, triaged, contained, eradicated, and recovered from. Establishes severity levels, communication rules, evidence handling requirements, and post-incident corrective action management.",
@@ -1682,7 +1682,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-02-06",
       reviewedBy: "Legal and Procurement",
       lastReviewed: "2026-02-14",
-      pdfUrl: "/dummy-pdfs/third-party-risk-management.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines security requirements for third parties handling organizational data or systems. Establishes due diligence, onboarding controls, contractual safeguards, monitoring, and termination procedures for vendors and partners.",
@@ -1919,7 +1919,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2026-01-05",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-01-25",
-      pdfUrl: "/dummy-pdfs/endpoint-security-hardening-mdm.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines endpoint security controls including device enrollment, baseline hardening, endpoint detection and response requirements, removable media restrictions, and secure configuration for corporate-managed devices and mobile endpoints.",
@@ -2159,7 +2159,7 @@ export const policyDocumentsDb = {
       lastUpdated: "2025-12-18",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-01-20",
-      pdfUrl: "/dummy-pdfs/bcp-dr-security-standard.pdf",
+      pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
 
       details:
         "Defines resilience and recovery requirements for critical services, including backup security, recovery testing, ransomware resilience, and minimum recovery objectives. Establishes encryption, access controls, and evidence requirements for backup and recovery operations.",
