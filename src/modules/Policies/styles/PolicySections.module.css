@@ -1,6 +1,7 @@
 .policyAccordion{
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 0.6rem;
 
   width: 100%;
@@ -12,6 +13,7 @@
 
   scrollbar-width: thin;
   scrollbar-color: #94A9C6 transparent;
+  border: 1px solid red;
 }
 
 .policyAccordion::-webkit-scrollbar{ width: 10px; }
@@ -21,7 +23,9 @@
   border-radius: 999px;
 }
 
-.policySection{ width: 100%; }
+.policySection{ 
+    width: 100%; 
+}
 
 .policySectionHeader{
   width: 100%;
@@ -29,11 +33,10 @@
   align-items: center;
   gap: 0.6rem;
 
-  padding: 0.75rem 0.9rem;
-  border-radius: 0.45rem;
+  padding: 0.5rem 0.9rem;
 
   background: #dbe9ff;
-  border: 1px solid #94A9C6;
+  border-bottom: 2px solid #4777ba;
   color: #1b3b6f;
 
   cursor: pointer;
@@ -44,17 +47,15 @@
   background: var(--primary-blue);
   border-color: var(--primary-blue);
   color: white;
-
-  border-radius: 0.45rem 0.45rem 0 0;
 }
 
 .policyChevron{
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   line-height: 1;
 }
 
 .policySectionTitle{
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 500;
 }
 
@@ -122,9 +123,13 @@
 .policySubnavItemActive{
   background: white;
   font-weight: 600;
-  color: #1b3b6f;
+  color: var(--primary-blue);
 
-  border-left: 4px solid var(--primary-blue);
+  border-left: 0.2rem solid var(--primary-blue);
+}
+
+.policySubnavItemActive:hover{
+  background: white;
 }
 
 /* Right content */
