@@ -40,6 +40,8 @@
 
   cursor: pointer;
   user-select: none;
+
+  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
 }
 
 .policySectionHeaderOpen{
@@ -49,9 +51,47 @@
 }
 
 .policyChevron{
+  display: inline-block;
+  transition: transform 220ms ease;
   font-size: 0.8rem;
   line-height: 1;
 }
+.policyChevronOpen{
+  transform: rotate(90deg);
+}
+
+
+/* --- OUTER/INNER accordion animation --- */
+.policyPanelOuter{
+  display: grid;
+  grid-template-rows: 0fr;
+
+  opacity: 0;
+  transform: translateY(-4px);
+  pointer-events: none;
+
+  transition:
+    grid-template-rows 280ms ease,
+    opacity 180ms ease,
+    transform 220ms ease;
+}
+
+.policyPanelOuterOpen{
+  grid-template-rows: 1fr;
+
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+/* clamps content while the outer row animates */
+.policyPanelInner{
+  overflow: hidden;
+}
+
+
+
+
 
 .policySectionTitle{
   font-size: 0.9rem;
@@ -68,12 +108,20 @@
   border-radius: 0 0 0.45rem 0.45rem;
   overflow: hidden;
 
-  height: 16rem;
-  min-height: 14rem;
-
   background: white;
   box-sizing: border-box;
 }
+
+
+
+/* open state */
+.policyPanelOpen{
+  max-height: 16rem;  
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 
 /* Left subsections */
 .policySubnav{
@@ -86,7 +134,9 @@
   display: flex;
   flex-direction: column;
 
+  max-height: 16rem;
   overflow-y: auto;
+
   box-sizing: border-box;
 
   scrollbar-width: thin;
@@ -131,13 +181,17 @@
   background: white;
 }
 
-/* Right content */
+/* right content */
 .policyContent{
   flex: 1;
   min-width: 0;
   display: flex;
   background: white;
+
+  /* match height with subnav */
+  max-height: 16rem;
 }
+
 
 .policyContentInner{
   flex: 1;
@@ -147,6 +201,7 @@
   box-sizing: border-box;
 
   overflow-y: auto;
+
   scrollbar-width: thin;
   scrollbar-color: #94A9C6 transparent;
 }

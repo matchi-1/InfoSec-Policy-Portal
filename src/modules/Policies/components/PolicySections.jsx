@@ -74,48 +74,51 @@ export default function PolicySections({ data = [] }) {
                             className={`${styles.policySectionHeader} ${isOpen ? styles.policySectionHeaderOpen : ""}`}
                             onClick={() => toggleSection(section.id)}
                         >
-                            <span className={styles.policyChevron}>{isOpen ? "▼" : "▶"}</span>
+                            <span className={`${styles.policyChevron} ${isOpen ? styles.policyChevronOpen : ""}`}>▶</span>
                             <span className={styles.policySectionTitle}>{section.title}</span>
                         </button>
 
-                        {isOpen && (
-                            <div className={styles.policyPanel}>
-                                <div className={styles.policySubnav}>
-                                    {section.subsections?.map((sub) => {
-                                        const isActive = activeSub?.id === sub.id;
-                                        return (
-                                            <button
-                                                key={sub.id}
-                                                type="button"
-                                                className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""}`}
-                                                onClick={() =>
-                                                    setActiveSubBySection((old) => ({
-                                                        ...old,
-                                                        [section.id]: sub.id,
-                                                    }))
-                                                }
-                                            >
-                                                {sub.title}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
+                        {/* always render wrapper so height can animate */}
+                        <div className={`${styles.policyPanelOuter} ${isOpen ? styles.policyPanelOuterOpen : ""}`}>
+                            <div className={styles.policyPanelInner}>
+                                <div className={styles.policyPanel}>
+                                    <div className={styles.policySubnav}>
+                                        {section.subsections?.map((sub) => {
+                                            const isActive = activeSub?.id === sub.id;
+                                            return (
+                                                <button
+                                                    key={sub.id}
+                                                    type="button"
+                                                    className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""}`}
+                                                    onClick={() =>
+                                                        setActiveSubBySection((old) => ({
+                                                            ...old,
+                                                            [section.id]: sub.id,
+                                                        }))
+                                                    }
+                                                >
+                                                    {sub.title}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
 
-                                <div className={styles.policyContent}>
-                                    <div className={styles.policyContentInner}>
-                                        <h3 className={styles.policyContentTitle}>
-                                            {activeSub?.title ?? "Select a subsection"}
-                                        </h3>
+                                    <div className={styles.policyContent}>
+                                        <div className={styles.policyContentInner}>
+                                            <h3 className={styles.policyContentTitle}>
+                                                {activeSub?.title ?? "Select a subsection"}
+                                            </h3>
 
-                                        <div className={styles.policyContentText}>
-                                            <ul className={styles.policyBulletList}>
-                                                {activeSub ? renderContent(activeSub.content) : null}
-                                            </ul>
+                                            <div className={styles.policyContentText}>
+                                                <ul className={styles.policyBulletList}>
+                                                    {activeSub ? renderContent(activeSub.content) : null}
+                                                </ul>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 );
             })}
