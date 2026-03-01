@@ -25,6 +25,7 @@ const documents = [
 
 const BodyContent = () => {
     const [selectedDocId, setSelectedDocId] = useState(null);
+    const [isPdfViewActive, setIsPdfViewActive] = useState(false);
     const [currentPage, setCurrentPage] = React.useState(1);
     const itemsPerPage = 8;
     const totalPages = Math.ceil(documents.length / itemsPerPage);
@@ -141,19 +142,40 @@ const BodyContent = () => {
                             </div>
                         )}
                     </div>
-
                     <div className={styles.documentButtonsAndSearchContainer}>
-
                         <div className={styles.documentSearchContainer}>
                             <SearchBar placeholder="Search standards, policies, procedures..." />
                         </div>
-
                         <div className={styles.documentButtonsContainer}>
-                            <button className={styles.documentButton}>View PDF</button>
-                            <button className={styles.documentButton}>Download PDF</button>
-                        </div>
+                            <button
+                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}
+                                onClick={() => setIsPdfViewActive(true)}
+                                disabled={!selectedDocId || isPdfViewActive}
+                                type="button"
+                            >
+                                {isPdfViewActive ? "View Mode" : "View PDF"}
+                            </button>
 
+                            <button
+                                className={styles.documentButton}
+                                disabled={!selectedDocId}
+                                type="button"
+                            >
+                                Download PDF
+                            </button>
+
+                            {isPdfViewActive && (
+                                <button
+                                    className={styles.documentButton}
+                                    onClick={() => setIsPdfViewActive(false)}
+                                    type="button"
+                                >
+                                    Back
+                                </button>
+                            )}
+                        </div>
                     </div>
+
 
                     <div className={styles.documentContentContainer}>
                         <div className={styles.documentContent}>

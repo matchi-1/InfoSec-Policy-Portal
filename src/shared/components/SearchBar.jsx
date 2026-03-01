@@ -8,7 +8,7 @@ const SearchBar = () => {
     <div
       style={{
         ...styles.container,
-        border: isFocused ? "1px solid rgb(132, 143, 175)" : "1px solid rgb(192, 192, 193)", // add border on focus
+        border: isFocused ? "2px solid rgb(98, 117, 176)" : "1px solid rgb(132, 143, 175)", // add border on focus
       }}
     >
       <img src="/icons/search-icon.png" alt="Search" style={styles.icon} />

@@ -33,6 +33,7 @@ h2 {
   gap: 0.75rem;
 
   height: 100%;
+  min-width: 13.5rem;
   width: 13.5rem;
   max-width: 13.5rem;
 
@@ -230,6 +231,7 @@ h2 {
   align-items: stretch;
   justify-content: flex-start;
   width: 100%;
+  max-width: 100%;
   /* fills remaining space */
   flex: 1;
   min-height: 0;
@@ -307,28 +309,78 @@ h2 {
   align-items: center;
   flex-direction: row;
   width: 100%;
-  padding: 1rem 1.5rem 1rem 0.75rem;
+  max-width: 100%;
+  padding: 1rem 1rem 1rem 0.75rem;
 }
 
+/* Button row */
 .documentButtonsContainer{
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  flex-direction: row;
-  gap: 1.25rem;
+  gap: 0.5rem;
 }
 
+/* Base button */
 .documentButton{
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.1rem 1rem;
-  border: 1px solid var(--primary-blue);
-  border-radius: 1rem;
+  height: 2.25rem;
+  padding: 0 0.9rem;
+  border-radius: 0.3rem;
+  width: max-content;
+
+  border: 2px solid #8ea6c7;
+  background: transparent;
   color: var(--primary-blue);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.01rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
-  font-size: 0.75rem;
+  user-select: none;
+
+  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, color 120ms ease, filter 120ms ease;
 }
+
+.documentButton:hover{
+  filter: brightness(0.97);
+  background-color: #e6f0ff;
+}
+
+.documentButton:active{
+  transform: translateY(1px);
+  background-color: #c8deff;
+}
+
+/* Accessible focus ring */
+.documentButton:focus-visible{
+  outline: 2px solid #94A9C6;
+  outline-offset: 2px;
+}
+
+/* Disabled (general) */
+.documentButton:disabled{
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Selected state for View PDF (scoped to this button only) */
+.documentButton.documentButtonSelected{
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: white;
+}
+
+/* Keep selected button strong even if disabled (since you disable it in “view mode”) */
+.documentButton.documentButtonSelected:disabled{
+  opacity: 1;
+  cursor: default;
+}
+
 
 .documentSearchContainer{
   width: 35rem;
