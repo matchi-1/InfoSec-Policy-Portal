@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/PolicySections.module.css";
+import { highlightText } from "../../../utils/highlightText";
 
 /**
  * data shape:
@@ -118,25 +119,30 @@ export default function PolicySections({ data = [], query = "" }) {
     // render content from a string (supports headings-ish + bullets)
     const renderContent = (text = "") => {
         const lines = String(text).split("\n");
+
         return lines.map((line, idx) => {
             const trimmed = line.trim();
             if (!trimmed) return <div key={idx} className={styles.policySpacer} />;
 
+            // bullets
             if (trimmed.startsWith("•")) {
+                const bulletText = trimmed.replace(/^•\s*/, "");
                 return (
                     <li key={idx} className={styles.policyBullet}>
-                        {trimmed.replace(/^•\s*/, "")}
+                        {highlightText(bulletText, query, styles.highlight)}
                     </li>
                 );
             }
 
+            // headings-ish
             const isHeading = /:$/.test(trimmed) || /^\d+\./.test(trimmed);
+
             return (
                 <p
                     key={idx}
                     className={isHeading ? styles.policyLineHeading : styles.policyLine}
                 >
-                    {trimmed}
+                    {highlightText(trimmed, query, styles.highlight)}
                 </p>
             );
         });
@@ -175,7 +181,9 @@ export default function PolicySections({ data = [], query = "" }) {
                             >
                                 ▶
                             </span>
-                            <span className={styles.policySectionTitle}>{section.title}</span>
+                            <span className={styles.policySectionTitle}>
+                                {highlightText(section.title, query, styles.highlight)}
+                            </span>
                         </button>
 
                         {/* always render wrapper so height can animate */}
@@ -201,7 +209,7 @@ export default function PolicySections({ data = [], query = "" }) {
                                                         }))
                                                     }
                                                 >
-                                                    {sub.title}
+                                                    {highlightText(sub.title, query, styles.highlight)}
                                                 </button>
                                             );
                                         })}
