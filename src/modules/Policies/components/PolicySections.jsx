@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import styles from "./PolicySections.module.css";
+import styles from "../styles/PolicySections.module.css";
 
 /**
  * data shape:

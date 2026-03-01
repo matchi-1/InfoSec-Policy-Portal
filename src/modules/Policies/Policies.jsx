@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
-
+import PolicySections from "./components/PolicySections";
+import { policySectionsData } from "./components/policySectionsData";
 
 const documents = [
     { id: 1, name: "Access Control Policy and Implementation" },
@@ -195,7 +196,7 @@ const BodyContent = () => {
                             </div>
                         ) : (
                             <div className={styles.documentContent}>
-                                <p>docu content lalalal</p>
+                                <PolicySections data={policySectionsData} />
                             </div>
                         )}
                     </div>
