@@ -265,10 +265,20 @@ h2 {
   width: 100%;
 }
 
+.documentTitleContainer{
+  max-height: 4rem;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6a8 transparent;
+  width: 100%;
+  
+}
+
 .documentDetails h2{
   color: white;
   font-size: 1.3rem;
   font-weight: 400;
+  word-break: break-all;
 }
 
 .documentDescription{

@@ -20,7 +20,7 @@ const documents = [
     { id: 13, name: "Email Security and Protection" },
     { id: 14, name: "Mobile Security and Device Management" },
     { id: 15, name: "Cloud Security and Infrastructure" },
-    { id: 16, name: "Third-Party Risk ManagementManagementManagementManagementManagementManagementManagementManagement" },
+    { id: 16, name: "Third-Party Risk ManagementManagementManagem entManagementManag ementManagementManagementManagement ManagementManagementManagementManagementManagement ManagementManagementManagementManagementManagementManage mentManagementManagementManagementManagementManagement ManagementManagementMa nagementManagementManagementManagementManagementManagement ManagementManagementManagem ntManagementManagementManagementManagementManagement" },
 ];
 
 
@@ -116,12 +116,17 @@ const BodyContent = () => {
                     <div className={styles.documentHeaderContainer}>
                         {selectedDocId ? (
                             <div className={styles.documentDetails}>
-                                <h2>{documents.find((doc) => doc.id === selectedDocId)?.name}</h2>
+                                <div className={styles.documentTitleContainer}>
+                                    <h2>{documents.find((doc) => doc.id === selectedDocId)?.name}</h2>
+                                </div>
                                 <div className={styles.documentDescription}>
                                     <p>
                                         This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
                                         This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
                                         This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+                                        This is a placeholder for the document details. In a real application, you would fetch and display the content of the selected document here.
+
                                     </p>
                                 </div>
 
