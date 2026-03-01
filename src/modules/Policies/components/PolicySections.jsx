@@ -218,7 +218,7 @@ export default function PolicySections({ data = [], query = "" }) {
                                     <div className={styles.policyContent}>
                                         <div className={styles.policyContentInner}>
                                             <h3 className={styles.policyContentTitle}>
-                                                {activeSub?.title ?? "Select a subsection"}
+                                                {activeSub?.title ?? ""}
                                             </h3>
 
                                             <div className={styles.policyContentText}>
