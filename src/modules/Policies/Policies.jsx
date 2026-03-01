@@ -11,6 +11,7 @@ const BodyContent = () => {
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
     const [docSearch, setDocSearch] = useState("");
+    const [policySearch, setPolicySearch] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -193,7 +194,11 @@ const BodyContent = () => {
 
                     <div className={styles.documentButtonsAndSearchContainer}>
                         <div className={styles.documentSearchFilterContainer}>
-                            <SearchBar placeholder="Search standards, policies, procedures..." />
+                            <SearchBar
+                                placeholder="Search standards, policies, procedures..."
+                                value={policySearch}
+                                onChange={setPolicySearch}
+                            />
 
                             <div className={styles.filterContainer}>
                                 <img
@@ -276,6 +281,7 @@ const BodyContent = () => {
                             <PolicySections
                                 key={selectedDocId ?? "no-doc"}
                                 data={selectedDoc?.sections ?? []}
+                                query={policySearch}
                             />
                         )}
                     </div>

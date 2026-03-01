@@ -251,3 +251,13 @@
 .policySpacer{
   height: 0.5rem;
 }
+
+
+
+.policyNoResults{
+  padding: 1rem;
+  border: 1px dashed #94A9C6;
+  border-radius: 0.5rem;
+  background: rgba(148,169,198,0.10);
+  color: #1b3b6f;
+}
