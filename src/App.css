@@ -491,7 +491,7 @@ img {
 
 .header-profile-icon-wrapper p{
   font-weight: 600;
-  color: #01a2a2;
+  color: var(--primary-blue);
 }
 
 .header-profile-icon-wrapper:hover {
@@ -509,7 +509,7 @@ img {
 }
 
 .header-profile-icon {
-  background-color: #e4f1f2;
+  background-color: #c7dcff;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -519,7 +519,7 @@ img {
   width: 1rem;
   font-size: 1rem;
   font-weight: 500;
-  color: #00a8a8;
+  color: rgb(73, 92, 213);
   margin-left: 0rem;
 }
 
@@ -582,7 +582,7 @@ img {
 }
 
 .notif-menu::-webkit-scrollbar-thumb {
-  background: #00a8a8;
+  background: #346acd;
   border-radius: 0.5rem;
   border: 0.25rem solid white; 
 }
@@ -592,7 +592,7 @@ img {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: #00A8A8;
+  color: var(--primary-blue);
 }
 
 .notif-item, .notif-empty {
@@ -663,7 +663,7 @@ img {
 .notif-item-unread .notif-toprow {
   display: flex;
   justify-content: space-between;
-  color: #469FC2;
+  color: var(--primary-blue);
 }
 
 .notif-toprow p{
@@ -677,7 +677,7 @@ img {
 
 .notif-item-unread .notif-time-and-icon p{
   font-weight: 600;
-  color: #469FC2;
+  color: #466dc2;
 }
 
 .unread-notif-icon img {
@@ -723,7 +723,7 @@ img {
 .profile-name{
   font-weight: 600;
   font-size: 0.9rem;
-  color: #00b5b5;
+  color: var(--primary-blue);
 }
 
 .profile-details{

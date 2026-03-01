@@ -96,8 +96,8 @@ function App() {
     } else {
       // DEV: allow app without login
       setUser({
-        first_name: "Guest",
-        last_name: "",
+        first_name: "Jeffrey",
+        last_name: "Kawabata",
         user_id: null,
         employee_id: null,
         role: { role_name: "Guest", permissions: "All" },

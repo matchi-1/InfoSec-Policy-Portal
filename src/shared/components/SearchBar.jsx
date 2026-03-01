@@ -1,27 +1,31 @@
-import { AlignCenter } from "lucide-react";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
-const SearchBar = () => {
+const SearchBar = ({ value, onChange, placeholder = "Search..." }) => {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
     <div
       style={{
         ...styles.container,
-        border: isFocused ? "2px solid rgb(98, 117, 176)" : "1px solid rgb(132, 143, 175)", // add border on focus
+        border: isFocused
+          ? "2px solid rgb(98, 117, 176)"
+          : "1px solid rgb(132, 143, 175)",
       }}
     >
       <img src="/icons/search-icon.png" alt="Search" style={styles.icon} />
       <input
         type="text"
-        placeholder="Search..."
+        placeholder={placeholder}
         style={styles.input}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
     </div>
   );
 };
+
 
 const styles = {
   container: {

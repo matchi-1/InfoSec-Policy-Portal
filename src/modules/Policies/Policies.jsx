@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import PolicySections from "./components/PolicySections";
@@ -10,6 +10,7 @@ const BodyContent = () => {
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+    const [docSearch, setDocSearch] = useState("");
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -31,19 +32,47 @@ const BodyContent = () => {
         return (policyDocumentsDb?.documents ?? []).find((d) => d.id === selectedDocId) ?? null;
     }, [selectedDocId]);
 
+
+
     const handleNextPage = () => {
         if (currentPage < totalPages) setCurrentPage((p) => p + 1);
     };
-
     const handlePrevPage = () => {
         if (currentPage > 1) setCurrentPage((p) => p - 1);
     };
+
+
 
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
         setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
         setIsHeaderCollapsed(false); // reset header collapse state when changing docs
     };
+
+
+
+
+    const dbDocs = policyDocumentsDb?.documents ?? [];
+    const filteredDocs = useMemo(() => {
+        const q = docSearch.trim().toLowerCase();
+        if (!q) return dbDocs;
+
+        return dbDocs.filter((d) => {
+            const title = (d.title ?? "").toLowerCase();
+            return title.includes(q);
+        });
+    }, [dbDocs, docSearch]);
+
+
+
+
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [docSearch]);
+
+
+
 
     return (
         <div className={styles.policies}>
@@ -53,7 +82,11 @@ const BodyContent = () => {
                     <h2>Documents</h2>
 
                     <div className={styles.searchBarContainer}>
-                        <SearchBar placeholder="Search documents..." />
+                        <SearchBar
+                            placeholder="Search documents..."
+                            value={docSearch}
+                            onChange={setDocSearch}
+                        />
                     </div>
 
                     <div className={styles.filterAndFileNumContainer}>

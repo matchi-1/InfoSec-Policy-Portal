@@ -236,10 +236,11 @@ h2 {
   /* fills remaining space */
   flex: 1 1 0;
   min-height: 0;
+  /* min-width: 50rem; */
   min-width: 0;
   height:100%;
   background-color: #F5F9FF;
-  border: 1px solid #a8a8a8;
+  border: 1px solid #ff0000;
   border-radius: 0.5rem;
   margin-left: 1rem;
 }
@@ -322,7 +323,7 @@ h2 {
   flex-direction: row;
   width: 100%;
   max-width: 100%;
-  padding: 0.75rem 1rem 0.75rem 0.75rem;
+  padding: 0.75rem 1rem 0.25rem 0.75rem;
 }
 
 /* Button row */
