@@ -13,7 +13,7 @@ import { highlightText } from "../../../utils/highlightText";
  * - if section matches directly, we keep all subsections
  * - if only subsections match, we keep only matching subsections
  */
-export default function PolicySections({ data = [], query = "" }) {
+export default function PolicySections({ data = [], query = "", isDocumentSelected = false }) {
     const sections = useMemo(() => data ?? [], [data]);
 
     const [openSectionId, setOpenSectionId] = useState(null);
@@ -149,13 +149,24 @@ export default function PolicySections({ data = [], query = "" }) {
     };
 
     // if nothing matches, show a simple empty state
-    if (filteredSections.length === 0) {
+    if (filteredSections.length === 0 && isDocumentSelected) {
         return (
             <div className={styles.policyAccordion}>
                 <div className={styles.policyNoResults}>
                     <p>No matches found.</p>
                     <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
                         Try searching by section title, subsection title, or any phrase inside the content.
+                    </p>
+                </div>
+            </div>
+        );
+    } else if (!isDocumentSelected) {
+        return (
+            <div className={styles.policyAccordion}>
+                <div className={styles.policyNoResults}>
+                    <p>No document selected yet.</p>
+                    <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
+                        Try choosing a document from the left panel to view its sections and content here.
                     </p>
                 </div>
             </div>

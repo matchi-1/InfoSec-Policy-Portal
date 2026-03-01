@@ -283,6 +283,7 @@ const BodyContent = () => {
                                 key={selectedDocId ?? "no-doc"}
                                 data={selectedDoc?.sections ?? []}
                                 query={policySearch}
+                                isDocumentSelected={!!selectedDocId}
                             />
                         )}
                     </div>
