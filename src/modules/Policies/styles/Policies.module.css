@@ -401,3 +401,21 @@ h2 {
   align-items: center;
   gap: 1.5rem;
 }
+
+.documentContentContainer{
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.6rem;
+
+  width: 100%;
+  height: 100%;
+
+  overflow-y: auto;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94A9C6 transparent;
+
+}

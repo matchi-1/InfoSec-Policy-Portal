@@ -201,9 +201,9 @@ const BodyContent = () => {
                                 <p>PDF Viewer goes here…</p>
                             </div>
                         ) : (
-                            <div className={styles.documentContent}>
-                                <PolicySections data={policySectionsData} />
-                            </div>
+
+                            <PolicySections data={policySectionsData} />
+
                         )}
                     </div>
                 </div>
