@@ -117,7 +117,7 @@ const BodyContent = () => {
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
                                 >
-                                    <p>{highlightText(doc.title, docSearch, styles.highlight)}</p>
+                                    <p>{highlightText(doc.title, docSearch)}</p>
                                 </div>
                             ))}
 

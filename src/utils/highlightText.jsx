@@ -10,7 +10,7 @@ function escapeRegExp(str) {
  * - Case-insensitive
  * - Safe against regex special chars
  */
-export function highlightText(text, query, markClassName) {
+export function highlightText(text, query) {
     const source = String(text ?? "");
     const q = String(query ?? "").trim();
 
@@ -28,18 +28,26 @@ export function highlightText(text, query, markClassName) {
     tokens.sort((a, b) => b.length - a.length);
 
     const regex = new RegExp(`(${tokens.join("|")})`, "gi");
-
     const parts = source.split(regex);
 
+    const highlightStyle = {
+        background: "rgba(255, 222, 101, 0.58)",
+        color: "inherit",
+        borderRadius: "0.2rem",
+    };
+
     return parts.map((part, idx) => {
-        // if it matches the regex, wrap it
+        // IMPORTANT: regex has /g, so reset lastIndex before testing
+        regex.lastIndex = 0;
+
         if (regex.test(part)) {
             return (
-                <mark key={idx} className={markClassName}>
+                <mark key={idx} style={highlightStyle}>
                     {part}
                 </mark>
             );
         }
+
         return <React.Fragment key={idx}>{part}</React.Fragment>;
     });
 }
