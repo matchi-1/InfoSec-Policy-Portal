@@ -588,7 +588,7 @@ export default function StandaloneLogin() {
                           placeholder="Code"
                           value={regisInfo.regis_code}
                           onChange={(e) => {
-                            setRegisInfo({ ...regisInfo, code: e.target.value });
+                            setRegisInfo({ ...regisInfo, regis_code: e.target.value });
                           }}
                           required
                           style={{ width: "30%", marginBottom: "0.3rem", height: "auto" }}
