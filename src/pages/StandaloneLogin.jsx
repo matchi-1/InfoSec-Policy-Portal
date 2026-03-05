@@ -10,7 +10,7 @@ export default function StandaloneLogin() {
     email: "",
     password: ""
   });
-  const [view, setView] = useState("login"); // login | forgot | reset
+  const [view, setView] = useState("login"); // login | forgot | regis
 
   const initialResetData = {
     kinetiq_email: "",
@@ -20,11 +20,19 @@ export default function StandaloneLogin() {
     confirmNewPassword: "",
   };
 
+  const initialRegisInfo = {
+    regis_username: "",
+    regis_valid_email: "",
+    regis_code: "",
+    regis_pass: "",
+    regis_confirm_pass: "",
+  }
+
   const isNewPassSame = async (newPass) => {
     console.log("checking password");
     console.log("KINETIK EMAIL" + resetData.kinetiq_email);
     console.log("NEW PASS INPUTTED: " + newPass);
-    const res = await fetch("https://s9v4t5i8ej.execute-api.ap-southeast-1.amazonaws.com/dev/check-password/", {
+    const res = await fetch("http://127.0.0.1:8000/check-password/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -46,17 +54,18 @@ export default function StandaloneLogin() {
   };
 
   const [resetData, setResetData] = useState(initialResetData);
+  const [regisInfo, setRegisInfo] = useState(initialRegisInfo);
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
-  const [loginError, setLoginError] = useState("");
+  const [loginError, setLoginError] = useState("just let me in bro");//useState("\u00A0");
   // localStorage.setItem('login_attemtps', '1')
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials(prev => ({ ...prev, [name]: value.trim() }));
-    setLoginError("");
+    //setLoginError("");
   };
 
   const location = useLocation();
@@ -86,7 +95,7 @@ export default function StandaloneLogin() {
         return;
       }
 
-      const response = await axios.post("https://s9v4t5i8ej.execute-api.ap-southeast-1.amazonaws.com/dev/login/", {
+      const response = await axios.post("http://127.0.0.1:8000/login/", {
         email: credentials.email,
         password: credentials.password,
       });
@@ -133,11 +142,11 @@ export default function StandaloneLogin() {
     localStorage.setItem("reset_code", code);
     localStorage.setItem("reset_email", email);
     //console.log("Generated code:", code);
-    
+
     console.log(`KINETIQ EMAIL :${kinetiq_email}`)
     const templateStr = isConfirmCode
-    ? "confirm_code_template"
-    : "reset_code_template";
+      ? "confirm_code_template"
+      : "reset_code_template";
 
     try {
       emailjs.send("service_fpuj34n", templateStr, {
@@ -146,18 +155,18 @@ export default function StandaloneLogin() {
         kinetiq_email: kinetiq_email,
       });
       console.log(`${templateStr} sent successfully! to: ${email} for ${kinetiq_email} `);
-      
+
     } catch (err) {
       console.error("Failed to send email:", err);
       alert("Error sending reset code.");
     }
 
 
-    
+
   };
 
   const checkEmail = async (email) => {
-    const response = await fetch("https://s9v4t5i8ej.execute-api.ap-southeast-1.amazonaws.com/dev/check-email/", {
+    const response = await fetch("http://127.0.0.1:8000/check-email/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email })
@@ -174,7 +183,7 @@ export default function StandaloneLogin() {
   };
 
   const handleChangePassword = async () => {
-    setLoginError(""); // clear any old error
+    //setLoginError(""); // clear any old error
     const savedCode = localStorage.getItem("reset_code");
     const savedEmail = localStorage.getItem("reset_email");
 
@@ -208,7 +217,7 @@ export default function StandaloneLogin() {
     }
 
     try {
-      const res = await fetch("https://s9v4t5i8ej.execute-api.ap-southeast-1.amazonaws.com/dev/reset-password/", {
+      const res = await fetch("http://127.0.0.1:8000/reset-password/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -232,206 +241,123 @@ export default function StandaloneLogin() {
     }
   };
 
+  const isLoginActive = view === "login" || view === "forgot";
 
   return (
     <div className="login-container">
       <div className="login-wrapper">
-        <div className="login-left">
+
+
+        <div className="login-tabs" role="tablist" aria-label="Auth tabs">
+          <button
+            type="button"
+            className={`tab ${isLoginActive ? "active" : ""}`}
+            onClick={() => setView("login")}
+            role="tab"
+            aria-selected={isLoginActive}
+          >
+            Login
+          </button>
+
+          <button
+            type="button"
+            className={`tab ${view === "regis" ? "active" : ""}`}
+            onClick={() => setView("regis")}
+            role="tab"
+            aria-selected={view === "regis"}
+          >
+            Register
+          </button>
+        </div>
+
+        <div className="login-bottom">
           <div className="login-card">
-
-            <div className="login-form">
-              <h2>
-                {view === "login" && "Login"}
-                {view === "forgot" && "Forgot your password?"}
-                {view === "reset" && "Reset your password"}
-                {view === "mfa" && "Confirm your Identity"}
-              </h2>
+            <h2>
+              {view === "login" && "Welcome Back"}
+              {view === "forgot" && "Reset your password"}
+              {view === "regis" && "Sign Up"}
+            </h2>
 
 
-              {view === "login" && (
-                <>
-                  <p className="login-error">{loginError}</p>
-                  <form onSubmit={handleLogin}>
-                    <input
-                      type="text"
-                      name="email"
-                      placeholder="Email"
-                      value={credentials.email}
-                      onChange={handleChange}
-                      required
-                    />
-                    <div className="password-wrapper">
+            {view === "login" && (
+              <>
+                <div className="login-form">
+
+                  <form className="login-info-form"
+                    onSubmit={handleLogin}>
+                    <h4>
+                      Username/Email
+                    </h4>
+                    <i>
                       <input
-                        type={showPassword ? "text" : "password"}
-                        name="password"
-                        placeholder="Password"
-                        value={credentials.password}
+                        type="text"
+                        name="email"
+                        placeholder="Email/Username"
+                        value={credentials.email}
                         onChange={handleChange}
                         required
                       />
-                      <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
-                        {showPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                            <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
-                          </svg>
-                        )}
-                      </span>
-                    </div>
+                    </i>
+                    <h4>
+                      Password
+                    </h4>
+                    <i>
+
+                      <div className="password-wrapper">
+                        <input
+                          type={showPassword ? "text" : "password"}
+                          name="password"
+                          placeholder="Password"
+                          value={credentials.password}
+                          onChange={handleChange}
+                          required
+                        />
+                        <span className="eye-icon" onClick={() => setShowPassword(!showPassword)}>
+                          {showPassword ? (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                              <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
+                            </svg>
+                          ) : (
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                              <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                              <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
+                            </svg>
+                          )}
+                        </span>
+                      </div>
+                    </i>
+
                     <div className="login-options">
-                      <a href="#" className="forgot-password" onClick={() => { setView("forgot"); setLoginError(""); }}>
-                        Forgot password?
+                      <a href="#" className="forgot-password" onClick={() => { setView("forgot"); /*setLoginError("");*/ }}>
+                        <i>Forgot password?
+                        </i>
                       </a>
                     </div>
-                    <button type="submit" className="login-btn">Login to Kinetiq</button>
-                  </form>
-                </>
-              )}
 
-              { /* ----------------- MF ----------------- */}
-              {view === "mfa" && (
-                <>
-                  <p className="login-pass-details">Enter your email. <br></br>
-                    We’ll send a code to confirm your identity.</p>
-                  
-                  <form
-                    className="email-form"
-                    onSubmit={async (e) => {
-                      e.preventDefault();
-                      const isValidEmail = /^[^\s@]+@[^\s@]+\.(com)$/.test(resetData.valid_email);
-                      if (!isValidEmail) {
-                        setLoginError("* Please enter a valid email address *");
-                        return;
-                      }
-                      setLoginError(""); // clear any old error
-                      generateAndSendCode(resetData.valid_email, credentials.email, true); // send the code to the email
-                      setView("mfaVerify");
-                    
-                    }}
-                  >
-                    <h4>Valid Email: </h4>
-                    <input
-                      type="email"
-                      name="username"
-                      placeholder="Enter your email"
-                      value={resetData.valid_email}
-                      onChange={(e) => {
-                        setResetData({ ...resetData, valid_email: e.target.value });
-                        setLoginError("");
-                      }}
-                      required
-                      style={{ color: 'gray' }}
-                    />
-                    
-                    {loginError && <p className="login-error">{loginError}</p>}
-                    <div className="button-back-container">
+                    {/* TODO: REMOVE THIS LATER, JUST FOR TESTING PURPOSES */}
+                    <a href="#" onClick={() => { navigate("/");; /*setLoginError("");*/ }}>
+                      <p className="login-error">{loginError}</p>
+                    </a>
 
-                      <button type="submit" className="login-btn">
-                        Send Code
-                      </button>
-
-                      <button
-                        type="button"
-                        className="back-btn"
-                        onClick={() => {
-                          setLoginError("");
-                          setView("login");
-                        }}
-                      >
-                        Back
-                      </button>
+                    <div className="login-btn-div">
+                      <button type="submit" className="login-btn">Login</button>
                     </div>
+
                   </form>
-                </>
-              )}
 
-                {view === "mfaVerify" && (
-                  <>
-                    <h2>Enter Your Code</h2>
-                    <p className="login-pass-details">
-                      We’ve sent a 6-digit code to <strong>{resetData.valid_email}</strong>.
-                    </p>
-                    <form
-                      className="code-form"
-                      onSubmit={async (e) => {
-                        e.preventDefault();
-                        // grab the input named "code" directly from the form
-                        const code = e.target.elements.code.value.trim();
-                        const savedCode = localStorage.getItem("reset_code");
+                </div>
+              </>
 
-                        if (code === savedCode) {  
-                          try{
-                            const response = await axios.post("https://s9v4t5i8ej.execute-api.ap-southeast-1.amazonaws.com/dev/login/", {
-                              email: credentials.email,
-                              password: credentials.password,
-                            });
-                      
-                            const data = response.data;
-                            if (data.success) {
-                              localStorage.setItem('login_attempts', '0');
-                              console.log("Login successful:", data);
-                              localStorage.setItem("user", JSON.stringify(data.data));
-                              navigate("/");
-                            }
-                          }
-                          catch (e) {
-                            console.error("Login error:", e);
-                            alert("Something went wrong. Please try again.");
-                          }
-                  
-                        } else {
-                          setLoginError("* Incorrect code, please try again *");
-                        }
-                      }}
-                    >
-                      <label>
-                        Confirmation Code:
-                        <input
-                          type="text"
-                          name="code"
-                          placeholder="123456"
-                          maxLength={6}
-                          required
-                          // optional: force numeric keyboard on mobile
-                          inputMode="numeric"
-                          pattern="\d{6}"
-                        />
-                      </label>
-                      {loginError && <p className="login-error">{loginError}</p>}
-                      <div className="button-back-container">
+            )}
 
-                        <button type="submit" className="login-btn">
-                          Verify Code
-                        </button>
+            { /* ----------------- FORGORR ----------------- */}
+            {view === "forgot" && (
+              <>
+                {/*<p className="login-pass-details">Enter your email. We’ll send a code to reset your password.</p>*/}
+                <div className="reset-form">
 
-                        <button
-                          type="button"
-                          className="back-btn"
-                          onClick={() => {
-                            setLoginError("");
-                            setView("login");
-                            credentials.email = "";
-                            credentials.password = "";
-                          }}
-                        >
-                          Back to login
-                        </button>
-                      </div>
-                    </form>
-                  </>
-                )}
-
-
-              { /* ----------------- FORGORR ----------------- */}
-              {view === "forgot" && (
-                <>
-                  <p className="login-pass-details">Enter your email. We’ll send a code to reset your password.</p>
                   <form
-                    className="email-form"
+                    className="reset-info-form"
                     onSubmit={async (e) => {
                       e.preventDefault();
 
@@ -447,53 +373,137 @@ export default function StandaloneLogin() {
                         return;
                       }
 
+                      /*
                       const emailExists = await checkEmail(resetData.kinetiq_email);
                       if (!emailExists) {
                         setLoginError("* Invalid Kinetiq email address. *");
                         return;
                       }
-                      setLoginError(""); // clear any old error
+                        */
+                      //setLoginError(""); // clear any old error   
 
-                      generateAndSendCode(resetData.valid_email, resetData.kinetiq_email); // send the code to the email
+                      //generateAndSendCode(resetData.valid_email, resetData.kinetiq_email); // send the code to the email
                       setView("reset");
 
                     }}
                   >
-                    <h4>Valid Email: </h4>
-                    <input
-                      type="email"
-                      name="username"
-                      placeholder="Enter your email"
-                      value={resetData.valid_email}
-                      onChange={(e) => {
-                        setResetData({ ...resetData, valid_email: e.target.value });
-                        setLoginError("");
-                      }}
-                      required
-                      style={{ color: 'gray' }}
-                    />
-                    <h4>Kinetiq Email: </h4>
-                    <input
-                      type="email"
-                      name="email"
-                      placeholder="Enter your kinetiq email"
-                      value={resetData.kinetiq_email}
-                      onChange={(e) => {
-                        setResetData({ ...resetData, kinetiq_email: e.target.value });
-                        setLoginError("");
-                      }}
-                      required
-                    />
-                    {loginError && <p className="login-error">{loginError}</p>}
+
+                    <div className="reset-info-inner">
+                      <div className="reset-info-form-left">
+
+                        <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+                          <h4 style={{ width: "70%" }}>
+                            Valid Email Address </h4>
+                          <h4 style={{ width: "30%" }}>
+                            Email Code</h4>
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+                          <input
+                            type="email"
+                            name="username"
+                            placeholder="Enter your email"
+                            value={resetData.valid_email}
+                            onChange={(e) => {
+                              setResetData({ ...resetData, valid_email: e.target.value });
+
+                            }}
+                            required
+                            style={{ width: "70%", margin: "0 0.5rem .3rem 0", height: "auto" }}
+                          />
+                          <input
+                            type="text"
+                            name="email"
+                            placeholder="Code"
+                            value={resetData.code}
+                            onChange={(e) => {
+                              setResetData({ ...resetData, code: e.target.value });
+                            }}
+                            required
+                            style={{ width: "30%", marginBottom: "0.3rem", height: "auto" }}
+                          />
+
+                        </div>
+
+                        <div style={{ display: "flex", flexDirection: "row", width: "100%", marginBottom: "2rem" }}>
+                          <a style={{ width: "70%" }}>
+                            Send Code
+                          </a>
+                          <a style={{ width: "30%", opacity: "0.5" }}>
+                            Resend Code? 50s
+
+                          </a>
+                        </div>
+
+                      </div>
+
+                      <div className="reset-info-form-right">
+                        <div style={{ flexDirection: "column", width: "100%", marginTop: "2%" }}>
+                          <div style={{ flexDirection: "row", display: "flex" }}>
+                            <h4>Password </h4>
+
+                          </div>
+                          <div className="password-wrapper">
+                            <input
+                              type={showNewPassword ? "text" : "password"}
+                              name="password"
+                              placeholder="New Password"
+                              value={resetData.newPassword}
+                              onChange={(e) => {
+                                setResetData({ ...resetData, newPassword: e.target.value });
+                              }}
+                              required
+                              style={{ color: "#204C8B" }}
+                            />
+                            <span className="eye-icon" onClick={() => setShowNewPassword(!showNewPassword)}>
+                              {showNewPassword ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                  <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
+                                </svg>
+                              ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                  <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                                  <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
+                                </svg>
+                              )}
+                            </span>
+                          </div>
+
+                        </div>
+
+                        <div style={{ flexDirection: "column", width: "100%", marginTop: "2.5rem" }}>
+                          <h4>Confirm Password: </h4>
+                          <input
+                            type="password"
+                            name="confirmPassword"
+                            placeholder="Re-enter new Password"
+                            value={resetData.confirmNewPassword}
+                            onChange={(e) => {
+                              setResetData({ ...resetData, confirmNewPassword: e.target.value });
+                            }}
+                            required
+
+                          />
+                        </div>
+
+                      </div>
+                    </div>
+
+
+                    <a href="#" onClick={() => { navigate("/");; /*setLoginError("");*/ }}>
+                      {loginError && <p className="login-error">{loginError}</p>}
+                    </a>
+
                     <div className="button-back-container">
-                      <button type="submit" className="login-btn">
-                        Reset my password
+                      <button type="submit" className="login-btn"
+                        style={{ width: "auto", padding: "0.4rem 1.5rem" }}>
+                        Change password
                       </button>
                       <button
                         type="button"
                         className="back-btn"
                         onClick={() => {
-                          setLoginError("");
+                          //setLoginError("");
                           setView("login");
                         }}
                       >
@@ -501,107 +511,270 @@ export default function StandaloneLogin() {
                       </button>
                     </div>
                   </form>
-                </>
-              )}
+
+                </div>
+              </>
+            )}
+
+            { /* ----------------- REGISTER ----------------- */}
+            {view === "regis" && (
+              <>
+              <div className = "regis-form">
+                <form
+                  className="regis-info-form"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    const isValidEmail = /^[^\s@]+@[^\s@]+\.(com)$/.test(resetData.valid_email);
+                    if (!isValidEmail) {
+                      setLoginError("* Please enter a valid email address *");
+                      return;
+                    }
+                    //setLoginError(""); // clear any old error
+                    generateAndSendCode(resetData.valid_email, credentials.email, true); // send the code to the email
+                    setView("mfaVerify");
+
+                  }}
+                >
+                  <div className="regis-info-inner">
+
+                    <div className="regis-info-form-left" style = {{marginTop: "0"}}>
+                      <h4 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                        Username
+                        <span className="infoWrap" tabIndex={0} aria-label="Password requirements">
+                          <img className="infoIcon" src="../public/icons/i-icon.png" alt="" />
+                          <span className="tooltip">
+                            Placeholder ehe <br></br>Placeholder ehe<br></br>
+                            Placeholder ehe <br></br>Placeholder ehe
+                          </span>
+                        </span>
+                      </h4>
+
+                      <input
+                        type="text"
+                        name="username"
+                        placeholder="Enter your preferred username"
+                        value={regisInfo.regis_username}
+                        onChange={(e) => {
+                          setRegisInfo({ ...regisInfo, regis_username: e.target.value });
+                          //setLoginError("");
+                        }}
+                        required
+                        style={{ color: 'gray', marginBottom: "0" }}
+                      />
+
+                      <div style={{ display: "flex", flexDirection: "row", width: "100%", marginTop: "2.5rem" }}>
+                        <h4 style={{ width: "70%" }}>
+                          Valid Email Address </h4>
+                        <h4 style={{ width: "30%" }}>
+                          Email Code</h4>
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "row", width: "100%" }}>
+                        <input
+                          type="email"
+                          name="username"
+                          placeholder="Enter your email"
+                          value={regisInfo.regis_valid_email}
+                          onChange={(e) => {
+                            setRegisInfo({ ...regisInfo, regis_valid_email: e.target.value });
+
+                          }}
+                          required
+                          style={{ width: "70%", margin: "0 0.5rem .3rem 0", height: "auto" }}
+                        />
+                        <input
+                          type="text"
+                          name="email"
+                          placeholder="Code"
+                          value={regisInfo.regis_code}
+                          onChange={(e) => {
+                            setRegisInfo({ ...regisInfo, code: e.target.value });
+                          }}
+                          required
+                          style={{ width: "30%", marginBottom: "0.3rem", height: "auto" }}
+                        />
+
+                      </div>
+
+                      <div style={{ display: "flex", flexDirection: "row", width: "100%", marginBottom: "2rem" }}>
+                        <a style={{ width: "70%" }}>
+                          Send Code
+                        </a>
+                        <a style={{ width: "30%", opacity: "0.5" }}>
+                          Resend Code? 50s
+
+                        </a>
+                      </div>
+                    </div>
+
+                    <div className="regis-info-form-right">
+                      <div style={{ flexDirection: "column", width: "100%" }}>
+                        <div style={{ flexDirection: "row", display: "flex" }}>
+                            <h4 style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                              Password
+                              <span className="infoWrap" tabIndex={0} aria-label="Password requirements">
+                                <img className="infoIcon" src={`${import.meta.env.BASE_URL}icons/tooltip.png`} alt="" />
+                                <span className="tooltip">
+                                  Use at least 8 characters, <br></br>
+                                  with a mix of letters and numbers.<br></br>
+                                  Use at least 8 characters, <br></br>
+                                  with a mix of letters and numbers.<br></br>
+                                </span>
+                              </span>
+                            </h4>
+
+                        </div>
+                        <div className="password-wrapper">
+                          <input
+                            type={showNewPassword ? "text" : "password"}
+                            name="password"
+                            placeholder="New Password"
+                            value={regisInfo.regis_pass}
+                            onChange={(e) => {
+                              setRegisInfo({ ...regisInfo, regis_pass: e.target.value });
+                            }}
+                            required
+                            style={{ color: "#204C8B" }}
+                          />
+                          <span className="eye-icon" onClick={() => setShowNewPassword(!showNewPassword)}>
+                            {showNewPassword ? (
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
+                              </svg>
+                            ) : (
+                              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
+                                <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
+                                <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
+                              </svg>
+                            )}
+                          </span>
+                        </div>
+
+                      </div>
 
 
-              { /* ----------------- RESET ----------------- */}
-              {view === "reset" && (
-                <div>
-                  <div className="email-form">
+                      <div style={{ flexDirection: "column", width: "100%", marginTop: "2.5rem" }}>
+                        <h4>Confirm Password: </h4>
+                        <input
+                          type="password"
+                          name="confirmPassword"
+                          placeholder="Re-enter new Password"
+                          value={regisInfo.regis_confirm_pass}
+                          onChange={(e) => {
+                            setRegisInfo({ ...regisInfo, regis_confirm_pass: e.target.value });
+                          }}
+                          required
 
-                    <p className="login-pass-details">We’ve sent a code to <strong>{resetData.valid_email}</strong>. Enter it below with your new password.</p>
-                    <h4>Email Code: </h4>
+                        />
+                      </div>
+
+                    </div>
+
+                    </div>
+
+                    {loginError && <p className="login-error">{loginError}</p>}
+                    <div className="button-back-container">
+
+                      <button type="submit" className="login-btn">
+                        Register
+                      </button>
+
+
+                    </div>
+                  
+                </form>
+              </div>
+                
+              </>
+            )}
+
+
+            {/* TODO: CHECK IF THER SOMETHING USEFUL HERE BEFORE REMOVING (inaccessible) */}
+            {view === "mfaVerify" && (
+              <>
+                <h2>Enter Your Code</h2>
+                <p className="login-pass-details">
+                  We’ve sent a 6-digit code to <strong>{resetData.valid_email}</strong>.
+                </p>
+                <form
+                  className="code-form"
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    // grab the input named "code" directly from the form
+                    const code = e.target.elements.code.value.trim();
+                    const savedCode = localStorage.getItem("reset_code");
+
+                    if (code === savedCode) {
+                      try {
+                        const response = await axios.post("http://127.0.0.1:8000/login/", {
+                          email: credentials.email,
+                          password: credentials.password,
+                        });
+
+                        const data = response.data;
+                        if (data.success) {
+                          localStorage.setItem('login_attempts', '0');
+                          console.log("Login successful:", data);
+                          localStorage.setItem("user", JSON.stringify(data.data));
+                          navigate("/");
+                        }
+                      }
+                      catch (e) {
+                        console.error("Login error:", e);
+                        alert("Something went wrong. Please try again.");
+                      }
+
+                    } else {
+                      setLoginError("* Incorrect code, please try again *");
+                    }
+                  }}
+                >
+                  <label>
+                    Confirmation Code:
                     <input
                       type="text"
                       name="code"
-                      placeholder="Enter email code"
-                      value={resetData.code}
-                      onChange={(e) => setResetData({ ...resetData, code: e.target.value })}
+                      placeholder="123456"
+                      maxLength={6}
                       required
+                      // optional: force numeric keyboard on mobile
+                      inputMode="numeric"
+                      pattern="\d{6}"
                     />
-                    <h4>New Password: </h4>
-                    <div className="password-wrapper">
-                      <input
-                        type={showNewPassword ? "text" : "password"}
-                        name="newPassword"
-                        placeholder="Enter new password"
-                        value={resetData.newPassword}
-                        onChange={(e) => setResetData({ ...resetData, newPassword: e.target.value })}
-                        required
-                        style={{ color: 'gray' }}
-                      />
-                      <span className="eye-icon" onClick={() => setShowNewPassword(!showNewPassword)}>
-                        {showNewPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                            <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
-                          </svg>
-                        )}
-                      </span>
-
-                    </div>
-
-                    <h4 style={{ color: 'gray', marginTop: '1rem' }}>Confirm New Password: </h4>
-
-                    <div className="password-wrapper">
-
-                      <input
-                        type={showConfirmPassword ? "text" : "password"}
-                        name="confirmNewPassword"
-                        placeholder="Confirm new password"
-                        value={resetData.confirmNewPassword}
-                        onChange={(e) => setResetData({ ...resetData, confirmNewPassword: e.target.value })}
-                        required
-                        style={{ color: 'gray' }}
-                      />
-                      <span className="eye-icon" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                        {showConfirmPassword ? (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881" />
-                          </svg>
-                        ) : (
-                          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20">
-                            <path fill="none" stroke="currentColor" strokeWidth="2" d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z" />
-                            <circle fill="none" stroke="currentColor" strokeWidth="2" cx="12" cy="12" r="3" />
-                          </svg>
-                        )}
-                      </span>
-
-                    </div>
-                    <p className="login-error">{loginError}</p>
-                  </div>
-
+                  </label>
+                  {loginError && <p className="login-error">{loginError}</p>}
                   <div className="button-back-container">
-                    <button className="login-btn" onClick={() => {
-                      handleChangePassword()
 
-                    }}>
-                      Change password
+                    <button type="submit" className="login-btn">
+                      Verify Code
                     </button>
-                    <button className="back-btn" onClick={() => {
-                      setView("forgot");
 
-                    }}>
-                      Back
+                    <button
+                      type="button"
+                      className="back-btn"
+                      onClick={() => {
+                        //setLoginError("");
+                        setView("login");
+                        credentials.email = "";
+                        credentials.password = "";
+                      }}
+                    >
+                      Back to login
                     </button>
                   </div>
-                </div>
-              )}
-            </div>
+                </form>
+              </>
+            )}
+
 
 
           </div>
 
 
         </div>
-        <div className="login-right">
+        {/*<div className="login-right">
           <img src="/icons/logo4.png" alt="Kinetiq Logo" className="kinetiq-logo" />
-        </div>
+        </div>*/}
       </div>
     </div>
   );
