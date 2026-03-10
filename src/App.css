@@ -439,6 +439,9 @@ img {
 
 #header-submodule-name {
   font-weight: 600;
+  padding-right: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .header-right-container {

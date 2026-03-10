@@ -306,6 +306,7 @@ function App() {
 
   const moduleFileNames = {
     "Home": "Home",
+    "Documents": "Documents",
     "Policies": "Policies",
     "Recent News": "RecentNews",
     "Others": "Others",
@@ -313,6 +314,7 @@ function App() {
 
   const moduleSubmoduleFileNames = {
     "Home": {},
+    "Documents": {},
     "Policies": {
       "Policies Dashboard": "Policies-dsh",
     },
