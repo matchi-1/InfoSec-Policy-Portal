@@ -234,7 +234,7 @@ function App() {
   useEffect(() => {
     console.log("(debug) sub hook")
     if (activeSubModule) {
-      console.log("(debug) calling loadsubmodule")
+      console.log("(debug) calling loadsubmodule for ", activeSubModule)
       loadSubModule(activeSubModule)
     } else {
       console.log("(debug) calling loadmainmodule from sub hook")
