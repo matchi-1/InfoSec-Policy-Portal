@@ -297,7 +297,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     <td>{doc.lastUpdated}</td>
                                 </tr>
                             )) : docsbyAuthor.length === 0 || docsbyReviewer.length === 0 ? (
-                                <p style={{ fontSize: "0.9rem", color: "#888" }}>No documents found for selected filter.</p>
+                                <p style={{ fontSize: "0.9rem", color: "#888", padding: "1rem" }}>No documents found for selected filter.</p>
                             ) : 
                                 sortedDocs.map((doc) => (
                                 <tr
@@ -314,7 +314,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                         </tbody>
                     
                 ) : (
-                    <p style={{ fontSize: "0.9rem", color: "#888" }}>No documents found.</p>
+                    <p style={{ fontSize: "0.9rem", color: "#888", padding: "1rem" }}>No documents found.</p>
                 )}
                 </table>
             </div>
