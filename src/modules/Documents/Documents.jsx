@@ -15,45 +15,49 @@ const BodyContent = ({ setActiveSubModule }) => {
 
   const [selectedAuthor, setSelectedAuthor] = useState("");
   const [selectedReviewer, setSelectedReviewer] = useState("");
-  const [dbDocs, setDbDocs] = useState([]); 
+
+  const [isOpen, setIsOpen] = useState(false);
+//   const [dbDocs, setDbDocs] = useState([]); 
 
   
 
   // derive list from dummy DB
-//   const documents = useMemo(() => {
-//       const dbDocs = policyDocumentsDb?.documents ?? [];
-//       return dbDocs.map((d) => ({ id: d.id, name: d.title }));
-//   }, [policyDocumentsDb?.documents]);
+  const documents = useMemo(() => {
+      const dbDocs = policyDocumentsDb?.documents ?? [];
+      return dbDocs.map((d) => ({ id: d.id, name: d.title }));
+  }, [policyDocumentsDb?.documents]);
 
-  useEffect(() => { 
-    const fetchDocuments = async () => {
-        console.log("(debug) fetching docs from backend...")
-        const resp = await fetch(backend_base_url + "/documents/get-documents/")
-        const docs = await resp.json()
-        console.log("(debug) fetched docs: " + docs)
-        setDbDocs(docs)
-    }
+  //   DB docs (full objects)
+  const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
 
-    fetchDocuments();
-  }, [])
+//   useEffect(() => { 
+//     const fetchDocuments = async () => {
+//         console.log("(debug) fetching docs from backend...")
+//         const resp = await fetch(backend_base_url + "/documents/get-documents/")
+//         const docs = await resp.json()
+//         console.log("(debug) fetched docs: " + docs)
+//         setDbDocs(docs)
+//     }
 
-  useEffect(() => {
-    console.log("dbDocs updated: ", dbDocs)
-  }, [dbDocs])
+//     fetchDocuments();
+//   }, [])
+
+//   useEffect(() => {
+//     console.log("dbDocs updated: ", dbDocs)
+//   }, [dbDocs])
 
   const handleSelectDoc = (docId, docTitle) => {
       setSelectedDocId(docId);
       if (setActiveSubModule) {
           console.log("docTitle: ", docTitle);
-        //   setActiveSubModule(docTitle);
+          setActiveSubModule(docTitle);
         // ^^ i dont think this is needed since the editor component is loaded anw when a doc is selected  -Harley
       }
       // setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
       // setIsHeaderCollapsed(false); // reset header collapse state when changing docs
   };
 
-  // DB docs (full objects)
-//   const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
+
 
   const uniqueAuthors = [...new Set(dbDocs.map(doc => doc.authoredBy))];
   const uniqueReviewers = [...new Set(dbDocs.map(doc => doc.reviewedBy))];
@@ -118,59 +122,104 @@ const BodyContent = ({ setActiveSubModule }) => {
             // Documents Dashboard
           <div className={styles.bodyContentContainer}>
             <h1>Documents</h1>
-            <div className={styles.searchBarContainer}>
-                <SearchBar
-                    placeholder="Search documents..."
-                    value={docSearch}
-                    onChange={setDocSearch}
-                />
+            <div className={styles.searchFilterCreate}>
+                <div className={styles.searchBarContainer}>
+                    <SearchBar
+                        placeholder="Search documents..."
+                        value={docSearch}
+                        onChange={setDocSearch}
+                    />
+                </div>
+
+                <div className={styles.filterContainer}>
+                    <div 
+                        className={styles.selectedOption}
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <div><p>{selectedAuthor || "Filter by Author"}</p></div>
+                        <div>
+                            <img
+                                src={"/icons/down.png"}
+                                alt={"Down Icon"}
+                            />
+                        </div>
+                    </div>
+
+                    { isOpen && (
+                        <div>
+                            <div 
+                                className={styles.filterOptions}
+                                onClick={() => {
+                                    setSelectedAuthor("")
+                                    setIsOpen(false)
+                                }}
+                            >
+                                All Authors
+                            </div>
+                            {uniqueAuthors.map((author, index) => (
+                                <div 
+                                    className={styles.filterOptions}
+                                    key={index}
+                                    onClick={() => {
+                                        setSelectedAuthor(author)
+                                        setSelectedReviewer("")
+                                        setIsOpen(false)
+                                    }}
+                                >
+                                    {author}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <div className={styles.filterContainer}>
+                    <div 
+                        className={styles.selectedOption}
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <div><p>{selectedReviewer || "Filter by Reviewer"}</p></div>
+                        <div>
+                            <img
+                                src={"/icons/down.png"}
+                                alt={"Down Icon"}
+                            />
+                        </div>
+                    </div>
+
+                    {isOpen && (
+                        <div>
+                            <div 
+                                className={styles.filterOptions}
+                                onClick={() => { 
+                                    setSelectedReviewer("")
+                                    setIsOpen(false)
+                                }}
+                            >
+                                All Reviewers
+                            </div>
+                            {uniqueReviewers.map((reviewer, index) => (
+                                <div 
+                                    className={styles.filterOptions}
+                                    key={index}
+                                    onClick={() => {
+                                        setSelectedReviewer(reviewer)
+                                        setSelectedAuthor("")
+                                        setIsOpen(false)
+                                    }}
+                                >  
+                                    {reviewer}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+
+                <button
+                    className={styles.createButton}
+                    onClick={() => handleSelectDoc("new", "New Document")}
+                >Create New</button>
             </div>
-
-            <select 
-                className={styles.filterContainer}
-                value={selectedAuthor}
-                onChange={(e) => {
-                    setSelectedAuthor(e.target.value)
-                    setSelectedReviewer("") // reset reviewer filter when author filter changes
-                }}
-            >
-                <option value="">All Authors</option>
-                    {uniqueAuthors.map((author, index) => (
-                    <option key={index} value={author}>
-                        {author}
-                    </option>
-                ))}
-                <img
-                    src={"/icons/down.png"}
-                    alt={"Down Icon"}
-                />
-            </select>
-
-            <select 
-                className={styles.filterContainer}
-                value={selectedReviewer}
-                onChange={(e) => {
-                    setSelectedReviewer(e.target.value)
-                    setSelectedAuthor("") // reset author filter when reviewer filter changes
-                }}
-            >
-                <option value="">All Reviewers</option>
-                    {uniqueReviewers.map((reviewer, index) => (
-                    <option key={index} value={reviewer}>  
-                        {reviewer}
-                    </option>
-                ))}
-                <img
-                    src={"/icons/down.png"}
-                    alt={"Down Icon"}
-                />
-            </select>
-
-            <button
-                className={styles.createButton}
-                onClick={() => handleSelectDoc("new", "New Document")}
-            >Create New</button>
-
 
             <div className={styles.resultsContainer}>
                 {sortedDocs.length > 0 ? (
