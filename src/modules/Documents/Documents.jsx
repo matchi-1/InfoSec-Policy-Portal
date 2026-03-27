@@ -16,10 +16,10 @@ const BodyContent = ({ setActiveSubModule }) => {
   const [selectedAuthor, setSelectedAuthor] = useState("");
   const [selectedReviewer, setSelectedReviewer] = useState("");
 
-  const [isOpen, setIsOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isReviewerOpen, setIsReviewerOpen] = useState(false);
 //   const [dbDocs, setDbDocs] = useState([]); 
 
-  
 
   // derive list from dummy DB
   const documents = useMemo(() => {
@@ -132,38 +132,54 @@ const BodyContent = ({ setActiveSubModule }) => {
                 </div>
 
                 <div className={styles.filterContainer}>
+                    <h2>Filter by Author</h2>
                     <div 
-                        className={styles.selectedOption}
-                        onClick={() => setIsOpen(true)}
+                        className={
+                            selectedAuthor !== "" 
+                            ? styles.activeSelectedOption 
+                            : styles.selectedOption
+                        }
+                        onClick={() => {
+                            setIsAuthOpen(!isAuthOpen)
+                            setIsReviewerOpen(false) 
+                        }}
                     >
-                        <div><p>{selectedAuthor || "Filter by Author"}</p></div>
+                        <div><p>{selectedAuthor || "All Authors"}</p></div>
                         <div>
                             <img
-                                src={"/icons/down.png"}
+                                src={
+                                    selectedAuthor !== "" 
+                                    ? "/icons/down-white.png"
+                                    : "/icons/down.png"
+                                }
                                 alt={"Down Icon"}
                             />
                         </div>
                     </div>
 
-                    { isOpen && (
-                        <div>
+                    { isAuthOpen && (
+                        <div className={styles.filterOptionsContainer}>
                             <div 
                                 className={styles.filterOptions}
                                 onClick={() => {
                                     setSelectedAuthor("")
-                                    setIsOpen(false)
+                                    setIsAuthOpen(false)
                                 }}
                             >
                                 All Authors
                             </div>
                             {uniqueAuthors.map((author, index) => (
                                 <div 
-                                    className={styles.filterOptions}
+                                    className={
+                                        selectedAuthor === author
+                                            ? styles.activeFilter
+                                            : styles.filterOptions
+                                    }
                                     key={index}
                                     onClick={() => {
                                         setSelectedAuthor(author)
                                         setSelectedReviewer("")
-                                        setIsOpen(false)
+                                        setIsAuthOpen(false)
                                     }}
                                 >
                                     {author}
@@ -174,38 +190,55 @@ const BodyContent = ({ setActiveSubModule }) => {
                 </div>
 
                 <div className={styles.filterContainer}>
+                    <h2>Filter by Reviewer</h2>
                     <div 
-                        className={styles.selectedOption}
-                        onClick={() => setIsOpen(true)}
+                        className={
+                            selectedReviewer !== "" 
+                            ? styles.activeSelectedOption 
+                            : styles.selectedOption
+                        }
+                        onClick={() => {
+                            setIsReviewerOpen(!isReviewerOpen)
+                            setIsAuthOpen(false) 
+                        }}
                     >
-                        <div><p>{selectedReviewer || "Filter by Reviewer"}</p></div>
+                        <div><p>{selectedReviewer || "All Reviewers"}</p></div>
                         <div>
+
                             <img
-                                src={"/icons/down.png"}
+                                src={
+                                    selectedReviewer !== "" 
+                                    ? "/icons/down-white.png"
+                                    : "/icons/down.png"
+                                }
                                 alt={"Down Icon"}
                             />
                         </div>
                     </div>
 
-                    {isOpen && (
-                        <div>
-                            <div 
+                    { isReviewerOpen && (
+                        <div className={styles.filterOptionsContainer}>
+                            <div
                                 className={styles.filterOptions}
                                 onClick={() => { 
                                     setSelectedReviewer("")
-                                    setIsOpen(false)
+                                    setIsReviewerOpen(false)
                                 }}
                             >
                                 All Reviewers
                             </div>
                             {uniqueReviewers.map((reviewer, index) => (
                                 <div 
-                                    className={styles.filterOptions}
+                                    className={
+                                        selectedReviewer === reviewer
+                                            ? styles.activeFilter
+                                            : styles.filterOptions
+                                    }
                                     key={index}
                                     onClick={() => {
                                         setSelectedReviewer(reviewer)
                                         setSelectedAuthor("")
-                                        setIsOpen(false)
+                                        setIsReviewerOpen(false)
                                     }}
                                 >  
                                     {reviewer}
@@ -214,24 +247,31 @@ const BodyContent = ({ setActiveSubModule }) => {
                         </div>
                     )}
                 </div>
-
-                <button
+                        
+                <div
                     className={styles.createButton}
                     onClick={() => handleSelectDoc("new", "New Document")}
-                >Create New</button>
+                >
+                    <div>
+                        <img
+                            src={"/icons/plus-hover.png"}
+                            alt={"Plus Icon"}
+                        />
+                    </div>
+                    Create New</div>
             </div>
 
             <div className={styles.resultsContainer}>
-                {sortedDocs.length > 0 ? (
-                    <table className={styles.documentTable}>
-                        <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Authored By</th>
-                                <th>Reviewed By</th>
-                                <th>Last Updated</th>
-                            </tr>
-                        </thead>
+                <table className={styles.documentTable}>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Authored By</th>
+                            <th>Reviewed By</th>
+                            <th>Last Updated</th>
+                        </tr>
+                    </thead>
+                    {sortedDocs.length > 0 ? (
                         <tbody>
                             {
                             selectedAuthor && docsbyAuthor.length > 0 ? docsbyAuthor.map((doc) => (
@@ -257,7 +297,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     <td>{doc.lastUpdated}</td>
                                 </tr>
                             )) : docsbyAuthor.length === 0 || docsbyReviewer.length === 0 ? (
-                                <p style={{ fontSize: "0.875rem", color: "#888" }}>No documents found for selected filter.</p>
+                                <p style={{ fontSize: "0.9rem", color: "#888" }}>No documents found for selected filter.</p>
                             ) : 
                                 sortedDocs.map((doc) => (
                                 <tr
@@ -272,10 +312,11 @@ const BodyContent = ({ setActiveSubModule }) => {
                                 </tr>
                             ))} 
                         </tbody>
-                    </table>
+                    
                 ) : (
-                    <p style={{ fontSize: "0.875rem", color: "#888" }}>No documents found.</p>
+                    <p style={{ fontSize: "0.9rem", color: "#888" }}>No documents found.</p>
                 )}
+                </table>
             </div>
         </div>
         )}
