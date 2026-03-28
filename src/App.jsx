@@ -234,7 +234,7 @@ function App() {
   useEffect(() => {
     console.log("(debug) sub hook")
     if (activeSubModule) {
-      console.log("(debug) calling loadsubmodule")
+      console.log("(debug) calling loadsubmodule for ", activeSubModule)
       loadSubModule(activeSubModule)
     } else {
       console.log("(debug) calling loadmainmodule from sub hook")
@@ -306,6 +306,7 @@ function App() {
 
   const moduleFileNames = {
     "Home": "Home",
+    "Documents": "Documents",
     "Policies": "Policies",
     "Recent News": "RecentNews",
     "Others": "Others",
@@ -313,6 +314,7 @@ function App() {
 
   const moduleSubmoduleFileNames = {
     "Home": {},
+    "Documents": {},
     "Policies": {
       "Policies Dashboard": "Policies-dsh",
     },
