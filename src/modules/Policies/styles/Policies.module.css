@@ -33,10 +33,10 @@ h2 {
   gap: 0.75rem;
 
   height: 100%;
-  min-width: 13.5rem;
+  min-width: 16.5rem;
   flex: 0 0 13.5rem;
   width: 13.5rem;
-  max-width: 13.5rem;
+  max-width: 16.5rem;
 
   /* IMPORTANT for scroll layouts */
   min-height: 0;
