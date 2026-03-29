@@ -18,12 +18,14 @@ const BodyContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
-    const [docFilters, setDocFilters] = useState({
+    const emptyDocFilters = {
         classification: "",
         status: "",
         authoredBy: "",
         reviewedBy: "",
-    });
+    };
+    const [docFilters, setDocFilters] = useState(emptyDocFilters);
+
 
     // DB docs (full objects)
     const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
@@ -181,14 +183,7 @@ const BodyContent = () => {
                                 <button
                                     type="button"
                                     className={styles.clearFilterText}
-                                    onClick={() =>
-                                        setDocFilters({
-                                            classification: "",
-                                            status: "",
-                                            authoredBy: "",
-                                            reviewedBy: "",
-                                        })
-                                    }
+                                    onClick={() => setDocFilters(emptyDocFilters)}
                                 >
                                     Clear
                                 </button>
