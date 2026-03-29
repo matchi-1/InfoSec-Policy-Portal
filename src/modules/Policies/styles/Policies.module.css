@@ -33,10 +33,10 @@ h2 {
   gap: 0.75rem;
 
   height: 100%;
-  min-width: 16.5rem;
+  min-width: 18rem;
   flex: 0 0 13.5rem;
   width: 13.5rem;
-  max-width: 16.5rem;
+  max-width: 18rem;
 
   /* IMPORTANT for scroll layouts */
   min-height: 0;
@@ -148,7 +148,7 @@ h2 {
 }
 
 .documentItem {
-  font-size: 0.8rem;
+  font-size: 0.88rem;
   color: rgb(75, 75, 75);
   background-color: #E7E7E7;
   border-radius: 0.3rem;
