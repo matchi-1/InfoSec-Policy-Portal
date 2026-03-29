@@ -135,9 +135,10 @@ const BodyContent = () => {
                                             {doc.authoredBy ? `By ${doc.authoredBy}` : "No author"}
                                         </div>
 
-                                        <div className={styles.documentMetaLine}>
+                                        <div className={`${styles.documentMetaLine} ${styles.documentUpdatedLine}`}>
                                             {doc.lastUpdated ? `Upd ${doc.lastUpdated}` : "No update date"}
                                         </div>
+
                                     </div>
                                 </div>
                             ))}
