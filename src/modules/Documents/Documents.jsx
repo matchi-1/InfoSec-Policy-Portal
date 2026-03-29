@@ -28,9 +28,11 @@ const BodyContent = ({ setActiveSubModule }) => {
         return [];
     };
 
+
     const uniqueCategories = useMemo(() => {
         return [...new Set(dbDocs.flatMap((doc) => getDocCategories(doc)))].sort();
     }, [dbDocs]);
+
 
     const uniqueAuthors = useMemo(() => {
         return [...new Set(dbDocs.map((doc) => doc.authoredBy).filter(Boolean))].sort();
