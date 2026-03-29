@@ -117,7 +117,28 @@ const BodyContent = () => {
                                     tabIndex={0}
                                     onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
                                 >
-                                    <p>{highlightText(doc.title, docSearch)}</p>
+                                    <div className={styles.documentItemContent}>
+                                        <p className={styles.documentTitle}>
+                                            {highlightText(doc.title, docSearch)}
+                                        </p>
+
+                                        <div className={styles.documentMetaChips}>
+                                            {doc.classification && (
+                                                <span className={styles.metaChip}>{doc.classification}</span>
+                                            )}
+                                            {doc.status && (
+                                                <span className={styles.metaChip}>{doc.status}</span>
+                                            )}
+                                        </div>
+
+                                        <div className={styles.documentMetaLine}>
+                                            {doc.authoredBy ? `By ${doc.authoredBy}` : "No author"}
+                                        </div>
+
+                                        <div className={styles.documentMetaLine}>
+                                            {doc.lastUpdated ? `Upd ${doc.lastUpdated}` : "No update date"}
+                                        </div>
+                                    </div>
                                 </div>
                             ))}
 
