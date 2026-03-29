@@ -1,126 +1,167 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useMemo, useState } from "react";
 import styles from "./styles/Documents.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import DocumentEditor from "./components/DocumentEditor";
+import FilterPopup from "../../shared/components/FilterPopup";
 import { highlightText } from "../../utils/highlightText";
 
-//  DB-like dummy source
+// DB-like dummy source
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
-const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
+
 const BodyContent = ({ setActiveSubModule }) => {
     const [selectedDocId, setSelectedDocId] = useState(null);
-    const [isPdfViewActive, setIsPdfViewActive] = useState(false);
-    const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
     const [docSearch, setDocSearch] = useState("");
 
-    const [selectedAuthor, setSelectedAuthor] = useState("");
-    const [selectedReviewer, setSelectedReviewer] = useState("");
+    // local state so delete works in UI for dummy data
+    const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
 
-    const [isAuthOpen, setIsAuthOpen] = useState(false);
-    const [isReviewerOpen, setIsReviewerOpen] = useState(false);
-    //   const [dbDocs, setDbDocs] = useState([]); 
+    const emptyDocFilters = {
+        category: "",
+        authoredBy: "",
+        reviewedBy: "",
+    };
+    const [docFilters, setDocFilters] = useState(emptyDocFilters);
 
-
-    // derive list from dummy DB
-    const documents = useMemo(() => {
-        const dbDocs = policyDocumentsDb?.documents ?? [];
-        return dbDocs.map((d) => ({ id: d.id, name: d.title }));
-    }, [policyDocumentsDb?.documents]);
-
-    //   DB docs (full objects)
-    const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
-
-    //   useEffect(() => { 
-    //     const fetchDocuments = async () => {
-    //         console.log("(debug) fetching docs from backend...")
-    //         const resp = await fetch(backend_base_url + "/documents/get-documents/")
-    //         const docs = await resp.json()
-    //         console.log("(debug) fetched docs: " + docs)
-    //         setDbDocs(docs)
-    //     }
-
-    //     fetchDocuments();
-    //   }, [])
-
-    //   useEffect(() => {
-    //     console.log("dbDocs updated: ", dbDocs)
-    //   }, [dbDocs])
-
-    const handleSelectDoc = (docId, docTitle) => {
-        setSelectedDocId(docId);
-        if (setActiveSubModule) {
-            console.log("docTitle: ", docTitle);
-            setActiveSubModule(docTitle);
-            // ^^ i dont think this is needed since the editor component is loaded anw when a doc is selected  -Harley
-        }
-        // setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
-        // setIsHeaderCollapsed(false); // reset header collapse state when changing docs
+    const getDocCategories = (doc) => {
+        if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
+        if (typeof doc?.category === "string" && doc.category.trim()) return [doc.category.trim()];
+        return [];
     };
 
+    const getUniqueOptions = (items, key) => {
+        if (key === "category") {
+            return [...new Set(items.flatMap((item) => getDocCategories(item)))].sort();
+        }
 
+        return [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
+    };
 
-    const uniqueAuthors = [...new Set(dbDocs.map(doc => doc.authoredBy))];
-    const uniqueReviewers = [...new Set(dbDocs.map(doc => doc.reviewedBy))];
+    const hasActiveDocFilters = Object.values(docFilters).some(
+        (value) => String(value ?? "").trim() !== ""
+    );
 
-    // Filter by title and sort by last updated date (newest first)
-    const sortedDocs = useMemo(() => {
+    const documentFilterFields = useMemo(() => {
+        return [
+            {
+                key: "category",
+                label: "Category",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "category"),
+                emptyLabel: "All categories",
+            },
+            {
+                key: "authoredBy",
+                label: "Authored by",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "authoredBy"),
+                emptyLabel: "All authors",
+            },
+            {
+                key: "reviewedBy",
+                label: "Reviewed by",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "reviewedBy"),
+                emptyLabel: "All reviewers",
+            },
+        ];
+    }, [dbDocs]);
+
+    const filteredDocs = useMemo(() => {
         const q = docSearch.trim().toLowerCase();
 
-        // filter
-        let list = q
-            ? dbDocs.filter((d) => (d.title ?? "").toLowerCase().includes(q))
-            : [...dbDocs];
+        const filtered = dbDocs.filter((d) => {
+            const matchesSearch =
+                !q || (d.title ?? "").toLowerCase().includes(q);
 
-        // sort by lastUpdated descending
-        return list.sort((a, b) => {
+            const docCategories = getDocCategories(d);
+
+            const matchesCategory =
+                !docFilters.category || docCategories.includes(docFilters.category);
+
+            const matchesAuthoredBy =
+                !docFilters.authoredBy || d.authoredBy === docFilters.authoredBy;
+
+            const matchesReviewedBy =
+                !docFilters.reviewedBy || d.reviewedBy === docFilters.reviewedBy;
+
+            return (
+                matchesSearch &&
+                matchesCategory &&
+                matchesAuthoredBy &&
+                matchesReviewedBy
+            );
+        });
+
+        return filtered.sort((a, b) => {
             const da = new Date(a.lastUpdated);
             const db = new Date(b.lastUpdated);
             return db - da;
         });
-    }, [dbDocs, docSearch]);
+    }, [dbDocs, docSearch, docFilters]);
 
-    // Filter table based on dropdown
-    const docsbyAuthor = selectedAuthor
-        ? sortedDocs.filter(doc => doc.authoredBy === selectedAuthor)
-        : sortedDocs;
+    const handleSelectDoc = (docId, docTitle) => {
+        setSelectedDocId(docId);
+        if (setActiveSubModule) {
+            setActiveSubModule(docTitle);
+        }
+    };
 
-    const docsbyReviewer = selectedReviewer
-        ? sortedDocs.filter(doc => doc.reviewedBy === selectedReviewer)
-        : sortedDocs;
+    const handleDeleteDoc = (doc) => {
+        const confirmed = window.confirm(
+            `Are you sure you want to delete "${doc.title}"?`
+        );
 
-    // Get selected document
+        if (!confirmed) return;
+
+        setDbDocs((prev) => prev.filter((d) => d.id !== doc.id));
+
+        if (selectedDocId === doc.id) {
+            setSelectedDocId(null);
+            if (setActiveSubModule) setActiveSubModule(null);
+        }
+    };
+
     const selectedDoc = useMemo(() => {
-        // if selectedDocId is "new", return a blank template object
         if (selectedDocId === "new") {
             return {
-                // "new" temp id value 
                 id: "new",
                 title: "New Document",
+                category: [],
+                documentDetails: "New Document Description",
                 details: "New Document Description",
                 authoredBy: "",
                 reviewedBy: "",
+                lastUpdated: "",
                 lastReviewed: "---------",
-                pdf_filename: "null"
+                pdf_filename: "null",
+                sections: [],
             };
         }
-        return dbDocs.find((d) => d.id === selectedDocId) ?? null;
+
+        const found = dbDocs.find((d) => d.id === selectedDocId) ?? null;
+
+        if (!found) return null;
+
+        return {
+            ...found,
+            details: found.details ?? found.documentDetails ?? "",
+        };
     }, [dbDocs, selectedDocId]);
 
     return (
         <div className={styles.bodyContentContainer}>
             {selectedDoc ? (
-                console.log("selectedDoc: ", selectedDoc),
                 <DocumentEditor
                     doc={selectedDoc}
                     onBack={() => {
                         setSelectedDocId(null);
-                        if (setActiveSubModule) setActiveSubModule(null); // <- keeping this line tho just incase -Harley
+                        if (setActiveSubModule) setActiveSubModule(null);
                     }}
                 />
             ) : (
-                // Documents Dashboard
                 <div className={styles.bodyContentContainer}>
                     <h1>Documents</h1>
+
                     <div className={styles.searchFilterCreate}>
                         <div className={styles.searchBarContainer}>
                             <SearchBar
@@ -130,120 +171,42 @@ const BodyContent = ({ setActiveSubModule }) => {
                             />
                         </div>
 
-                        <div className={styles.filterContainer}>
-                            <h2>Filter by Author</h2>
-                            <div
-                                className={
-                                    selectedAuthor !== ""
-                                        ? styles.activeSelectedOption
-                                        : styles.selectedOption
-                                }
-                                onClick={() => {
-                                    setIsAuthOpen(!isAuthOpen)
-                                    setIsReviewerOpen(false)
-                                }}
-                            >
-                                <div><p>{selectedAuthor || "All Authors"}</p></div>
-                                <div>
-                                    <img
-                                        src={
-                                            selectedAuthor !== ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
-                                        }
-                                        alt={"Down Icon"}
-                                    />
-                                </div>
-                            </div>
+                        <div
+                            style={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: "0.35rem",
+                                minWidth: 0,
+                            }}
+                        >
+                            <FilterPopup
+                                title="Filter documents"
+                                buttonLabel="Filter"
+                                iconSrc="/icons/filter-blue.png"
+                                fields={documentFilterFields}
+                                values={docFilters}
+                                onApply={setDocFilters}
+                                onClear={setDocFilters}
+                            />
 
-                            {isAuthOpen && (
-                                <div className={styles.filterOptionsContainer}>
-                                    <div
-                                        className={styles.filterOptions}
-                                        onClick={() => {
-                                            setSelectedAuthor("")
-                                            setIsAuthOpen(false)
-                                        }}
-                                    >
-                                        All Authors
-                                    </div>
-                                    {uniqueAuthors.map((author, index) => (
-                                        <div
-                                            className={
-                                                selectedAuthor === author
-                                                    ? styles.activeFilter
-                                                    : styles.filterOptions
-                                            }
-                                            key={index}
-                                            onClick={() => {
-                                                setSelectedAuthor(author)
-                                                setSelectedReviewer("")
-                                                setIsAuthOpen(false)
-                                            }}
-                                        >
-                                            {author}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-
-                        <div className={styles.filterContainer}>
-                            <h2>Filter by Reviewer</h2>
-                            <div
-                                className={
-                                    selectedReviewer !== ""
-                                        ? styles.activeSelectedOption
-                                        : styles.selectedOption
-                                }
-                                onClick={() => {
-                                    setIsReviewerOpen(!isReviewerOpen)
-                                    setIsAuthOpen(false)
-                                }}
-                            >
-                                <div><p>{selectedReviewer || "All Reviewers"}</p></div>
-                                <div>
-
-                                    <img
-                                        src={
-                                            selectedReviewer !== ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
-                                        }
-                                        alt={"Down Icon"}
-                                    />
-                                </div>
-                            </div>
-
-                            {isReviewerOpen && (
-                                <div className={styles.filterOptionsContainer}>
-                                    <div
-                                        className={styles.filterOptions}
-                                        onClick={() => {
-                                            setSelectedReviewer("")
-                                            setIsReviewerOpen(false)
-                                        }}
-                                    >
-                                        All Reviewers
-                                    </div>
-                                    {uniqueReviewers.map((reviewer, index) => (
-                                        <div
-                                            className={
-                                                selectedReviewer === reviewer
-                                                    ? styles.activeFilter
-                                                    : styles.filterOptions
-                                            }
-                                            key={index}
-                                            onClick={() => {
-                                                setSelectedReviewer(reviewer)
-                                                setSelectedAuthor("")
-                                                setIsReviewerOpen(false)
-                                            }}
-                                        >
-                                            {reviewer}
-                                        </div>
-                                    ))}
-                                </div>
+                            {hasActiveDocFilters && (
+                                <button
+                                    type="button"
+                                    onClick={() => setDocFilters(emptyDocFilters)}
+                                    style={{
+                                        border: "none",
+                                        background: "transparent",
+                                        padding: 0,
+                                        margin: 0,
+                                        fontSize: "0.72rem",
+                                        color: "#6f7f98",
+                                        textDecoration: "underline",
+                                        cursor: "pointer",
+                                        fontFamily: "inherit",
+                                    }}
+                                >
+                                    Clear
+                                </button>
                             )}
                         </div>
 
@@ -257,7 +220,8 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     alt={"Plus Icon"}
                                 />
                             </div>
-                            Create New Document</div>
+                            Create New Document
+                        </div>
                     </div>
 
                     <div className={styles.resultsContainer}>
@@ -265,62 +229,107 @@ const BodyContent = ({ setActiveSubModule }) => {
                             <thead>
                                 <tr>
                                     <th>Title</th>
+                                    <th>Category</th>
                                     <th>Authored By</th>
                                     <th>Reviewed By</th>
                                     <th>Last Updated</th>
+                                    <th>Actions</th>
                                 </tr>
                             </thead>
-                            {sortedDocs.length > 0 ? (
-                                <tbody>
-                                    {
-                                        selectedAuthor && docsbyAuthor.length > 0 ? docsbyAuthor.map((doc) => (
-                                            <tr
-                                                key={doc.id}
-                                                className={selectedDocId === doc.id ? styles.selectedRow : ""}
-                                                onClick={() => handleSelectDoc(doc.id, doc.title)}
-                                            >
-                                                <td>{highlightText(doc.title, docSearch)}</td>
-                                                <td>{doc.authoredBy}</td>
-                                                <td>{doc.reviewedBy}</td>
-                                                <td>{doc.lastUpdated}</td>
-                                            </tr>
-                                        )) : selectedReviewer && docsbyReviewer.length > 0 ? docsbyReviewer.map((doc) => (
-                                            <tr
-                                                key={doc.id}
-                                                className={selectedDocId === doc.id ? styles.selectedRow : ""}
-                                                onClick={() => handleSelectDoc(doc.id, doc.title)}
-                                            >
-                                                <td>{highlightText(doc.title, docSearch)}</td>
-                                                <td>{doc.authoredBy}</td>
-                                                <td>{doc.reviewedBy}</td>
-                                                <td>{doc.lastUpdated}</td>
-                                            </tr>
-                                        )) : docsbyAuthor.length === 0 || docsbyReviewer.length === 0 ? (
-                                            <p style={{ fontSize: "0.9rem", color: "#888", padding: "1rem" }}>No documents found for selected filter.</p>
-                                        ) :
-                                            sortedDocs.map((doc) => (
-                                                <tr
-                                                    key={doc.id}
-                                                    className={selectedDocId === doc.id ? styles.selectedRow : ""}
-                                                    onClick={() => handleSelectDoc(doc.id, doc.title)}
-                                                >
-                                                    <td>{highlightText(doc.title, docSearch)}</td>
-                                                    <td>{doc.authoredBy}</td>
-                                                    <td>{doc.reviewedBy}</td>
-                                                    <td>{doc.lastUpdated}</td>
-                                                </tr>
-                                            ))}
-                                </tbody>
 
-                            ) : (
-                                <p style={{ fontSize: "0.9rem", color: "#888", padding: "1rem" }}>No documents found.</p>
-                            )}
+                            <tbody>
+                                {filteredDocs.length > 0 ? (
+                                    filteredDocs.map((doc) => {
+                                        const categories = getDocCategories(doc);
+
+                                        return (
+                                            <tr
+                                                key={doc.id}
+                                                className={
+                                                    selectedDocId === doc.id
+                                                        ? styles.selectedRow
+                                                        : ""
+                                                }
+                                            >
+                                                <td>{highlightText(doc.title, docSearch)}</td>
+                                                <td>
+                                                    {categories.length > 0
+                                                        ? categories.join(", ")
+                                                        : "—"}
+                                                </td>
+                                                <td>{doc.authoredBy || "—"}</td>
+                                                <td>{doc.reviewedBy || "—"}</td>
+                                                <td>{doc.lastUpdated || "—"}</td>
+                                                <td>
+                                                    <div
+                                                        style={{
+                                                            display: "flex",
+                                                            alignItems: "center",
+                                                            justifyContent: "center",
+                                                            gap: "0.35rem",
+                                                        }}
+                                                    >
+                                                        <button
+                                                            type="button"
+                                                            onClick={() =>
+                                                                handleSelectDoc(doc.id, doc.title)
+                                                            }
+                                                            aria-label={`Edit ${doc.title}`}
+                                                            title="Edit document"
+                                                            style={{
+                                                                border: "none",
+                                                                background: "transparent",
+                                                                cursor: "pointer",
+                                                                padding: "0.25rem",
+                                                                fontSize: "1rem",
+                                                                lineHeight: 1,
+                                                            }}
+                                                        >
+                                                            ✏️
+                                                        </button>
+
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleDeleteDoc(doc)}
+                                                            aria-label={`Delete ${doc.title}`}
+                                                            title="Delete document"
+                                                            style={{
+                                                                border: "none",
+                                                                background: "transparent",
+                                                                cursor: "pointer",
+                                                                padding: "0.25rem",
+                                                                fontSize: "1rem",
+                                                                lineHeight: 1,
+                                                            }}
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })
+                                ) : (
+                                    <tr>
+                                        <td
+                                            colSpan={6}
+                                            style={{
+                                                fontSize: "0.9rem",
+                                                color: "#888",
+                                                padding: "1rem",
+                                                textAlign: "center",
+                                            }}
+                                        >
+                                            No documents found.
+                                        </td>
+                                    </tr>
+                                )}
+                            </tbody>
                         </table>
                     </div>
                 </div>
             )}
         </div>
-
     );
 };
 
