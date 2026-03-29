@@ -5,12 +5,7 @@ const SearchBar = ({ value = "", onChange, placeholder = "Search..." }) => {
   const [inputValue, setInputValue] = useState(value);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
-  const emptyDocFilters = {
-    classification: "",
-    status: "",
-    authoredBy: "",
-    reviewedBy: "",
-  };
+
 
   useEffect(() => {
     setInputValue(value);
@@ -154,6 +149,9 @@ const styles = {
   input: {
     border: "none",
     outline: "none",
+    boxShadow: "none",
+    appearance: "none",
+    WebkitAppearance: "none",
     backgroundColor: "transparent",
     flex: 1,
     minWidth: 0,
