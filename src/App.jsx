@@ -316,7 +316,6 @@ function App() {
     "Home": {},
     "Documents": {},
     "Policies": {
-      "Policies Dashboard": "Policies-dsh",
     },
     "Recent News": {
       "Recent News Dashboard": "RecentNews-dsh",
