@@ -19,54 +19,47 @@ const BodyContent = () => {
     const itemsPerPage = 8;
 
     const emptyDocFilters = {
-        classification: "",
-        status: "",
+        category: "",
         authoredBy: "",
         reviewedBy: "",
     };
     const [docFilters, setDocFilters] = useState(emptyDocFilters);
 
-
     // DB docs (full objects)
     const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
 
-    // derive list from dummy DB
-    const documents = useMemo(() => {
-        const dbDocs = policyDocumentsDb?.documents ?? [];
-        return dbDocs.map((d) => ({ id: d.id, name: d.title }));
-    }, [policyDocumentsDb?.documents]);
-
-
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
-        setIsPdfViewActive(false); //  whenever we change docs, we exit PDF view mode
-        setIsHeaderCollapsed(false); // reset header collapse state when changing docs
+        setIsPdfViewActive(false);
+        setIsHeaderCollapsed(false);
     };
 
+    const getDocCategories = (doc) => {
+        if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
+        if (typeof doc?.category === "string" && doc.category.trim()) return [doc.category.trim()];
+        return [];
+    };
 
-    const getUniqueOptions = (items, key) =>
-        [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
+    const getUniqueOptions = (items, key) => {
+        if (key === "category") {
+            return [...new Set(items.flatMap((item) => getDocCategories(item)))].sort();
+        }
+
+        return [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
+    };
 
     const hasActiveDocFilters = Object.values(docFilters).some(
         (value) => String(value ?? "").trim() !== ""
     );
 
-
     const documentFilterFields = useMemo(() => {
         return [
             {
-                key: "classification",
-                label: "Classification",
+                key: "category",
+                label: "Category",
                 type: "select",
-                options: getUniqueOptions(dbDocs, "classification"),
-                emptyLabel: "All classifications",
-            },
-            {
-                key: "status",
-                label: "Status",
-                type: "select",
-                options: getUniqueOptions(dbDocs, "status"),
-                emptyLabel: "All statuses",
+                options: getUniqueOptions(dbDocs, "category"),
+                emptyLabel: "All categories",
             },
             {
                 key: "authoredBy",
@@ -93,13 +86,11 @@ const BodyContent = () => {
             const matchesSearch =
                 !q || (d.title ?? "").toLowerCase().includes(q);
 
-            const matchesClassification =
-                !docFilters.classification ||
-                d.classification === docFilters.classification;
+            const docCategories = getDocCategories(d);
 
-            const matchesStatus =
-                !docFilters.status ||
-                d.status === docFilters.status;
+            const matchesCategory =
+                !docFilters.category ||
+                docCategories.includes(docFilters.category);
 
             const matchesAuthoredBy =
                 !docFilters.authoredBy ||
@@ -111,8 +102,7 @@ const BodyContent = () => {
 
             return (
                 matchesSearch &&
-                matchesClassification &&
-                matchesStatus &&
+                matchesCategory &&
                 matchesAuthoredBy &&
                 matchesReviewedBy
             );
@@ -123,12 +113,6 @@ const BodyContent = () => {
         setCurrentPage(1);
     }, [docSearch, docFilters]);
 
-    // reset page when searching
-    useEffect(() => {
-        setCurrentPage(1);
-    }, [docSearch]);
-
-    // paginate the filtered list
     const totalPages = Math.max(1, Math.ceil(filteredDocs.length / itemsPerPage));
     const safePage = Math.min(currentPage, totalPages);
 
@@ -137,7 +121,7 @@ const BodyContent = () => {
 
     const paginatedDocuments = filteredDocs.slice(startIndex, startIndex + itemsPerPage);
 
-    // Selected document (use dbDocs so it matches the real object)
+    // Selected document
     const selectedDoc = useMemo(() => {
         return dbDocs.find((d) => d.id === selectedDocId) ?? null;
     }, [dbDocs, selectedDocId]);
@@ -149,9 +133,6 @@ const BodyContent = () => {
     const handlePrevPage = () => {
         setCurrentPage((p) => Math.max(p - 1, 1));
     };
-
-
-
 
     return (
         <div className={styles.policies}>
@@ -200,40 +181,42 @@ const BodyContent = () => {
 
                     <div className={styles.documentAndFooterContainer}>
                         <div className={styles.documentsContainer}>
-                            {paginatedDocuments.map((doc) => (
-                                <div
-                                    key={doc.id}
-                                    className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""}`}
-                                    onClick={() => handleSelectDoc(doc.id)}
-                                    role="button"
-                                    tabIndex={0}
-                                    onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
-                                >
-                                    <div className={styles.documentItemContent}>
-                                        <p className={styles.documentTitle}>
-                                            {highlightText(doc.title, docSearch)}
-                                        </p>
+                            {paginatedDocuments.map((doc) => {
+                                const categories = getDocCategories(doc);
 
-                                        <div className={styles.documentMetaChips}>
-                                            {doc.classification && (
-                                                <span className={styles.metaChip}>{doc.classification}</span>
-                                            )}
-                                            {doc.status && (
-                                                <span className={styles.metaChip}>{doc.status}</span>
-                                            )}
+                                return (
+                                    <div
+                                        key={doc.id}
+                                        className={`${styles.documentItem} ${selectedDocId === doc.id ? styles.selected : ""}`}
+                                        onClick={() => handleSelectDoc(doc.id)}
+                                        role="button"
+                                        tabIndex={0}
+                                        onKeyDown={(e) => e.key === "Enter" && handleSelectDoc(doc.id)}
+                                    >
+                                        <div className={styles.documentItemContent}>
+                                            <p className={styles.documentTitle}>
+                                                {highlightText(doc.title, docSearch)}
+                                            </p>
+
+                                            <div className={styles.documentMetaChips}>
+                                                {categories.map((cat) => (
+                                                    <span key={cat} className={styles.metaChip}>
+                                                        {cat}
+                                                    </span>
+                                                ))}
+                                            </div>
+
+                                            <div className={styles.documentMetaLine}>
+                                                {doc.authoredBy ? `By ${doc.authoredBy}` : "No author"}
+                                            </div>
+
+                                            <div className={`${styles.documentMetaLine} ${styles.documentUpdatedLine}`}>
+                                                {doc.lastUpdated ? `Upd ${doc.lastUpdated}` : "No update date"}
+                                            </div>
                                         </div>
-
-                                        <div className={styles.documentMetaLine}>
-                                            {doc.authoredBy ? `By ${doc.authoredBy}` : "No author"}
-                                        </div>
-
-                                        <div className={`${styles.documentMetaLine} ${styles.documentUpdatedLine}`}>
-                                            {doc.lastUpdated ? `Upd ${doc.lastUpdated}` : "No update date"}
-                                        </div>
-
                                     </div>
-                                </div>
-                            ))}
+                                );
+                            })}
 
                             {paginatedDocuments.length === 0 && (
                                 <div className={styles.noResults}>
@@ -272,7 +255,6 @@ const BodyContent = () => {
 
                 {/* RIGHT */}
                 <div className={styles.rightContentContainer}>
-
                     {!isHeaderCollapsed && (
                         <div className={styles.documentHeaderContainer}>
                             {selectedDoc ? (
@@ -281,9 +263,8 @@ const BodyContent = () => {
                                         <h2>{selectedDoc?.title}</h2>
                                     </div>
 
-                                    {/* doc details from DB */}
                                     <div className={styles.documentDescription}>
-                                        <p>{selectedDoc.details}</p>
+                                        <p>{selectedDoc.documentDetails}</p>
                                     </div>
                                 </div>
                             ) : (
@@ -297,7 +278,6 @@ const BodyContent = () => {
 
                             {selectedDoc && (
                                 <div className={styles.documentMetadata}>
-                                    {/* metadata from DB */}
                                     <p>Authored by: {selectedDoc.authoredBy}</p>
                                     <p>Last Updated: {selectedDoc.lastUpdated}</p>
                                     <p>Reviewed by: {selectedDoc.reviewedBy}</p>
@@ -318,8 +298,7 @@ const BodyContent = () => {
 
                         <div className={styles.documentButtonsContainer}>
                             <button
-                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""
-                                    }`}
+                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}
                                 onClick={() => setIsPdfViewActive(true)}
                                 disabled={!selectedDocId || isPdfViewActive}
                                 type="button"

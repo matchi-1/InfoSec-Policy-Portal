@@ -4,7 +4,6 @@
 export const policyDocumentsDb = {
   meta: {
     org: "ExampleCorp Information Security Office",
-    classificationDefault: "Internal",
     seededAt: "2026-03-02",
     notes:
       "Placeholder dataset for UI wiring. Replace with API/DB later. Dates and names are illustrative.",
@@ -15,17 +14,12 @@ export const policyDocumentsDb = {
     {
       id: 1,
       title: "Enterprise Information Security Policy Framework",
-      classification: "Internal",
-      status: "Active",
-      version: "3.2",
+      category: "Governance",
       authoredBy: "Information Security Governance",
       lastUpdated: "2026-01-22",
       reviewedBy: "IT Risk and Compliance",
       lastReviewed: "2026-02-01",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Establishes the organization’s overarching information security principles, governance model, and minimum control requirements. This framework defines roles and accountability, risk-based decision-making, control enforcement expectations, and the baseline policy hierarchy that all departments must follow.",
       documentDetails:
         "Establishes the organization’s overarching information security principles, governance model, and minimum control requirements. This framework defines roles and accountability, risk-based decision-making, control enforcement expectations, and the baseline policy hierarchy that all departments must follow.",
 
@@ -257,17 +251,12 @@ export const policyDocumentsDb = {
     {
       id: 2,
       title: "Identity, Authentication, and Access Control Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "2.6",
+      category: "IAM",
       authoredBy: "Identity and Access Management Team",
       lastUpdated: "2026-02-08",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-02-15",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines enforceable requirements for authentication, authorization, access provisioning, access reviews, and privileged access. This standard supports least privilege, segregation of duties, and auditability across all corporate systems.",
       documentDetails:
         "Defines enforceable requirements for authentication, authorization, access provisioning, access reviews, and privileged access. This standard supports least privilege, segregation of duties, and auditability across all corporate systems.",
 
@@ -447,7 +436,7 @@ export const policyDocumentsDb = {
                 "• Login attempts (success/failure), MFA challenge events, session creation.\n" +
                 "• Role/group membership changes and permission grants.\n" +
                 "• Privileged actions where supported.\n" +
-                "Minimum Fields:\n" +
+                "• Minimum Fields:\n" +
                 "• Actor, target, timestamp, action, result, source IP/device context.\n" +
                 "Retention:\n" +
                 "• Maintain logs per enterprise retention standard; sensitive systems require longer retention.",
@@ -494,17 +483,12 @@ export const policyDocumentsDb = {
     {
       id: 3,
       title: "Data Classification, Protection, and Privacy Handling Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "2.9",
+      category: "Data Protection",
       authoredBy: "Data Governance Office",
       lastUpdated: "2026-01-10",
       reviewedBy: "Legal and Compliance",
       lastReviewed: "2026-01-31",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines data classification levels and mandatory handling requirements, including encryption, storage, transmission, retention, and disposal. Includes privacy-by-design requirements for systems processing personal or sensitive data.",
       documentDetails:
         "Defines data classification levels and mandatory handling requirements, including encryption, storage, transmission, retention, and disposal. Includes privacy-by-design requirements for systems processing personal or sensitive data.",
 
@@ -729,17 +713,12 @@ export const policyDocumentsDb = {
     {
       id: 4,
       title: "Security Logging, Monitoring, and Alerting Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "1.8",
+      category: "Monitoring",
       authoredBy: "Security Operations Center",
       lastUpdated: "2026-02-18",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-02-20",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines minimum logging coverage, centralized collection requirements, alerting rules, and log retention. Establishes the operational expectations needed for detection, investigation, and auditability across infrastructure and applications.",
       documentDetails:
         "Defines minimum logging coverage, centralized collection requirements, alerting rules, and log retention. Establishes the operational expectations needed for detection, investigation, and auditability across infrastructure and applications.",
 
@@ -814,20 +793,18 @@ export const policyDocumentsDb = {
                 "• Use access controls to protect logs from modification.\n" +
                 "• Log ingestion failures must alert owners.\n" +
                 "Availability:\n" +
-                "• Maintain redundancy for critical log sources where feasible.",
+                "• Maintain redundancy for critical log pipelines supporting incident response.",
             },
             {
               id: "LOG-02-02",
               title: "2.2 Retention and Access",
               content:
                 "Retention:\n" +
-                "• Minimum retention is defined by classification and regulatory need.\n" +
-                "• High-risk systems may require extended retention.\n" +
+                "• Retain logs according to enterprise requirements and regulatory obligations.\n" +
+                "• Critical security logs may require longer retention than standard application logs.\n" +
                 "Access:\n" +
-                "• Restrict log access to authorized analysts and system owners.\n" +
-                "• Maintain audit trails for log searches and exports.\n" +
-                "Legal Hold:\n" +
-                "• Support preservation under legal hold requirements when requested.",
+                "• Log access must be restricted to authorized personnel.\n" +
+                "• Administrative access to the log platform must be monitored and reviewed.",
             },
             {
               id: "LOG-02-03",
@@ -856,33 +833,29 @@ export const policyDocumentsDb = {
           id: "LOG-03",
           title: "3. Detection and Alerting",
           description:
-            "Defines baseline alert logic and expected response actions.",
+            "Defines minimum alerting expectations for security-relevant events.",
           subsections: [
             {
               id: "LOG-03-01",
-              title: "3.1 Baseline Alerts",
+              title: "3.1 Alert Rules and Prioritization",
               content:
-                "Baseline Alerts:\n" +
-                "• Multiple failed logins, suspicious MFA behavior.\n" +
-                "• Privilege escalation and creation of administrative accounts.\n" +
-                "• Changes to security controls (e.g., logging disabled).\n" +
-                "• Unusual data export or bulk access patterns.\n" +
-                "Tuning:\n" +
-                "• Alerts must be tuned to reduce false positives without losing coverage.\n" +
-                "Ownership:\n" +
-                "• Each alert has an owner and response playbook.",
+                "Alerting:\n" +
+                "• Define alerts for suspicious authentication activity, privilege escalation, logging failures, and unusual data access patterns.\n" +
+                "• Critical alerts must have severity, ownership, and escalation paths.\n" +
+                "Noise Reduction:\n" +
+                "• Tune detection rules to minimize false positives while retaining coverage.\n" +
+                "• Repeated false positives must be reviewed and improved.",
             },
             {
               id: "LOG-03-02",
-              title: "3.2 Response Expectations",
+              title: "3.2 Investigation Support",
               content:
-                "Response:\n" +
-                "• Critical alerts require triage within defined SLAs.\n" +
-                "• Investigations must capture evidence, timeline, and outcomes.\n" +
-                "Escalation:\n" +
-                "• Escalate based on impact, sensitivity of affected data, and spread.\n" +
-                "Documentation:\n" +
-                "• Record containment actions and recommendations for recurrence prevention.",
+                "Investigation:\n" +
+                "• Alerts must link to sufficient evidence to support triage and investigation.\n" +
+                "• Correlate events across identity, endpoint, network, and cloud sources where possible.\n" +
+                "Case Handling:\n" +
+                "• Preserve relevant evidence and document analyst actions.\n" +
+                "• Escalate confirmed incidents according to incident response procedures.",
             },
             {
               id: "LOG-03-03",
@@ -909,32 +882,31 @@ export const policyDocumentsDb = {
         },
         {
           id: "LOG-04",
-          title: "4. Assurance and Continuous Improvement",
+          title: "4. Assurance and Review",
           description:
-            "Validates log completeness and drives improvements after findings.",
+            "Ensures logging and monitoring controls remain effective over time.",
           subsections: [
             {
               id: "LOG-04-01",
-              title: "4.1 Coverage Reviews",
+              title: "4.1 Coverage Validation",
               content:
-                "Coverage Reviews:\n" +
-                "• Perform periodic checks to confirm required log sources are onboarded.\n" +
-                "• Validate that fields are present and correlation IDs are consistent.\n" +
+                "Validation:\n" +
+                "• Periodically verify that critical systems continue sending required logs.\n" +
+                "• Compare expected log sources against actual ingestion.\n" +
                 "Testing:\n" +
-                "• Run simulated events to confirm end-to-end ingestion and alert triggering.\n" +
-                "Remediation:\n" +
-                "• Gaps must be tracked with owners and due dates.",
+                "• Simulate representative events to confirm detections trigger as expected.\n" +
+                "• Findings must be tracked to remediation.",
             },
             {
               id: "LOG-04-02",
-              title: "4.2 Post-Incident Improvements",
+              title: "4.2 Reporting and Metrics",
               content:
-                "After Incidents:\n" +
-                "• Update detections based on observed attack patterns.\n" +
-                "• Improve dashboards and triage workflows.\n" +
-                "• Document lessons learned and ensure corrective actions are completed.\n" +
                 "Metrics:\n" +
-                "• Track coverage, alert quality, and mean time to detect/respond over time.",
+                "• Track coverage rates, alert volumes, alert response times, and ingestion health.\n" +
+                "Reporting:\n" +
+                "• Provide periodic summaries to security leadership and control owners.\n" +
+                "Improvement:\n" +
+                "• Use metrics and incident lessons learned to improve monitoring coverage and effectiveness.",
             },
             {
               id: "LOG-04-03",
@@ -966,49 +938,43 @@ export const policyDocumentsDb = {
     {
       id: 5,
       title: "Vulnerability Management and Patch Governance Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "2.3",
+      category: "Vulnerability Management",
       authoredBy: "Security Engineering",
-      lastUpdated: "2026-01-28",
+      lastUpdated: "2026-02-12",
       reviewedBy: "IT Operations",
-      lastReviewed: "2026-02-05",
+      lastReviewed: "2026-02-18",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines processes for vulnerability discovery, prioritization, remediation timelines, patch deployment, and verification. Establishes severity-based SLAs and requirements for exception handling and validation evidence.",
       documentDetails:
-        "Defines processes for vulnerability discovery, prioritization, remediation timelines, patch deployment, and verification. Establishes severity-based SLAs and requirements for exception handling and validation evidence.",
+        "Defines the organization’s vulnerability identification, risk prioritization, remediation timelines, patch governance, and exception handling requirements across systems and applications.",
 
       sections: [
         {
           id: "VULN-01",
-          title: "1. Discovery and Inventory Alignment",
+          title: "1. Discovery and Inventory Coverage",
           description:
-            "Ensures vulnerability scanning aligns with asset inventory and ownership.",
+            "Defines minimum requirements for identifying assets and discovering vulnerabilities.",
           subsections: [
             {
               id: "VULN-01-01",
-              title: "1.1 Asset Coverage and Ownership",
+              title: "1.1 Asset Coverage and Scanning",
               content:
-                "Asset Coverage:\n" +
-                "• All production assets must be inventoried with a clear owner.\n" +
-                "• Vulnerability scanning scope must match inventory scope.\n" +
-                "Ownership:\n" +
-                "• Owners must ensure scanning agents/credentials are functional.\n" +
-                "Exceptions:\n" +
-                "• Any excluded assets require documented justification and compensating controls.",
+                "Coverage:\n" +
+                "• Maintain an up-to-date inventory of in-scope assets, including servers, endpoints, cloud services, containers, and applications.\n" +
+                "• Vulnerability scanning must cover internal, external, and cloud-facing assets as applicable.\n" +
+                "Cadence:\n" +
+                "• Critical assets must be scanned more frequently based on risk.\n" +
+                "• New assets must be onboarded into scanning promptly.",
             },
             {
               id: "VULN-01-02",
-              title: "1.2 Scan Cadence and Validation",
+              title: "1.2 Authenticated and Specialized Scanning",
               content:
-                "Scan Cadence:\n" +
-                "• Production infrastructure: at least weekly.\n" +
-                "• External-facing services: increased cadence based on risk.\n" +
-                "Validation:\n" +
-                "• Confirm findings are actionable (false positive review).\n" +
-                "• Maintain evidence of scanning operations and coverage reports.",
+                "Scanning Methods:\n" +
+                "• Use authenticated scanning where feasible to improve coverage and accuracy.\n" +
+                "• Use specialized testing for web applications, cloud misconfigurations, and container images when relevant.\n" +
+                "Quality:\n" +
+                "• Validate scanner configuration periodically.\n" +
+                "• Address blind spots and unsupported assets with compensating controls.",
             },
             {
               id: "VULN-01-03",
@@ -1035,33 +1001,31 @@ export const policyDocumentsDb = {
         },
         {
           id: "VULN-02",
-          title: "2. Prioritization and Remediation SLAs",
+          title: "2. Prioritization and Remediation Timelines",
           description:
-            "Defines how findings are prioritized and addressed by severity.",
+            "Defines risk-based remediation priorities and timelines.",
           subsections: [
             {
               id: "VULN-02-01",
-              title: "2.1 Severity and Business Context",
+              title: "2.1 Risk Rating and Triage",
               content:
                 "Prioritization:\n" +
-                "• Consider CVSS severity, exploitability, asset criticality, and exposure.\n" +
-                "• Actively exploited vulnerabilities are treated as urgent regardless of score.\n" +
-                "Context:\n" +
-                "• Internet exposure and sensitive data increase priority.\n" +
-                "Communication:\n" +
-                "• Owners must be notified with clear remediation guidance and due dates.",
+                "• Prioritize vulnerabilities based on severity, exploitability, asset criticality, exposure, and compensating controls.\n" +
+                "• Publicly exploitable vulnerabilities affecting internet-facing systems require urgent review.\n" +
+                "Triage:\n" +
+                "• Confirm false positives where appropriate.\n" +
+                "• Assign remediation owners and due dates through a tracked workflow.",
             },
             {
               id: "VULN-02-02",
-              title: "2.2 Remediation Timelines (SLAs)",
+              title: "2.2 Patch and Remediation SLAs",
               content:
-                "Remediation SLAs:\n" +
-                "• Critical: remediate within 7 days.\n" +
-                "• High: remediate within 14–30 days (as defined by risk tier).\n" +
-                "• Medium: remediate within 60–90 days.\n" +
-                "• Low: remediate as scheduled or when practical.\n" +
-                "Exceptions:\n" +
-                "• SLA exceptions require compensating controls and re-review before expiry.",
+                "SLAs:\n" +
+                "• Critical: remediate within defined emergency timelines.\n" +
+                "• High: remediate within an accelerated timeframe based on risk.\n" +
+                "• Medium/Low: remediate according to normal maintenance cycles unless risk factors justify escalation.\n" +
+                "Verification:\n" +
+                "• Re-scan or otherwise validate remediation before closure.",
             },
             {
               id: "VULN-02-03",
@@ -1088,34 +1052,30 @@ export const policyDocumentsDb = {
         },
         {
           id: "VULN-03",
-          title: "3. Patch Management Process",
+          title: "3. Exceptions and Compensating Controls",
           description:
-            "Defines patch testing, deployment, rollback, and operational coordination.",
+            "Defines how remediation exceptions are handled when immediate fixes are not possible.",
           subsections: [
             {
               id: "VULN-03-01",
-              title: "3.1 Testing and Change Control",
+              title: "3.1 Exception Requests",
               content:
-                "Testing:\n" +
-                "• Patches must be tested in non-production where feasible.\n" +
-                "• Validate critical workflows, performance, and compatibility.\n" +
-                "Change Control:\n" +
-                "• Use approved change windows and approvals for production changes.\n" +
-                "Rollback:\n" +
-                "• Maintain rollback plans for high-impact deployments.",
+                "Exceptions:\n" +
+                "• Exception requests must document business justification, asset scope, risk impact, compensating controls, and an expiration date.\n" +
+                "• Exceptions must be approved by the asset owner and the Information Security Office.\n" +
+                "Conditions:\n" +
+                "• Exceptions are temporary and require periodic review.\n" +
+                "• Expired exceptions become invalid unless renewed through the approval process.",
             },
             {
               id: "VULN-03-02",
-              title: "3.2 Deployment and Verification",
+              title: "3.2 Compensating Controls",
               content:
-                "Deployment:\n" +
-                "• Deploy patches using consistent tooling and automation when available.\n" +
-                "Verification:\n" +
-                "• Re-scan or validate versions to confirm remediation.\n" +
+                "Compensating Controls:\n" +
+                "• Examples include segmentation, firewall restrictions, application allowlisting, additional monitoring, or temporary service isolation.\n" +
+                "• Controls must materially reduce the risk while remediation is pending.\n" +
                 "Evidence:\n" +
-                "• Maintain records of applied patches and verification results.\n" +
-                "Escalation:\n" +
-                "• Failed patches or unexpected impact must trigger incident management if availability/security is affected.",
+                "• Maintain records showing that compensating controls were implemented and validated.",
             },
             {
               id: "VULN-03-03",
@@ -1142,32 +1102,30 @@ export const policyDocumentsDb = {
         },
         {
           id: "VULN-04",
-          title: "4. Reporting and Metrics",
+          title: "4. Governance and Reporting",
           description:
-            "Defines reporting for leadership, owners, and audit readiness.",
+            "Defines oversight, reporting, and continuous improvement expectations.",
           subsections: [
             {
               id: "VULN-04-01",
-              title: "4.1 Metrics",
+              title: "4.1 Metrics and Oversight",
               content:
                 "Metrics:\n" +
-                "• SLA compliance rates by severity.\n" +
-                "• Open findings over time by business unit and critical systems.\n" +
-                "• Time-to-remediate distribution and backlog aging.\n" +
-                "Quality:\n" +
-                "• False positive rate and scan coverage.\n" +
-                "Use:\n" +
-                "• Metrics inform investment, staffing, and risk reporting.",
+                "• Track scan coverage, open findings by severity, SLA compliance, and repeat findings.\n" +
+                "Oversight:\n" +
+                "• Provide regular reporting to control owners, IT leadership, and security governance bodies.\n" +
+                "Escalation:\n" +
+                "• Significant overdue critical findings must be escalated through governance channels.",
             },
             {
               id: "VULN-04-02",
-              title: "4.2 Audit Evidence",
+              title: "4.2 Continuous Improvement",
               content:
-                "Audit Evidence:\n" +
-                "• Maintain scan reports, remediation tickets, approvals, and verification logs.\n" +
-                "• Keep exception approvals and compensating controls documentation.\n" +
-                "Traceability:\n" +
-                "• Auditors must be able to trace a finding from discovery through remediation and validation.",
+                "Improvement:\n" +
+                "• Use incident learnings, threat intelligence, and audit results to refine scanning scope and remediation processes.\n" +
+                "• Address recurring root causes through automation, standardization, or architectural change.\n" +
+                "Assurance:\n" +
+                "• Periodically test the effectiveness of the vulnerability management program.",
             },
             {
               id: "VULN-04-03",
@@ -1198,55 +1156,46 @@ export const policyDocumentsDb = {
     // 6
     {
       id: 6,
-      title: "Secure Software Development Lifecycle (SSDLC) Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "1.7",
-      authoredBy: "Application Security",
-      lastUpdated: "2026-02-02",
-      reviewedBy: "Engineering Leadership",
-      lastReviewed: "2026-02-12",
+      title: "Network Security and Segmentation Standard",
+      category: "Network Security",
+      authoredBy: "Network Security Engineering",
+      lastUpdated: "2026-01-30",
+      reviewedBy: "Information Security Office",
+      lastReviewed: "2026-02-06",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-      
-      details:
-        "Defines mandatory security activities across the software lifecycle, including threat modeling, code review, dependency management, secret handling, security testing, and release gates for applications and services.",
       documentDetails:
-        "Defines mandatory security activities across the software lifecycle, including threat modeling, code review, dependency management, secret handling, security testing, and release gates for applications and services.",
+        "Defines secure network architecture expectations, segmentation requirements, firewall governance, and administrative access controls across enterprise and cloud environments.",
 
       sections: [
         {
-          id: "SDLC-01",
-          title: "1. Requirements and Design Security",
+          id: "NET-01",
+          title: "1. Segmentation Principles",
           description:
-            "Security expectations at the planning and design stage, including threat modeling.",
+            "Defines minimum network segmentation requirements based on risk and trust boundaries.",
           subsections: [
             {
-              id: "SDLC-01-01",
-              title: "1.1 Security Requirements and Data Flows",
+              id: "NET-01-01",
+              title: "1.1 Trust Boundaries and Segments",
               content:
-                "Security Requirements:\n" +
-                "• Identify data types processed and classify them.\n" +
-                "• Define authentication, authorization, and logging requirements early.\n" +
-                "• Establish availability and resilience targets for critical services.\n" +
-                "Data Flows:\n" +
-                "• Document system boundaries, third-party integrations, and trust zones.\n" +
-                "Review:\n" +
-                "• Security review is required for systems handling Confidential/Restricted data.",
+                "Segmentation:\n" +
+                "• Separate user, server, administrative, development, and third-party access zones based on risk.\n" +
+                "• High-risk systems and Restricted data environments require stronger isolation controls.\n" +
+                "Design:\n" +
+                "• Flows between segments must be explicitly authorized.\n" +
+                "• Default-deny principles should be used where feasible.",
             },
             {
-              id: "SDLC-01-02",
-              title: "1.2 Threat Modeling",
+              id: "NET-01-02",
+              title: "1.2 Administrative and Sensitive Paths",
               content:
-                "Threat Modeling:\n" +
-                "• Perform threat modeling for new services and major changes.\n" +
-                "• Identify likely threats (abuse cases), mitigate with design controls.\n" +
-                "Outputs:\n" +
-                "• Document threats, mitigations, and residual risks.\n" +
-                "Maintenance:\n" +
-                "• Update models when data flows, auth mechanisms, or exposure changes.",
+                "Administrative Access:\n" +
+                "• Administrative access must traverse controlled management paths.\n" +
+                "• Production administration should be separated from general user traffic.\n" +
+                "Sensitive Paths:\n" +
+                "• Traffic involving critical services, management planes, or security tooling requires additional protection and monitoring.",
             },
             {
-              id: "SDLC-01-03",
+              id: "NET-01-03",
               title: "1.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -1256,7 +1205,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "SDLC-01-04",
+              id: "NET-01-04",
               title: "1.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -1269,39 +1218,34 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "SDLC-02",
-          title: "2. Implementation Controls",
+          id: "NET-02",
+          title: "2. Firewall and Traffic Governance",
           description:
-            "Secure coding controls, secret management, and dependency governance.",
+            "Defines requirements for firewall policies, approvals, and review.",
           subsections: [
             {
-              id: "SDLC-02-01",
-              title: "2.1 Secure Coding and Code Review",
+              id: "NET-02-01",
+              title: "2.1 Rule Management and Approval",
               content:
-                "Secure Coding:\n" +
-                "• Follow approved secure coding guidelines for the language/framework.\n" +
-                "• Validate inputs; apply output encoding where needed.\n" +
-                "• Use parameterized queries; prevent injection.\n" +
-                "Code Review:\n" +
-                "• All changes require peer review; security-critical changes require specialized review.\n" +
+                "Rules:\n" +
+                "• Firewall and filtering rules must be documented, justified, and approved by authorized owners.\n" +
+                "• Rules should be as specific as practical for source, destination, protocol, and port.\n" +
+                "Change Control:\n" +
+                "• Temporary rules must have expiration dates.\n" +
+                "• High-risk changes require review and validation.",
+            },
+            {
+              id: "NET-02-02",
+              title: "2.2 Periodic Rule Review",
+              content:
+                "Review:\n" +
+                "• Firewall rules must be reviewed periodically for necessity, risk, and stale entries.\n" +
+                "• Remove or tighten rules no longer required.\n" +
                 "Evidence:\n" +
-                "• Maintain review records through version control history.",
+                "• Maintain records of reviews, approvals, and remediation actions.",
             },
             {
-              id: "SDLC-02-02",
-              title: "2.2 Secrets and Dependency Management",
-              content:
-                "Secrets:\n" +
-                "• Never store secrets in source code.\n" +
-                "• Use an approved secrets manager and restrict access.\n" +
-                "Dependencies:\n" +
-                "• Maintain an inventory of third-party libraries.\n" +
-                "• Scan for vulnerabilities and license compliance.\n" +
-                "Gates:\n" +
-                "• High-risk findings block release unless approved exceptions exist.",
-            },
-            {
-              id: "SDLC-02-03",
+              id: "NET-02-03",
               title: "2.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -1311,7 +1255,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "SDLC-02-04",
+              id: "NET-02-04",
               title: "2.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -1324,38 +1268,33 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "SDLC-03",
-          title: "3. Security Testing and Release Gates",
+          id: "NET-03",
+          title: "3. Remote Connectivity and Edge Protection",
           description:
-            "Testing expectations, SAST/DAST, and pre-release approvals.",
+            "Defines security requirements for remote access and boundary controls.",
           subsections: [
             {
-              id: "SDLC-03-01",
-              title: "3.1 Testing Requirements",
+              id: "NET-03-01",
+              title: "3.1 Remote Access Security",
               content:
-                "Testing:\n" +
-                "• Apply automated security testing appropriate to the application.\n" +
-                "• Validate authentication and authorization scenarios.\n" +
-                "• Test error handling to avoid information disclosure.\n" +
-                "Environment:\n" +
-                "• Non-production environments must not use Restricted production datasets.\n" +
-                "Records:\n" +
-                "• Maintain test evidence and results for audit readiness.",
+                "Remote Access:\n" +
+                "• Remote connectivity to internal environments must use approved secure access solutions.\n" +
+                "• MFA is required for remote administrative access and high-risk environments.\n" +
+                "Restrictions:\n" +
+                "• Split tunneling and unmanaged-device access must be risk-assessed and controlled where allowed.",
             },
             {
-              id: "SDLC-03-02",
-              title: "3.2 Release Gates and Approval",
+              id: "NET-03-02",
+              title: "3.2 Edge and Internet-Facing Controls",
               content:
-                "Release Gates:\n" +
-                "• Block release on critical vulnerabilities or exposed secrets.\n" +
-                "• Require approval for exceptions with compensating controls.\n" +
-                "Pre-Production:\n" +
-                "• Ensure logging/monitoring is enabled before go-live.\n" +
-                "Post-Release:\n" +
-                "• Monitor for anomalies and address urgent issues through incident process.",
+                "Perimeter Controls:\n" +
+                "• Internet-facing services must be protected with appropriate edge filtering, logging, and rate limiting where relevant.\n" +
+                "• Exposed administrative interfaces are prohibited unless explicitly approved with compensating controls.\n" +
+                "Monitoring:\n" +
+                "• Monitor for anomalous ingress and egress activity.",
             },
             {
-              id: "SDLC-03-03",
+              id: "NET-03-03",
               title: "3.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -1365,7 +1304,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "SDLC-03-04",
+              id: "NET-03-04",
               title: "3.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -1378,38 +1317,32 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "SDLC-04",
-          title: "4. Operational Security for Services",
+          id: "NET-04",
+          title: "4. Oversight and Assurance",
           description:
-            "Secure configuration, runtime controls, and ongoing ownership.",
+            "Defines validation and governance expectations for network security controls.",
           subsections: [
             {
-              id: "SDLC-04-01",
-              title: "4.1 Secure Configuration and Hardening",
+              id: "NET-04-01",
+              title: "4.1 Validation and Testing",
               content:
-                "Hardening:\n" +
-                "• Disable debug endpoints and unnecessary services.\n" +
-                "• Use least privilege for runtime identities.\n" +
-                "• Restrict network exposure; prefer allowlists.\n" +
-                "Configuration:\n" +
-                "• Store configuration securely and avoid sensitive values in plaintext.\n" +
-                "Verification:\n" +
-                "• Validate baseline hardening with periodic reviews.",
+                "Validation:\n" +
+                "• Periodically test segmentation, firewall behavior, and remote access restrictions.\n" +
+                "• Review architecture changes for security impact before implementation.\n" +
+                "Assurance:\n" +
+                "• Use scans, configuration review, and monitoring to verify control effectiveness.",
             },
             {
-              id: "SDLC-04-02",
-              title: "4.2 Ownership and Continuous Improvement",
+              id: "NET-04-02",
+              title: "4.2 Reporting and Improvement",
               content:
-                "Ownership:\n" +
-                "• Each service must have an owner and support contact.\n" +
-                "Maintenance:\n" +
-                "• Keep dependencies updated.\n" +
-                "• Remediate vulnerabilities per SLA.\n" +
-                "Learning:\n" +
-                "• Post-incident findings must feed back into design and testing improvements.",
+                "Reporting:\n" +
+                "• Track rule review completion, segmentation exceptions, and major network security findings.\n" +
+                "Improvement:\n" +
+                "• Use incidents, assessments, and control failures to strengthen network security design and operations.",
             },
             {
-              id: "SDLC-04-03",
+              id: "NET-04-03",
               title: "4.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -1419,7 +1352,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "SDLC-04-04",
+              id: "NET-04-04",
               title: "4.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -1437,52 +1370,43 @@ export const policyDocumentsDb = {
     // 7
     {
       id: 7,
-      title: "Incident Response (IR) and Security Event Management Policy",
-      classification: "Internal",
-      status: "Active",
-      version: "2.2",
+      title: "Incident Response and Security Event Handling Standard",
+      category: "Incident Response",
       authoredBy: "Security Operations Center",
-      lastUpdated: "2026-01-30",
-      reviewedBy: "Information Security Governance",
-      lastReviewed: "2026-02-10",
+      lastUpdated: "2026-02-14",
+      reviewedBy: "Information Security Office",
+      lastReviewed: "2026-02-21",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines how security events are reported, triaged, contained, eradicated, and recovered from. Establishes severity levels, communication rules, evidence handling requirements, and post-incident corrective action management.",
       documentDetails:
-        "Defines how security events are reported, triaged, contained, eradicated, and recovered from. Establishes severity levels, communication rules, evidence handling requirements, and post-incident corrective action management.",
+        "Defines minimum requirements for security event triage, incident declaration, containment, investigation, recovery, and post-incident improvement across the organization.",
 
       sections: [
         {
           id: "IR-01",
-          title: "1. Incident Classification and Severity",
+          title: "1. Detection and Triage",
           description:
-            "Establishes incident categories and criteria for severity assignment.",
+            "Defines how security events are received, assessed, and prioritized.",
           subsections: [
             {
               id: "IR-01-01",
-              title: "1.1 Incident Categories",
+              title: "1.1 Event Intake and Classification",
               content:
-                "Categories:\n" +
-                "• Account compromise and credential theft.\n" +
-                "• Malware and ransomware.\n" +
-                "• Data exposure, leakage, or unauthorized disclosure.\n" +
-                "• Unauthorized access, privilege escalation.\n" +
-                "• Availability disruption and denial of service.\n" +
-                "• Security control failures (logging disabled, key exposure).\n" +
-                "• Third-party incidents impacting organizational assets.",
+                "Intake:\n" +
+                "• Security events may originate from users, monitoring platforms, service providers, or threat intelligence.\n" +
+                "• Events must be logged with sufficient detail for initial assessment.\n" +
+                "Classification:\n" +
+                "• Triage must consider severity, scope, asset criticality, and potential business impact.\n" +
+                "• Escalate events meeting incident criteria without unnecessary delay.",
             },
             {
               id: "IR-01-02",
-              title: "1.2 Severity Levels",
+              title: "1.2 Triage and Initial Response",
               content:
-                "Severity:\n" +
-                "• SEV-1: major business impact, widespread compromise, or regulated data exposure.\n" +
-                "• SEV-2: confirmed compromise with limited scope or significant risk.\n" +
-                "• SEV-3: suspicious activity requiring investigation; limited impact.\n" +
-                "• SEV-4: low-risk events or policy violations.\n" +
-                "Criteria:\n" +
-                "• Assess data sensitivity, scope, persistence, and operational impact.",
+                "Triage:\n" +
+                "• Analysts must review available indicators, validate signal quality, and determine whether immediate containment is required.\n" +
+                "• Preserve relevant context, timestamps, and evidence from the earliest stage possible.\n" +
+                "Communication:\n" +
+                "• Notify appropriate response leads and stakeholders according to severity.",
             },
             {
               id: "IR-01-03",
@@ -1509,35 +1433,30 @@ export const policyDocumentsDb = {
         },
         {
           id: "IR-02",
-          title: "2. Response Lifecycle and Roles",
+          title: "2. Containment, Eradication, and Recovery",
           description:
-            "Defines workflow phases and roles for effective coordination.",
+            "Defines the operational response lifecycle after an incident is declared.",
           subsections: [
             {
               id: "IR-02-01",
-              title: "2.1 Lifecycle Phases",
+              title: "2.1 Containment and Isolation",
               content:
-                "Lifecycle:\n" +
-                "• Detect and Triage: validate signal, scope, and severity.\n" +
-                "• Contain: stop spread and limit damage.\n" +
-                "• Eradicate: remove root cause and persistence.\n" +
-                "• Recover: restore services and validate safeguards.\n" +
-                "• Lessons Learned: identify gaps and implement improvements.\n" +
-                "Principle:\n" +
-                "• Preserve evidence while balancing containment needs.",
+                "Containment:\n" +
+                "• Use risk-based containment measures such as host isolation, account suspension, network restriction, or service disablement.\n" +
+                "• Containment decisions must balance security urgency with business continuity impact.\n" +
+                "Evidence:\n" +
+                "• Preserve forensic value where possible before destructive actions are taken.",
             },
             {
               id: "IR-02-02",
-              title: "2.2 Roles and Responsibilities",
+              title: "2.2 Eradication and Recovery",
               content:
-                "Roles:\n" +
-                "• Incident Commander: coordination, decisions, and stakeholder updates.\n" +
-                "• Triage Lead: builds initial scope and validates telemetry.\n" +
-                "• Forensics Lead: evidence handling, root cause analysis.\n" +
-                "• Comms Lead: internal/external communications and messaging.\n" +
-                "• System Owner: executes mitigations and recovery.\n" +
-                "Records:\n" +
-                "• Maintain timelines, actions, and outcomes as part of the incident record.",
+                "Eradication:\n" +
+                "• Remove malicious artifacts, close exploited weaknesses, rotate affected credentials, and validate system integrity before restoration.\n" +
+                "Recovery:\n" +
+                "• Restore services in a controlled manner with heightened monitoring where appropriate.\n" +
+                "Validation:\n" +
+                "• Confirm that recovery objectives are met and residual risk is understood.",
             },
             {
               id: "IR-02-03",
@@ -1564,33 +1483,29 @@ export const policyDocumentsDb = {
         },
         {
           id: "IR-03",
-          title: "3. Evidence Handling and Communications",
+          title: "3. Communications and Escalation",
           description:
-            "Defines evidence preservation and communication constraints.",
+            "Defines coordination, reporting, and stakeholder communication expectations.",
           subsections: [
             {
               id: "IR-03-01",
-              title: "3.1 Evidence Preservation",
+              title: "3.1 Internal Coordination",
               content:
-                "Preservation:\n" +
-                "• Capture relevant logs, snapshots, and configurations prior to destructive changes.\n" +
-                "• Maintain chain-of-custody for sensitive cases.\n" +
-                "• Store evidence in approved encrypted repositories with restricted access.\n" +
-                "Guidance:\n" +
-                "• Avoid rebooting compromised systems unless required for containment.",
+                "Coordination:\n" +
+                "• Incident leads must coordinate technical responders, management, legal, HR, and communications functions as appropriate.\n" +
+                "• Severity-based communications should be timely, accurate, and proportionate to impact.\n" +
+                "Documentation:\n" +
+                "• Significant decisions, timelines, and approvals must be recorded during response.",
             },
             {
               id: "IR-03-02",
-              title: "3.2 Communication Rules",
+              title: "3.2 External and Regulatory Communication",
               content:
-                "Communications:\n" +
-                "• Share only confirmed facts and current impact.\n" +
-                "• Avoid speculation in written updates.\n" +
-                "• Use approved channels and maintain a single source of truth.\n" +
-                "Escalation:\n" +
-                "• Engage Legal and Compliance for incidents involving personal data or regulatory reporting.\n" +
-                "Cadence:\n" +
-                "• Provide updates based on severity and stakeholder needs.",
+                "External Communication:\n" +
+                "• Only authorized personnel may communicate externally regarding incidents.\n" +
+                "• Potential regulatory, contractual, or customer notification obligations must be evaluated promptly.\n" +
+                "Legal Support:\n" +
+                "• Engage legal and compliance teams where required by law, contract, or risk profile.",
             },
             {
               id: "IR-03-03",
@@ -1617,33 +1532,29 @@ export const policyDocumentsDb = {
         },
         {
           id: "IR-04",
-          title: "4. Post-Incident Corrective Actions",
+          title: "4. Post-Incident Review and Readiness",
           description:
-            "Ensures follow-through on remediation, control improvements, and lessons learned.",
+            "Defines lessons learned, control improvement, and preparedness expectations.",
           subsections: [
             {
               id: "IR-04-01",
-              title: "4.1 Postmortem Requirements",
+              title: "4.1 Post-Incident Review",
               content:
-                "Postmortems:\n" +
-                "• Required for SEV-1 and SEV-2 incidents.\n" +
-                "• Must include timeline, root cause, detection gaps, and customer/business impact.\n" +
-                "Actions:\n" +
-                "• Corrective actions must have owners and due dates.\n" +
-                "Verification:\n" +
-                "• Validate completed actions and document effectiveness.",
+                "Review:\n" +
+                "• Conduct a post-incident review for significant events to identify root causes, control gaps, and improvement opportunities.\n" +
+                "• Assign owners and due dates for remediation actions.\n" +
+                "Learning:\n" +
+                "• Use lessons learned to improve detection, response, recovery, and prevention.",
             },
             {
               id: "IR-04-02",
-              title: "4.2 Improvements and Exercises",
+              title: "4.2 Exercises and Preparedness",
               content:
-                "Improvements:\n" +
-                "• Update detections and playbooks based on observed attack patterns.\n" +
-                "• Improve hardening, access control, and monitoring coverage.\n" +
-                "Exercises:\n" +
-                "• Conduct tabletop simulations periodically to validate readiness.\n" +
-                "Learning:\n" +
-                "• Incorporate lessons into training and standards updates.",
+                "Preparedness:\n" +
+                "• Test incident response processes through tabletop exercises or simulations.\n" +
+                "• Validate contact lists, escalation paths, and tooling readiness periodically.\n" +
+                "Improvement:\n" +
+                "• Exercise outcomes must be documented and tracked to completion.",
             },
             {
               id: "IR-04-03",
@@ -1674,52 +1585,42 @@ export const policyDocumentsDb = {
     // 8
     {
       id: 8,
-      title: "Third-Party Risk Management and Vendor Security Policy",
-      classification: "Internal",
-      status: "Active",
-      version: "1.6",
-      authoredBy: "Vendor Risk and Security Assurance",
-      lastUpdated: "2026-02-06",
-      reviewedBy: "Legal and Procurement",
-      lastReviewed: "2026-02-14",
+      title: "Third-Party Risk and Vendor Security Standard",
+      category: "Third-Party Risk",
+      authoredBy: "Risk and Compliance Office",
+      lastUpdated: "2026-01-14",
+      reviewedBy: "Legal and Compliance",
+      lastReviewed: "2026-01-29",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines security requirements for third parties handling organizational data or systems. Establishes due diligence, onboarding controls, contractual safeguards, monitoring, and termination procedures for vendors and partners.",
       documentDetails:
-        "Defines security requirements for third parties handling organizational data or systems. Establishes due diligence, onboarding controls, contractual safeguards, monitoring, and termination procedures for vendors and partners.",
+        "Defines security due diligence, contractual requirements, onboarding assessments, and ongoing monitoring expectations for third-party vendors and service providers handling organizational data or systems.",
 
       sections: [
         {
           id: "TPRM-01",
-          title: "1. Due Diligence and Onboarding",
+          title: "1. Due Diligence and Risk Assessment",
           description:
-            "Minimum controls to evaluate and approve third parties before engagement.",
+            "Defines pre-engagement security review requirements for vendors.",
           subsections: [
             {
               id: "TPRM-01-01",
-              title: "1.1 Security Assessment",
+              title: "1.1 Initial Security Review",
               content:
-                "Assessment:\n" +
-                "• Evaluate the vendor’s security posture based on data classification and access scope.\n" +
-                "• Collect evidence such as security questionnaires, certifications, and audit reports where applicable.\n" +
-                "Risk Factors:\n" +
-                "• Data sensitivity, external exposure, subcontractors, and access method.\n" +
+                "Review:\n" +
+                "• Assess vendors based on service criticality, data sensitivity, system access, and geographic or regulatory factors.\n" +
+                "• Collect relevant evidence such as questionnaires, certifications, audit reports, or architecture details where appropriate.\n" +
                 "Outcome:\n" +
-                "• Assign a risk tier and required controls prior to onboarding.",
+                "• Risk findings must be documented and reviewed before onboarding.",
             },
             {
               id: "TPRM-01-02",
-              title: "1.2 Access Method and Constraints",
+              title: "1.2 Risk-Based Approval",
               content:
-                "Access:\n" +
-                "• Prefer least-privilege, time-bound access.\n" +
-                "• Require MFA for remote access.\n" +
-                "• Use named accounts; shared accounts are prohibited.\n" +
-                "Logging:\n" +
-                "• Ensure vendor actions are auditable.\n" +
                 "Approval:\n" +
-                "• System Owner and Security must approve access scope and constraints.",
+                "• High-risk vendors require enhanced review and approval by appropriate risk and security stakeholders.\n" +
+                "• Identified gaps must be addressed through remediation plans, contractual protections, or compensating controls before approval where necessary.\n" +
+                "Evidence:\n" +
+                "• Retain a documented record of assessment outcomes and approvals.",
             },
             {
               id: "TPRM-01-03",
@@ -1746,35 +1647,28 @@ export const policyDocumentsDb = {
         },
         {
           id: "TPRM-02",
-          title: "2. Contractual and Legal Safeguards",
+          title: "2. Contractual Security Requirements",
           description:
-            "Minimum contractual controls for security, privacy, and breach reporting.",
+            "Defines minimum contract clauses and commitments for security and privacy.",
           subsections: [
             {
               id: "TPRM-02-01",
-              title: "2.1 Security and Privacy Clauses",
+              title: "2.1 Security and Data Protection Clauses",
               content:
-                "Clauses:\n" +
-                "• Define security requirements aligned to data classification.\n" +
-                "• Include breach notification timelines and cooperation obligations.\n" +
-                "• Require encryption, access controls, and secure disposal.\n" +
-                "Subprocessors:\n" +
-                "• Vendor must disclose subprocessors and obtain approval where required.\n" +
-                "Audit:\n" +
-                "• Reserve the right to request evidence of control effectiveness.",
+                "Contracts:\n" +
+                "• Contracts must include relevant security, confidentiality, incident notification, and data handling expectations.\n" +
+                "• Require commitments for appropriate access controls, encryption, and subcontractor management where applicable.\n" +
+                "Privacy:\n" +
+                "• Contracts involving personal data must address privacy and regulatory obligations.",
             },
             {
               id: "TPRM-02-02",
-              title: "2.2 Data Ownership and Return/Deletion",
+              title: "2.2 Audit Rights and Assurance",
               content:
-                "Ownership:\n" +
-                "• The organization retains ownership of organizational data.\n" +
-                "Return/Deletion:\n" +
-                "• Vendor must return or securely delete data upon termination.\n" +
-                "Evidence:\n" +
-                "• For Restricted data, vendor must provide deletion confirmation.\n" +
-                "Retention:\n" +
-                "• Vendor retention must follow agreed schedules and legal constraints.",
+                "Assurance:\n" +
+                "• Contracts should provide a mechanism to obtain assurance on vendor control effectiveness, such as reports, certifications, or audit rights, based on risk.\n" +
+                "Notification:\n" +
+                "• Vendors must notify the organization of material security events or significant control changes affecting the service.",
             },
             {
               id: "TPRM-02-03",
@@ -1801,33 +1695,29 @@ export const policyDocumentsDb = {
         },
         {
           id: "TPRM-03",
-          title: "3. Ongoing Monitoring and Review",
+          title: "3. Ongoing Monitoring and Reassessment",
           description:
-            "Controls to re-evaluate vendor risk posture and manage changes.",
+            "Defines periodic reassessment and continuous oversight requirements.",
           subsections: [
             {
               id: "TPRM-03-01",
-              title: "3.1 Periodic Reviews",
+              title: "3.1 Periodic Review",
               content:
-                "Reviews:\n" +
-                "• Reassess vendors based on risk tier (e.g., annually for high-risk vendors).\n" +
-                "• Validate continued compliance with contractual security requirements.\n" +
-                "Triggers:\n" +
-                "• Significant incidents, major architecture changes, or expanded access scope.\n" +
-                "Documentation:\n" +
-                "• Maintain review outcomes and remediation actions.",
+                "Monitoring:\n" +
+                "• Reassess vendors periodically based on service risk, data sensitivity, and access levels.\n" +
+                "• Review updated assurance documents, incidents, material service changes, and outstanding findings.\n" +
+                "Action:\n" +
+                "• Significant issues must trigger remediation, escalation, or service reconsideration as appropriate.",
             },
             {
               id: "TPRM-03-02",
-              title: "3.2 Change Management for Vendor Services",
+              title: "3.2 Performance and Issue Management",
               content:
-                "Change Management:\n" +
-                "• Vendors must notify the organization of material changes impacting security controls.\n" +
-                "• Changes may require re-assessment and updated approval.\n" +
-                "Controls:\n" +
-                "• Validate access controls, encryption, and logging after changes.\n" +
-                "Escalation:\n" +
-                "• Risk increases may require mitigation, limitation, or termination of services.",
+                "Issue Handling:\n" +
+                "• Track vendor security findings, remediation commitments, and overdue actions.\n" +
+                "• Integrate material vendor issues into risk governance reporting where relevant.\n" +
+                "Coordination:\n" +
+                "• Coordinate with procurement, legal, and service owners on vendor risk matters.",
             },
             {
               id: "TPRM-03-03",
@@ -1854,33 +1744,29 @@ export const policyDocumentsDb = {
         },
         {
           id: "TPRM-04",
-          title: "4. Offboarding and Termination",
+          title: "4. Offboarding and Access Removal",
           description:
-            "Ensures third-party access is removed and data is handled properly at end of engagement.",
+            "Defines security expectations when vendor services end or change materially.",
           subsections: [
             {
               id: "TPRM-04-01",
-              title: "4.1 Access Revocation",
+              title: "4.1 Access Revocation and Data Return",
               content:
-                "Revocation:\n" +
-                "• Disable vendor accounts and revoke access tokens immediately upon termination.\n" +
-                "• Remove vendor from approved allowlists and network paths.\n" +
-                "Verification:\n" +
-                "• Confirm vendor no longer has access to systems or data.\n" +
-                "Evidence:\n" +
-                "• Maintain a termination checklist and sign-off record.",
+                "Offboarding:\n" +
+                "• Remove vendor access promptly when services end or access is no longer required.\n" +
+                "• Recover or disable credentials, accounts, integrations, and remote connectivity paths.\n" +
+                "Data Handling:\n" +
+                "• Ensure data return, transfer, or secure deletion obligations are fulfilled per contract and policy.",
             },
             {
               id: "TPRM-04-02",
-              title: "4.2 Data Return/Deletion and Records",
+              title: "4.2 Exit Validation",
               content:
-                "Data Handling:\n" +
-                "• Retrieve organizational data and ensure secure deletion where required.\n" +
-                "• Ensure backups and replicas held by vendor follow agreed deletion expectations.\n" +
-                "Records:\n" +
-                "• Retain termination records and deletion confirmation for audit purposes.\n" +
-                "Follow-up:\n" +
-                "• Address any outstanding findings or corrective actions prior to closure.",
+                "Validation:\n" +
+                "• Confirm completion of access removal and contractual security obligations at offboarding.\n" +
+                "• Retain evidence of deprovisioning and data disposition when required.\n" +
+                "Review:\n" +
+                "• Escalate unresolved offboarding risks through governance channels.",
             },
             {
               id: "TPRM-04-03",
@@ -1912,54 +1798,42 @@ export const policyDocumentsDb = {
     {
       id: 9,
       title: "Endpoint Security, Hardening, and Mobile Device Management Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "2.0",
+      category: "Endpoint Security",
       authoredBy: "IT Operations Security",
       lastUpdated: "2026-01-05",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-01-25",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines endpoint security controls including device enrollment, baseline hardening, endpoint detection and response requirements, removable media restrictions, and secure configuration for corporate-managed devices and mobile endpoints.",
       documentDetails:
-        "Defines endpoint security controls including device enrollment, baseline hardening, endpoint detection and response requirements, removable media restrictions, and secure configuration for corporate-managed devices and mobile endpoints.",
+        "Defines minimum security requirements for corporate endpoints and managed mobile devices, including enrollment, configuration baselines, monitoring, removable media restrictions, and response controls.",
 
       sections: [
         {
-          id: "END-01",
-          title: "1. Device Enrollment and Baseline Controls",
+          id: "ENDPT-01",
+          title: "1. Enrollment and Ownership",
           description:
-            "Minimum controls for managed devices, including enrollment and ownership requirements.",
+            "Defines requirements for bringing endpoints under management and maintaining accountability.",
           subsections: [
             {
-              id: "END-01-01",
-              title: "1.1 Enrollment and Inventory",
+              id: "ENDPT-01-01",
+              title: "1.1 Managed Enrollment",
               content:
                 "Enrollment:\n" +
-                "• Corporate devices must be enrolled in approved management tooling.\n" +
-                "• Devices must be associated with an owner and business purpose.\n" +
+                "• Corporate endpoints and approved mobile devices must be enrolled into authorized management solutions.\n" +
+                "• Devices not enrolled or not compliant may be denied access to corporate resources based on risk.\n" +
                 "Inventory:\n" +
-                "• Maintain inventory fields including OS version, encryption status, and security agent status.\n" +
-                "Policy:\n" +
-                "• Unmanaged devices may be restricted from accessing sensitive systems.",
+                "• Maintain records of device ownership, assigned user, device type, and security status.",
             },
             {
-              id: "END-01-02",
-              title: "1.2 Baseline Configuration",
+              id: "ENDPT-01-02",
+              title: "1.2 Ownership and Responsibility",
               content:
-                "Baseline:\n" +
-                "• Enable full-disk encryption.\n" +
-                "• Enforce screen lock with reasonable timeout.\n" +
-                "• Disable unnecessary services and require automatic security updates where feasible.\n" +
-                "Privileges:\n" +
-                "• Local admin rights must be minimized and controlled.\n" +
-                "Verification:\n" +
-                "• Compliance checks must be performed regularly.",
+                "Responsibility:\n" +
+                "• Device custodians are responsible for appropriate use, physical protection, and prompt reporting of loss or compromise.\n" +
+                "• Administrators must ensure enrollment, monitoring, and policy enforcement remain current.",
             },
             {
-              id: "END-01-03",
+              id: "ENDPT-01-03",
               title: "1.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -1969,7 +1843,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "END-01-04",
+              id: "ENDPT-01-04",
               title: "1.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -1982,40 +1856,34 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "END-02",
-          title: "2. Endpoint Protection and Detection",
+          id: "ENDPT-02",
+          title: "2. Baseline Hardening and Protection",
           description:
-            "Requirements for anti-malware, EDR, and response capabilities.",
+            "Defines configuration, patching, and endpoint protection expectations.",
           subsections: [
             {
-              id: "END-02-01",
-              title: "2.1 Endpoint Protection Requirements",
+              id: "ENDPT-02-01",
+              title: "2.1 Secure Configuration Baselines",
+              content:
+                "Baselines:\n" +
+                "• Apply secure baseline configurations for operating systems, browsers, and relevant client software.\n" +
+                "• Disable unnecessary services and reduce local administrative privileges where feasible.\n" +
+                "Change Control:\n" +
+                "• Baseline deviations must be justified, approved, and tracked when required.",
+            },
+            {
+              id: "ENDPT-02-02",
+              title: "2.2 Endpoint Protection and Patch Compliance",
               content:
                 "Protection:\n" +
-                "• All managed endpoints must run approved endpoint protection software.\n" +
-                "• Real-time protection must remain enabled.\n" +
-                "Tamper Protection:\n" +
-                "• Users must not disable security agents.\n" +
-                "Updates:\n" +
-                "• Definitions and detection rules must update automatically.\n" +
-                "Exceptions:\n" +
-                "• Any exclusions require security approval and documented justification.",
+                "• Endpoints must use approved endpoint protection, monitoring, or detection capabilities.\n" +
+                "• Security-relevant telemetry should be forwarded for centralized visibility where supported.\n" +
+                "Patch Management:\n" +
+                "• Critical security updates must be applied according to risk-based patch timelines.\n" +
+                "• Devices that fall materially behind patch requirements may be restricted.",
             },
             {
-              id: "END-02-02",
-              title: "2.2 EDR Telemetry and Response",
-              content:
-                "Telemetry:\n" +
-                "• EDR agents must forward telemetry to central security tooling.\n" +
-                "Response:\n" +
-                "• Security operations may isolate devices, quarantine files, or revoke sessions.\n" +
-                "Investigation:\n" +
-                "• Devices involved in suspected incidents must preserve evidence where possible.\n" +
-                "Coordination:\n" +
-                "• System owners must cooperate with containment and remediation activities.",
-            },
-            {
-              id: "END-02-03",
+              id: "ENDPT-02-03",
               title: "2.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2025,7 +1893,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "END-02-04",
+              id: "ENDPT-02-04",
               title: "2.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2038,37 +1906,33 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "END-03",
-          title: "3. Removable Media and Peripheral Control",
+          id: "ENDPT-03",
+          title: "3. Data Handling and Peripheral Controls",
           description:
-            "Controls for USB devices and data exfiltration prevention on endpoints.",
+            "Defines controls for local storage, removable media, and device data protection.",
           subsections: [
             {
-              id: "END-03-01",
-              title: "3.1 USB and Storage Restrictions",
+              id: "ENDPT-03-01",
+              title: "3.1 Local Data Protection",
               content:
-                "Restrictions:\n" +
-                "• Unknown or unapproved USB devices must not be used.\n" +
-                "• Storage devices must be encrypted if permitted.\n" +
-                "Scanning:\n" +
-                "• Removable media must be scanned before files are opened.\n" +
-                "Monitoring:\n" +
-                "• Where supported, log access to removable media for sensitive user groups.",
+                "Data Protection:\n" +
+                "• Devices storing sensitive data must use full-disk encryption or equivalent protections where supported.\n" +
+                "• Restrict unnecessary local storage of Confidential or Restricted data.\n" +
+                "Access:\n" +
+                "• Enforce screen lock, re-authentication, and idle timeout controls appropriate to device risk.",
             },
             {
-              id: "END-03-02",
-              title: "3.2 Data Loss Prevention (DLP) Controls",
+              id: "ENDPT-03-02",
+              title: "3.2 Removable Media and Peripheral Restrictions",
               content:
-                "DLP:\n" +
-                "• Implement DLP controls for Restricted data flows where feasible.\n" +
-                "• Alert on risky transfers (mass copy, uploads to unapproved destinations).\n" +
-                "User Awareness:\n" +
-                "• Provide guidance on approved sharing channels.\n" +
-                "Enforcement:\n" +
-                "• High-risk behavior may trigger containment actions and investigation.",
+                "Media Controls:\n" +
+                "• Use of removable media must be restricted, monitored, or blocked based on data sensitivity and business need.\n" +
+                "• Peripheral access that materially increases risk may require explicit approval or technical control.\n" +
+                "Exceptions:\n" +
+                "• Temporary exceptions must be documented and reviewed.",
             },
             {
-              id: "END-03-03",
+              id: "ENDPT-03-03",
               title: "3.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2078,7 +1942,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "END-03-04",
+              id: "ENDPT-03-04",
               title: "3.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2091,39 +1955,35 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "END-04",
-          title: "4. Mobile Device Management",
+          id: "ENDPT-04",
+          title: "4. Loss, Compromise, and Recovery",
           description:
-            "Controls for corporate mobile devices and access to sensitive resources.",
+            "Defines response expectations for lost, stolen, or compromised endpoints.",
           subsections: [
             {
-              id: "END-04-01",
-              title: "4.1 Mobile Enrollment and Compliance",
+              id: "ENDPT-04-01",
+              title: "4.1 Reporting and Response",
               content:
-                "Mobile Enrollment:\n" +
-                "• Mobile devices accessing sensitive systems must be enrolled in MDM.\n" +
-                "Compliance:\n" +
-                "• Enforce passcodes/biometrics, encryption, and OS update requirements.\n" +
-                "App Controls:\n" +
-                "• Restrict unapproved apps where feasible.\n" +
-                "Access:\n" +
-                "• Non-compliant devices may be blocked from corporate resources.",
+                "Reporting:\n" +
+                "• Lost, stolen, or suspected-compromised devices must be reported immediately through approved channels.\n" +
+                "Response:\n" +
+                "• Authorized teams may remotely lock, wipe, isolate, or revoke device access based on risk and device capabilities.\n" +
+                "Escalation:\n" +
+                "• Material compromise must be handled in coordination with incident response processes.",
             },
             {
-              id: "END-04-02",
-              title: "4.2 Remote Wipe and Lost Device Handling",
+              id: "ENDPT-04-02",
+              title: "4.2 Restoration and Lessons Learned",
               content:
-                "Lost Devices:\n" +
-                "• Users must report lost/stolen devices immediately.\n" +
-                "Remote Actions:\n" +
-                "• Security/IT may remote wipe corporate data.\n" +
-                "Investigation:\n" +
-                "• Review account activity and revoke tokens associated with the device.\n" +
-                "Prevention:\n" +
-                "• Ensure device-based encryption and strong access controls reduce exposure.",
+                "Recovery:\n" +
+                "• Rebuild or restore affected devices using approved images, configurations, and validation steps before returning them to service.\n" +
+                "Review:\n" +
+                "• Significant device incidents should inform updates to hardening, monitoring, or user guidance.\n" +
+                "Evidence:\n" +
+                "• Maintain records of actions taken and validation of recovery.",
             },
             {
-              id: "END-04-03",
+              id: "ENDPT-04-03",
               title: "4.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2133,7 +1993,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "END-04-04",
+              id: "ENDPT-04-04",
               title: "4.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2152,53 +2012,43 @@ export const policyDocumentsDb = {
     {
       id: 10,
       title: "Business Continuity, Backup, and Disaster Recovery (BCP/DR) Security Standard",
-      classification: "Internal",
-      status: "Active",
-      version: "1.5",
+      category: "Business Continuity",
       authoredBy: "IT Resilience and Continuity",
       lastUpdated: "2025-12-18",
       reviewedBy: "Information Security Office",
       lastReviewed: "2026-01-20",
       pdfUrl: "/dummy-pdfs/SamplePDF1.pdf",
-
-      details:
-        "Defines resilience and recovery requirements for critical services, including backup security, recovery testing, ransomware resilience, and minimum recovery objectives. Establishes encryption, access controls, and evidence requirements for backup and recovery operations.",
       documentDetails:
         "Defines resilience and recovery requirements for critical services, including backup security, recovery testing, ransomware resilience, and minimum recovery objectives. Establishes encryption, access controls, and evidence requirements for backup and recovery operations.",
 
       sections: [
         {
-          id: "DR-01",
-          title: "1. Recovery Objectives and Scope",
+          id: "BCDR-01",
+          title: "1. Critical Service Resilience Planning",
           description:
-            "Defines service criticality and recovery objectives used in planning.",
+            "Defines minimum resilience planning expectations for critical business services.",
           subsections: [
             {
-              id: "DR-01-01",
-              title: "1.1 Criticality, RTO, and RPO",
+              id: "BCDR-01-01",
+              title: "1.1 Recovery Objectives and Scope",
               content:
-                "Recovery Objectives:\n" +
-                "• Define Recovery Time Objective (RTO) and Recovery Point Objective (RPO) per critical service.\n" +
-                "• Align targets with business impact and regulatory requirements.\n" +
-                "Scope:\n" +
-                "• Applies to production services and supporting systems.\n" +
-                "Ownership:\n" +
-                "• Each system must have a recovery owner and tested procedures.",
+                "Planning:\n" +
+                "• Identify critical services, supporting systems, dependencies, and recovery priorities.\n" +
+                "• Define recovery time and recovery point objectives based on business impact.\n" +
+                "Documentation:\n" +
+                "• Maintain documented recovery strategies, owners, and escalation contacts.",
             },
             {
-              id: "DR-01-02",
-              title: "1.2 Dependency Mapping",
+              id: "BCDR-01-02",
+              title: "1.2 Dependencies and Alternate Paths",
               content:
                 "Dependencies:\n" +
-                "• Document upstream/downstream dependencies (identity, DNS, storage, network).\n" +
-                "• Validate failover sequences and restoration order.\n" +
-                "Testing:\n" +
-                "• Recovery tests must account for dependencies and not only individual systems.\n" +
-                "Improvement:\n" +
-                "• Update plans when architecture changes or tests reveal gaps.",
+                "• Identify critical upstream and downstream dependencies, including vendors, identity services, networking, and backups.\n" +
+                "Resilience:\n" +
+                "• Where justified by risk, maintain alternate paths, redundancy, or failover capabilities to support continuity.",
             },
             {
-              id: "DR-01-03",
+              id: "BCDR-01-03",
               title: "1.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2208,7 +2058,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "DR-01-04",
+              id: "BCDR-01-04",
               title: "1.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2221,37 +2071,33 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "DR-02",
-          title: "2. Backup Security Controls",
+          id: "BCDR-02",
+          title: "2. Backup Security and Integrity",
           description:
-            "Ensures backups are protected, encrypted, and resilient against ransomware.",
+            "Defines minimum security requirements for backups and protected recovery data.",
           subsections: [
             {
-              id: "DR-02-01",
-              title: "2.1 Backup Encryption and Access Controls",
+              id: "BCDR-02-01",
+              title: "2.1 Backup Protection and Access Control",
               content:
-                "Backup Security:\n" +
-                "• Backups containing Confidential/Restricted data must be encrypted.\n" +
-                "• Restrict backup access to authorized backup operators and system owners.\n" +
-                "Auditability:\n" +
-                "• Log backup creation, deletion, restore requests, and access events.\n" +
-                "Key Management:\n" +
-                "• Encryption keys must be protected via approved key management controls.",
+                "Backups:\n" +
+                "• Protect backup data with appropriate encryption and access controls based on data sensitivity.\n" +
+                "• Limit administrative access to backup platforms and review it periodically.\n" +
+                "Integrity:\n" +
+                "• Protect backup configurations and repositories from unauthorized change or deletion where feasible.",
             },
             {
-              id: "DR-02-02",
-              title: "2.2 Immutable Backups and Segmentation",
+              id: "BCDR-02-02",
+              title: "2.2 Ransomware and Tamper Resilience",
               content:
-                "Ransomware Resilience:\n" +
-                "• Use immutable backup storage for critical systems where feasible.\n" +
-                "• Separate backup credentials and restrict privileges.\n" +
-                "Segmentation:\n" +
-                "• Limit network paths to backup infrastructure.\n" +
-                "Monitoring:\n" +
-                "• Alert on unusual backup deletions or mass restore attempts.",
+                "Resilience:\n" +
+                "• Use mechanisms such as immutability, separation, or offline protections where justified by risk.\n" +
+                "• Monitor backup failures, deletion attempts, and unusual administrative activity.\n" +
+                "Validation:\n" +
+                "• Verify that backup success and integrity checks are performed and reviewed.",
             },
             {
-              id: "DR-02-03",
+              id: "BCDR-02-03",
               title: "2.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2261,7 +2107,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "DR-02-04",
+              id: "BCDR-02-04",
               title: "2.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2274,38 +2120,34 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "DR-03",
+          id: "BCDR-03",
           title: "3. Recovery Testing and Validation",
           description:
-            "Defines test frequency and validation evidence requirements.",
+            "Defines expectations for exercising and validating recovery capabilities.",
           subsections: [
             {
-              id: "DR-03-01",
-              title: "3.1 Recovery Test Cadence",
+              id: "BCDR-03-01",
+              title: "3.1 Test Frequency and Scope",
               content:
                 "Testing:\n" +
-                "• Critical systems must perform recovery testing on a defined schedule.\n" +
-                "• Tests must include realistic scenarios, including partial and full restore.\n" +
+                "• Perform recovery tests at a cadence appropriate to service criticality and risk.\n" +
+                "• Tests may include backup restoration, failover, tabletop exercises, or scenario-based validation.\n" +
                 "Scope:\n" +
-                "• Validate data integrity, access controls, and service functionality after recovery.\n" +
-                "Reporting:\n" +
-                "• Document results and remediation actions for failed tests.",
+                "• Include dependencies, access assumptions, and operational coordination where relevant.",
             },
             {
-              id: "DR-03-02",
-              title: "3.2 Evidence and Audit Readiness",
+              id: "BCDR-03-02",
+              title: "3.2 Results and Remediation",
               content:
-                "Evidence:\n" +
-                "• Maintain test reports, logs, screenshots, and tickets showing recovery success.\n" +
-                "Audit:\n" +
-                "• Audits must be able to trace recovery claims to documented tests.\n" +
-                "Continuous Improvement:\n" +
-                "• Lessons learned from tests must update procedures and tooling.\n" +
-                "Governance:\n" +
-                "• Ensure approval and sign-off for major DR plan changes.",
+                "Results:\n" +
+                "• Document test outcomes, recovery times achieved, issues encountered, and any deviations from objectives.\n" +
+                "Remediation:\n" +
+                "• Track gaps and corrective actions to closure.\n" +
+                "Assurance:\n" +
+                "• Significant shortcomings must be escalated through governance channels.",
             },
             {
-              id: "DR-03-03",
+              id: "BCDR-03-03",
               title: "3.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2315,7 +2157,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "DR-03-04",
+              id: "BCDR-03-04",
               title: "3.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
@@ -2328,38 +2170,33 @@ export const policyDocumentsDb = {
           ],
         },
         {
-          id: "DR-04",
-          title: "4. Disaster Communications and Coordination",
+          id: "BCDR-04",
+          title: "4. Governance and Continuous Improvement",
           description:
-            "Defines communications and coordination responsibilities during disruption.",
+            "Defines oversight and improvement expectations for resilience capabilities.",
           subsections: [
             {
-              id: "DR-04-01",
-              title: "4.1 Communication Plan",
+              id: "BCDR-04-01",
+              title: "4.1 Oversight and Reporting",
               content:
-                "Communications:\n" +
-                "• Define stakeholders and notification paths per severity.\n" +
-                "• Provide regular updates with confirmed facts and recovery status.\n" +
-                "Channels:\n" +
-                "• Use approved communication channels and maintain a single source of truth.\n" +
-                "External:\n" +
-                "• Coordinate external communications with Legal and Leadership as required.",
+                "Oversight:\n" +
+                "• Report on coverage, backup health, recovery test status, and significant resilience risks to relevant governance forums.\n" +
+                "• Maintain evidence of plan ownership, testing, and remediation progress.\n" +
+                "Escalation:\n" +
+                "• Material unresolved resilience gaps must be escalated appropriately.",
             },
             {
-              id: "DR-04-02",
-              title: "4.2 Coordination and Handoffs",
+              id: "BCDR-04-02",
+              title: "4.2 Lessons Learned and Program Maturity",
               content:
-                "Coordination:\n" +
-                "• Assign clear roles for technical recovery, business continuity, and communications.\n" +
-                "Handoffs:\n" +
-                "• Document decisions and actions to support continuity across shifts.\n" +
-                "Post-Event:\n" +
-                "• Conduct a review to identify gaps and improvements.\n" +
-                "Closure:\n" +
-                "• Ensure corrective actions are tracked to completion.",
+                "Improvement:\n" +
+                "• Use incidents, near-misses, exercises, and audits to improve continuity and recovery capabilities.\n" +
+                "• Update plans, contacts, dependencies, and technical strategies as environments evolve.\n" +
+                "Readiness:\n" +
+                "• Continuity and disaster recovery capabilities should remain aligned with current business priorities and technology changes.",
             },
             {
-              id: "DR-04-03",
+              id: "BCDR-04-03",
               title: "4.3 Implementation Guidance",
               content:
                 "Implementation Guidance:\n" +
@@ -2369,7 +2206,7 @@ export const policyDocumentsDb = {
                 "• Include a minimum review/maintenance cadence for ongoing compliance.",
             },
             {
-              id: "DR-04-04",
+              id: "BCDR-04-04",
               title: "4.4 Monitoring, Evidence, and Metrics",
               content:
                 "Monitoring and Evidence:\n" +
