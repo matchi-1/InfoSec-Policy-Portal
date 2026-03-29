@@ -164,7 +164,7 @@ function App() {
   //fetch notifs
   const fetchNotifs = async (user) => {
     console.log("Fetching notifs...")
-    const resp = await fetch(`http://127.0.0.1:8000/api/notifications/?user_id=${user?.user_id}`, { method: 'GET' })
+    //const resp = await fetch(`http://127.0.0.1:8000/api/notifications/?user_id=${user?.user_id}`, { method: 'GET' })
     // const resp_text = await resp.text()
     // console.log("resp text")
     // console.log(resp_text)

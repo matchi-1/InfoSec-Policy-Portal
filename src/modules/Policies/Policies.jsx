@@ -3,6 +3,7 @@ import styles from "./styles/Policies.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import PolicySections from "./components/PolicySections";
 import { highlightText } from "../../utils/highlightText";
+import FilterPopup from "../../shared/components/FilterPopup";
 
 //  DB-like dummy source
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
@@ -17,6 +18,16 @@ const BodyContent = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
+    const [docFilters, setDocFilters] = useState({
+        classification: "",
+        status: "",
+        authoredBy: "",
+        reviewedBy: "",
+    });
+
+    // DB docs (full objects)
+    const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
+
     // derive list from dummy DB
     const documents = useMemo(() => {
         const dbDocs = policyDocumentsDb?.documents ?? [];
@@ -30,18 +41,80 @@ const BodyContent = () => {
         setIsHeaderCollapsed(false); // reset header collapse state when changing docs
     };
 
+    const getUniqueOptions = (items, key) =>
+        [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
 
 
-
-    // DB docs (full objects)
-    const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
+    const documentFilterFields = useMemo(() => {
+        return [
+            {
+                key: "classification",
+                label: "Classification",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "classification"),
+                emptyLabel: "All classifications",
+            },
+            {
+                key: "status",
+                label: "Status",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "status"),
+                emptyLabel: "All statuses",
+            },
+            {
+                key: "authoredBy",
+                label: "Authored by",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "authoredBy"),
+                emptyLabel: "All authors",
+            },
+            {
+                key: "reviewedBy",
+                label: "Reviewed by",
+                type: "select",
+                options: getUniqueOptions(dbDocs, "reviewedBy"),
+                emptyLabel: "All reviewers",
+            },
+        ];
+    }, [dbDocs]);
 
     // Filter by title
     const filteredDocs = useMemo(() => {
         const q = docSearch.trim().toLowerCase();
-        if (!q) return dbDocs;
-        return dbDocs.filter((d) => (d.title ?? "").toLowerCase().includes(q));
-    }, [dbDocs, docSearch]);
+
+        return dbDocs.filter((d) => {
+            const matchesSearch =
+                !q || (d.title ?? "").toLowerCase().includes(q);
+
+            const matchesClassification =
+                !docFilters.classification ||
+                d.classification === docFilters.classification;
+
+            const matchesStatus =
+                !docFilters.status ||
+                d.status === docFilters.status;
+
+            const matchesAuthoredBy =
+                !docFilters.authoredBy ||
+                d.authoredBy === docFilters.authoredBy;
+
+            const matchesReviewedBy =
+                !docFilters.reviewedBy ||
+                d.reviewedBy === docFilters.reviewedBy;
+
+            return (
+                matchesSearch &&
+                matchesClassification &&
+                matchesStatus &&
+                matchesAuthoredBy &&
+                matchesReviewedBy
+            );
+        });
+    }, [dbDocs, docSearch, docFilters]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [docSearch, docFilters]);
 
     // reset page when searching
     useEffect(() => {
@@ -89,14 +162,17 @@ const BodyContent = () => {
                     </div>
 
                     <div className={styles.filterAndFileNumContainer}>
-                        <div className={styles.filterContainer}>
-                            <img
-                                src={"/icons/filter-blue.png"}
-                                alt={"Filter Icon"}
-                                className={styles.filterIcon}
-                            />
-                            <p>Filter</p>
-                        </div>
+                        <FilterPopup
+                            title="Filter documents"
+                            buttonLabel="Filter"
+                            iconSrc="/icons/filter-blue.png"
+                            buttonClassName={styles.filterContainer}
+                            buttonIconClassName={styles.filterIcon}
+                            fields={documentFilterFields}
+                            values={docFilters}
+                            onApply={setDocFilters}
+                            onClear={setDocFilters}
+                        />
 
                         {/* reflect DB */}
                         <span className={styles.fileNumText}>
