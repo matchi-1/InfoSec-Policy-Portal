@@ -17,14 +17,14 @@
 
 .innerCard {
   width: 100%;
-  max-width: 46rem;
+  max-width: 60rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   text-align: center;
   padding: 2rem 2.5rem;
-  border: 1px solid #d8e2f0;
+  border: 2px dashed #c3cedf;
   border-radius: 0.9rem;
   background: linear-gradient(180deg, #f9fbff 0%, #f3f7fc 100%);
   box-sizing: border-box;
@@ -64,9 +64,9 @@
 .noticeBox {
   margin-top: 1.5rem;
   width: 100%;
-  max-width: 32rem;
+  max-width: 40rem;
   background-color: #eef5ff;
-  border: 1px solid #c8daf3;
+  border: 1px dotted #c8daf3;
   border-radius: 0.75rem;
   padding: 1rem 1.2rem;
   box-sizing: border-box;
