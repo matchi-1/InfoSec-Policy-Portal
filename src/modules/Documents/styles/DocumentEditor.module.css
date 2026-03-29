@@ -47,14 +47,14 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: 1.5rem;
-  border: 1px solid red;
+  gap: 1rem;
+  min-width: 0;
 }
 
 .title {
   flex: 1;
   min-width: 0;
-  border: 1px solid green;
+  max-width: 45em;
 }
 
 .title > p {
@@ -126,16 +126,18 @@
   display: flex;
   flex-direction: column;
   gap: 0.45rem;
-  width: 19.5rem;
+  width: min(19.5rem, 100%);
+  min-width: 0;
   flex-shrink: 0;
 }
 
 .dropdownContainer {
   display: grid;
-  grid-template-columns: 6.4rem 1fr;
+  grid-template-columns: 6.5rem minmax(0, 1fr);
   align-items: center;
   gap: 0.55rem;
   position: relative;
+  min-width: 0;
 }
 
 .dropdownContainer > p {
@@ -148,7 +150,9 @@
 
 .dropDownSection {
   position: relative;
-  min-height: 2rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 1.25rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -156,10 +160,11 @@
 
   padding: 0 0.8rem;
   border: 2px solid #5c83bb;
-  border-radius: 999px;
+  border-radius: 0.4rem;
   background: #eef5ff;
   cursor: pointer;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .dropDownSection:hover {
@@ -168,6 +173,9 @@
 
 .dropDownSection > p {
   margin: 0;
+  flex: 1;
+  min-width: 0;
+  max-width: 100%;
   color: var(--primary-blue);
   font-size: 0.92rem;
   white-space: nowrap;
@@ -1066,45 +1074,116 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 0.1rem;
 }
 
-.headerCollapseButton {
+.headerRegion {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.titleHeaderWrap {
+  max-height: 32rem;
+  opacity: 1;
+  overflow: hidden;
+  transition:
+    max-height 280ms ease,
+    opacity 180ms ease,
+    margin 180ms ease;
+}
+
+.titleHeaderWrapCollapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+}
+
+.headerDock {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 1rem;
+  margin-top: -1px;
+  position: relative;
+  z-index: 2;
+}
+
+.headerDetailsToggle {
   appearance: none;
-  border: 1px solid #94A9C6;
-  background: #f2f6fb;
+  border: 1px solid #d8e2ef;
+  background: #ffffff;
   color: #1b3b6f;
-  border-radius: 0.45rem;
-  padding: 0.45rem 0.8rem;
-  font: inherit;
-  font-size: 0.84rem;
-  font-weight: 600;
-  cursor: pointer;
-  
+
+  min-height: 2.3rem;
+  padding: 0.45rem 0.75rem 0.5rem;
+
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.6rem;
 
-  transition: background-color 180ms ease, border-color 180ms ease, transform 160ms ease;
+  font: inherit;
+  cursor: pointer;
+
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 160ms ease;
 }
 
-.headerCollapseButton:hover {
-  background: #e8f0fb;
-  border-color: #4777ba;
+.headerDetailsToggle:hover {
+  background: #f5f9ff;
+  border-color: #94A9C6;
 }
 
-.headerCollapseButton:active {
+.headerDetailsToggle:active {
   transform: translateY(1px);
 }
 
-.headerCollapseChevron {
-  display: inline-block;
-  font-size: 1.5rem;
-  line-height: 0.85;
-  transition: transform 220ms ease;
+.headerDetailsToggleCollapsed {
+  background: #f8fbff;
 }
 
-.headerCollapseChevronCollapsed {
-  transform: rotate(180deg);
+.headerDetailsLabel {
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #1b3b6f;
+}
+
+.headerDetailsState {
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: #6f7f98;
+  min-width: 3.2rem;
+  text-align: left;
+}
+
+.headerDetailsSwitch {
+  width: 2.35rem;
+  height: 1.3rem;
+  border-radius: 999px;
+  background: #dbe9ff;
+  border: 1px solid #94A9C6;
+  position: relative;
+  flex-shrink: 0;
+  transition: background-color 180ms ease, border-color 180ms ease;
+}
+
+.headerDetailsKnob {
+  position: absolute;
+  top: 50%;
+  left: 0.14rem;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 999px;
+  background: #1f4f95;
+  transform: translateY(-50%);
+  transition: left 180ms ease, background-color 180ms ease;
+}
+
+.headerDetailsKnobCollapsed {
+  left: calc(100% - 1.04rem);
+  background: #8f9091;
 }
 
 .titleHeaderWrap {
@@ -1132,4 +1211,63 @@
 .backDocuBtn:hover {
   color: var(--primary-blue);
   text-decoration: underline;
+}
+
+
+.iconActionBtn {
+  appearance: none;
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  width: 1rem;
+  height: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+  line-height: 0;
+  opacity: 0.95;
+}
+
+.iconActionBtn:hover {
+  opacity: 1;
+}
+
+.actionIcon {
+  width: 0.95rem;
+  height: 0.95rem;
+  object-fit: contain;
+  display: block;
+}
+
+.editActionBtn .actionIcon {
+  filter: brightness(0) saturate(100%) invert(31%) sepia(30%) saturate(1524%) hue-rotate(186deg) brightness(90%) contrast(92%);
+}
+
+.trashActionBtn .actionIcon {
+  filter: brightness(0) saturate(100%) invert(23%) sepia(95%) saturate(3256%) hue-rotate(342deg) brightness(97%) contrast(91%);
+}
+
+/* white edit icon when section header is dark */
+.policySectionHeader:hover .editActionBtn .actionIcon,
+.policySectionHeaderOpen .editActionBtn .actionIcon {
+  filter: brightness(0) invert(1);
+}
+
+/* keep trash red even on dark header */
+.policySectionHeader:hover .trashActionBtn .actionIcon,
+.policySectionHeaderOpen .trashActionBtn .actionIcon {
+  filter: brightness(0) saturate(100%) invert(23%) sepia(95%) saturate(3256%) hue-rotate(342deg) brightness(97%) contrast(91%);
+}
+
+
+.policySectionTitle > div,
+.policySubnavItem > div {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  min-width: 0;
+  flex-wrap: wrap;
 }

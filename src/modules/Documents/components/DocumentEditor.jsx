@@ -220,21 +220,31 @@ function BodyContent({ doc, onBack }) {
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
                 <p className={styles.backDocuBtn} onClick={onBack}>⬅ Back to Documents</p>
-                <button
-                    type="button"
-                    className={styles.headerCollapseButton}
-                    onClick={() => setIsHeaderCollapsed((prev) => !prev)}
-                >
-                    <span
-                        className={`${styles.headerCollapseChevron} ${isHeaderCollapsed ? styles.headerCollapseChevronCollapsed : ""
-                            }`}
-                    >
-                        ▾
-                    </span>
-                    <span>
-                        {isHeaderCollapsed ? "Show document details" : "Hide document details"}
-                    </span>
-                </button>
+                <div className={styles.headerRegion}>
+                    <div className={styles.headerDock}>
+                        <button
+                            type="button"
+                            className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
+                                }`}
+                            onClick={() => setIsHeaderCollapsed((prev) => !prev)}
+                            aria-expanded={!isHeaderCollapsed}
+                            aria-controls="document-details-panel"
+                        >
+                            <span className={styles.headerDetailsLabel}>Document details</span>
+
+                            <span className={styles.headerDetailsSwitch}>
+                                <span
+                                    className={`${styles.headerDetailsKnob} ${isHeaderCollapsed ? styles.headerDetailsKnobCollapsed : ""
+                                        }`}
+                                />
+                            </span>
+
+                            <span className={styles.headerDetailsState}>
+                                {isHeaderCollapsed ? "Hidden" : "Shown"}
+                            </span>
+                        </button>
+                    </div>
+                </div>
             </div>
 
             <div
@@ -250,7 +260,14 @@ function BodyContent({ doc, onBack }) {
                                 (!editingTitle) ? (
                                     <div className={styles.titleText}>
                                         <h1 onClick={() => setEditingTitle(true)}>{currTitle}</h1>
-                                        <button onClick={() => setEditingTitle(true)}>edit</button>
+                                        <button
+                                            className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                            onClick={() => setEditingTitle(true)}
+                                            aria-label="Edit title"
+                                            title="Edit title"
+                                        >
+                                            <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                        </button>
                                     </div>
                                 ) : (
                                     <div className={styles.titleEditor}>
@@ -316,7 +333,14 @@ function BodyContent({ doc, onBack }) {
                             {!editingDesc ? (
                                 <div className={styles.descText}>
                                     <p>{currDesc}</p>
-                                    <button onClick={() => { setEditingDesc(true) }}>edit</button>
+                                    <button
+                                        className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                        onClick={() => { setEditingDesc(true) }}
+                                        aria-label="Edit description"
+                                        title="Edit description"
+                                    >
+                                        <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                    </button>
                                 </div>
                             ) : (
                                 <div className={styles.descEdit}>
@@ -439,16 +463,33 @@ function BodyContent({ doc, onBack }) {
                                                 ) : (
                                                     <div>
                                                         {highlightText(section.title, query, styles.highlight)}
-                                                        <button onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(section.id); setSectionTitleTemp(section.title); }}>edit</button>
+                                                        <button
+                                                            className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                setSectionTitleEditID(section.id);
+                                                                setSectionTitleTemp(section.title);
+                                                            }}
+                                                            aria-label="Edit section"
+                                                            title="Edit section"
+                                                        >
+                                                            <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                                        </button>
+
                                                         <span>
                                                             <button
+                                                                className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     setSections(
                                                                         sections.filter(sect => sect.id != section.id)
                                                                     )
                                                                 }}
-                                                            >delete</button>
+                                                                aria-label="Delete section"
+                                                                title="Delete section"
+                                                            >
+                                                                <img src="/icons/trash-icon.png" alt="" className={styles.actionIcon} />
+                                                            </button>
                                                         </span>
                                                     </div>
                                                 )
@@ -524,30 +565,45 @@ function BodyContent({ doc, onBack }) {
                                                                                     {highlightText(sub.title, query, styles.highlight)}
                                                                                 </span>
                                                                                 <span>
-                                                                                    <button onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        setSubTitleEditID(sub.id);
-                                                                                        setSubTitleTemp(sub.title);
-                                                                                    }}>edit</button>
+                                                                                    <button
+                                                                                        className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            setSubTitleEditID(sub.id);
+                                                                                            setSubTitleTemp(sub.title);
+                                                                                        }}
+                                                                                        aria-label="Edit subsection"
+                                                                                        title="Edit subsection"
+                                                                                    >
+                                                                                        <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                                                                    </button>
                                                                                 </span>
+
                                                                                 <span>
-                                                                                    <button onClick={(e) => {
-                                                                                        e.stopPropagation();
-                                                                                        setSections(prevSections =>
-                                                                                            prevSections.map((sect) => {
-                                                                                                if (sect.id === openSectionId) {
-                                                                                                    return (
-                                                                                                        {
-                                                                                                            ...sect,
-                                                                                                            subsections: sect.subsections.filter(subsec => subsec.id != sub.id)
-                                                                                                        }
-                                                                                                    )
-                                                                                                } else {
-                                                                                                    return sect
-                                                                                                }
-                                                                                            })
-                                                                                        )
-                                                                                    }}>delete</button>
+                                                                                    <button
+                                                                                        className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
+                                                                                        onClick={(e) => {
+                                                                                            e.stopPropagation();
+                                                                                            setSections(prevSections =>
+                                                                                                prevSections.map((sect) => {
+                                                                                                    if (sect.id === openSectionId) {
+                                                                                                        return (
+                                                                                                            {
+                                                                                                                ...sect,
+                                                                                                                subsections: sect.subsections.filter(subsec => subsec.id != sub.id)
+                                                                                                            }
+                                                                                                        )
+                                                                                                    } else {
+                                                                                                        return sect
+                                                                                                    }
+                                                                                                })
+                                                                                            )
+                                                                                        }}
+                                                                                        aria-label="Delete subsection"
+                                                                                        title="Delete subsection"
+                                                                                    >
+                                                                                        <img src="/icons/trash-icon.png" alt="" className={styles.actionIcon} />
+                                                                                    </button>
                                                                                 </span>
                                                                             </div>
                                                                         )
