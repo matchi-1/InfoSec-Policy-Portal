@@ -1247,7 +1247,7 @@
 }
 
 .trashActionBtn .actionIcon {
-  filter: brightness(0) saturate(100%) invert(23%) sepia(95%) saturate(3256%) hue-rotate(342deg) brightness(97%) contrast(91%);
+  filter: none;
 }
 
 /* white edit icon when section header is dark */
@@ -1256,10 +1256,10 @@
   filter: brightness(0) invert(1);
 }
 
-/* keep trash red even on dark header */
+/* white trash icon when section header is dark */
 .policySectionHeader:hover .trashActionBtn .actionIcon,
 .policySectionHeaderOpen .trashActionBtn .actionIcon {
-  filter: brightness(0) saturate(100%) invert(23%) sepia(95%) saturate(3256%) hue-rotate(342deg) brightness(97%) contrast(91%);
+  filter: brightness(0) invert(1);
 }
 
 
