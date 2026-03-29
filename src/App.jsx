@@ -98,9 +98,9 @@ function App() {
       setUser({
         first_name: "Jeffrey",
         last_name: "Kawabata",
-        user_id: null,
-        employee_id: null,
-        role: { role_name: "Guest", permissions: "All" },
+        user_id: "EMP-0001",
+        employee_id: "EMP-0001",
+        role: { role_name: "Admin", permissions: "All" },
       });
 
       // IMPORTANT: don't redirect
@@ -653,16 +653,6 @@ function App() {
 
                   <div className="dropdown-divider"></div>
                   <div className="dropdown-menu">
-                    <div className="dropdown-item"
-                      onClick={() => {
-                        setShowUserProfile(true);
-                        setIsProfileMenuOpen(false);
-                        setActiveModule(null);
-                        setActiveSubModule(null);
-                      }}
-                    >
-                      <img src="/icons/settings.png" />User Profile
-                    </div>
                     <div className="dropdown-item" onClick={handleLogout}><img src="/icons/logout.png" /> Logout</div>
                   </div>
 
