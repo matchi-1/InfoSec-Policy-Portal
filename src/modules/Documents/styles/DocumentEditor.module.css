@@ -25,8 +25,7 @@
   gap: 0.8rem;
   box-sizing: border-box;
 
-  background: var(--bg-page);
-  border-radius: 0.9rem;
+  background: white;
   overflow: hidden;
 }
 
@@ -55,6 +54,7 @@
 .title {
   flex: 1;
   min-width: 0;
+  border: 1px solid green;
 }
 
 .title > p {
@@ -1059,4 +1059,77 @@
   .dropDownSection {
     width: 100%;
   }
+}
+
+
+.headerCollapseBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.headerCollapseButton {
+  appearance: none;
+  border: 1px solid #94A9C6;
+  background: #f2f6fb;
+  color: #1b3b6f;
+  border-radius: 0.45rem;
+  padding: 0.45rem 0.8rem;
+  font: inherit;
+  font-size: 0.84rem;
+  font-weight: 600;
+  cursor: pointer;
+  
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+
+  transition: background-color 180ms ease, border-color 180ms ease, transform 160ms ease;
+}
+
+.headerCollapseButton:hover {
+  background: #e8f0fb;
+  border-color: #4777ba;
+}
+
+.headerCollapseButton:active {
+  transform: translateY(1px);
+}
+
+.headerCollapseChevron {
+  display: inline-block;
+  font-size: 1.5rem;
+  line-height: 0.85;
+  transition: transform 220ms ease;
+}
+
+.headerCollapseChevronCollapsed {
+  transform: rotate(180deg);
+}
+
+.titleHeaderWrap {
+  max-height: 32rem;
+  opacity: 1;
+  overflow: hidden;
+  transition:
+    max-height 280ms ease,
+    opacity 180ms ease,
+    margin 180ms ease;
+}
+
+.titleHeaderWrapCollapsed {
+  max-height: 0;
+  opacity: 0;
+  margin: 0;
+}
+
+.backDocuBtn {
+  cursor: pointer;
+  color: var(--primary-blue-2);
+  transition: color 180ms ease, text-decoration 180ms ease;
+}
+
+.backDocuBtn:hover {
+  color: var(--primary-blue);
+  text-decoration: underline;
 }

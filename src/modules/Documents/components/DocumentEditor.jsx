@@ -50,6 +50,8 @@ function BodyContent({ doc, onBack }) {
 
     const [currentMarkdown, setCurrentMarkdown] = useState("")
     const [initialMarkdown, setInitialMarkdown] = useState("")
+    const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+
     // Normalize query
     const q = useMemo(() => query.trim().toLowerCase(), [query]);
 
@@ -216,146 +218,171 @@ function BodyContent({ doc, onBack }) {
 
     return (
         <div className={styles.documents}>
-            {/* header */}
-            <div className={styles.titleHeader}>
-                <div className={styles.titleDropdowns}>
-                    <div className={styles.title}>
-                        <p onClick={onBack}>⬅ Back to Documents</p>
-                        {
-                            (!editingTitle) ? (
-                                <div className={styles.titleText}>
-                                    <h1 onClick={() => setEditingTitle(true)}>{currTitle}</h1>
-                                    <button onClick={() => setEditingTitle(true)}>edit</button>
-                                </div>
-                            ) : (
-                                <div className={styles.titleEditor}>
-                                    <input
-                                        type="text"
-                                        value={currTitle}
-                                        onChange={(e) => setCurrTitle(e.target.value)}
-                                    />
-                                    <button onClick={() => {
-                                        setEditingTitle(false);
-                                    }}>checkmark here</button>
-                                </div>
-
-                            )
-                        }
-                    </div>
-                    <div className={styles.dropdowns}>
-                        <div className={styles.dropdownContainer}>
-                            <p>authored by:</p>
-                            <div className={styles.dropDownSection} onClick={() => {
-                                setShowAuthoredDropdown(!showAuthoredDropdown);
-                            }}>
-                                <p>{doc.authoredBy}</p>
-                                {showAuthoredDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        users here
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className={styles.dropdownContainer}>
-                            <p>reviewed by:</p>
-                            <div className={styles.dropDownSection} onClick={() => {
-                                setShowReviewedDropdown(!showReviewedDropdown);
-                            }}>
-                                <p>{doc.reviewedBy}</p>
-                                {showReviewedDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        users here
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className={styles.dropdownContainer}>
-                            <p>last reviewed:</p>
-                            <div className={styles.dropDownSection} onClick={() => {
-                                setShowDateDropdown(!showDateDropdown);
-                            }}>
-                                <p>{doc.lastReviewed}</p>
-                                {showDateDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        datepicker here
-                                    </div>
-                                )}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div className={styles.descButtons}>
-                    <div className={styles.descContainer}>
-                        {!editingDesc ? (
-                            <div className={styles.descText}>
-                                <p>{currDesc}</p>
-                                <button onClick={() => { setEditingDesc(true) }}>edit</button>
-                            </div>
-                        ) : (
-                            <div className={styles.descEdit}>
-                                <textarea
-                                    value={currDesc}
-                                    onChange={(e) => { setCurrDesc(e.target.value) }}
-                                    rows={5}
-                                    cols={30}
-                                />
-                                <button onClick={() => { setEditingDesc(false) }}>check</button>
-                            </div>
-                        )}
-                    </div>
-                    <div className={styles.buttonsContainer}>
-                        {
-                            (!viewingPDF) ? (
-                                <button onClick={() => {
-                                    doc.pdf_filename == "null" ? alert("no pdfs?") : setViewingPDF(true)
-                                }}>view pdf</button>
-                            ) : (
-                                <button onClick={() => { setViewingPDF(false) }}>clsoe pdf</button>
-                            )
-                        }
-                        <button onClick={() => { setShowUploadModal(true) }}>upload pdf</button>
-                        {fileToUpload != null ? <p>*not saved</p> : null}
-                    </div>
-                </div>
-                {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
-                {/* <div className={styles.tagsContainer}>
-                    {
-                        currTags.map((tag) => {
-                            return (
-                                <p onClick={() => {
-                                    setCurrTags((prev) => prev.filter((item) => item !== tag));
-                                }}>{tag} </p>
-                            )
-                        })
-                    }
-                    <button onClick={() => setShowTagsDropdown(true)}>add tag +</button>
-                    {
-                        showTagsDropdown && <div className={styles.tagsDropdown}>
-                            <div className={styles.tagsDropdownHeader}>
-                                <button onClick={() => {setShowTagsDropdown(false)}}> CLOSE ME </button>
-                            </div>
-                            <div className={styles.tagsDropdownSearch}>
-                                <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value)}}/>
-                            </div>
-                            <div className={styles.tagsDropdownList}>
-                                {
-                                    filteredTags.map((tag) => {
-                                        if (!currTags.includes(tag)) {
-                                            return(
-                                                <p onClick={() => {
-                                                    setCurrTags((prev) => [...prev, tag])
-                                                }}>{tag}</p>
-                                            )
-                                        }
-                                    })
-                                }
-                            </div>
-                        </div>
-                    }
-                </div> */}
+            <div className={styles.headerCollapseBar}>
+                <p className={styles.backDocuBtn} onClick={onBack}>⬅ Back to Documents</p>
+                <button
+                    type="button"
+                    className={styles.headerCollapseButton}
+                    onClick={() => setIsHeaderCollapsed((prev) => !prev)}
+                >
+                    <span
+                        className={`${styles.headerCollapseChevron} ${isHeaderCollapsed ? styles.headerCollapseChevronCollapsed : ""
+                            }`}
+                    >
+                        ▾
+                    </span>
+                    <span>
+                        {isHeaderCollapsed ? "Show document details" : "Hide document details"}
+                    </span>
+                </button>
             </div>
+
+            <div
+                className={`${styles.titleHeaderWrap} ${isHeaderCollapsed ? styles.titleHeaderWrapCollapsed : ""
+                    }`}
+            >
+                {/* header */}
+                <div className={styles.titleHeader}>
+                    <div className={styles.titleDropdowns}>
+                        <div className={styles.title}>
+
+                            {
+                                (!editingTitle) ? (
+                                    <div className={styles.titleText}>
+                                        <h1 onClick={() => setEditingTitle(true)}>{currTitle}</h1>
+                                        <button onClick={() => setEditingTitle(true)}>edit</button>
+                                    </div>
+                                ) : (
+                                    <div className={styles.titleEditor}>
+                                        <input
+                                            type="text"
+                                            value={currTitle}
+                                            onChange={(e) => setCurrTitle(e.target.value)}
+                                        />
+                                        <button onClick={() => {
+                                            setEditingTitle(false);
+                                        }}>checkmark here</button>
+                                    </div>
+
+                                )
+                            }
+                        </div>
+                        <div className={styles.dropdowns}>
+                            <div className={styles.dropdownContainer}>
+                                <p>authored by:</p>
+                                <div className={styles.dropDownSection} onClick={() => {
+                                    setShowAuthoredDropdown(!showAuthoredDropdown);
+                                }}>
+                                    <p>{doc.authoredBy}</p>
+                                    {showAuthoredDropdown && (
+                                        <div className={styles.dropdownList}>
+                                            users here
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={styles.dropdownContainer}>
+                                <p>reviewed by:</p>
+                                <div className={styles.dropDownSection} onClick={() => {
+                                    setShowReviewedDropdown(!showReviewedDropdown);
+                                }}>
+                                    <p>{doc.reviewedBy}</p>
+                                    {showReviewedDropdown && (
+                                        <div className={styles.dropdownList}>
+                                            users here
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+
+                            <div className={styles.dropdownContainer}>
+                                <p>last reviewed:</p>
+                                <div className={styles.dropDownSection} onClick={() => {
+                                    setShowDateDropdown(!showDateDropdown);
+                                }}>
+                                    <p>{doc.lastReviewed}</p>
+                                    {showDateDropdown && (
+                                        <div className={styles.dropdownList}>
+                                            datepicker here
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div className={styles.descButtons}>
+                        <div className={styles.descContainer}>
+                            {!editingDesc ? (
+                                <div className={styles.descText}>
+                                    <p>{currDesc}</p>
+                                    <button onClick={() => { setEditingDesc(true) }}>edit</button>
+                                </div>
+                            ) : (
+                                <div className={styles.descEdit}>
+                                    <textarea
+                                        value={currDesc}
+                                        onChange={(e) => { setCurrDesc(e.target.value) }}
+                                        rows={5}
+                                        cols={30}
+                                    />
+                                    <button onClick={() => { setEditingDesc(false) }}>check</button>
+                                </div>
+                            )}
+                        </div>
+                        <div className={styles.buttonsContainer}>
+                            {
+                                (!viewingPDF) ? (
+                                    <button onClick={() => {
+                                        doc.pdf_filename == "null" ? alert("no pdfs?") : setViewingPDF(true)
+                                    }}>view pdf</button>
+                                ) : (
+                                    <button onClick={() => { setViewingPDF(false) }}>clsoe pdf</button>
+                                )
+                            }
+                            <button onClick={() => { setShowUploadModal(true) }}>upload pdf</button>
+                            {fileToUpload != null ? <p>*not saved</p> : null}
+                        </div>
+                    </div>
+                    {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
+                    {/* <div className={styles.tagsContainer}>
+                            {
+                                currTags.map((tag) => {
+                                    return (
+                                        <p onClick={() => {
+                                            setCurrTags((prev) => prev.filter((item) => item !== tag));
+                                        }}>{tag} </p>
+                                    )
+                                })
+                            }
+                            <button onClick={() => setShowTagsDropdown(true)}>add tag +</button>
+                            {
+                                showTagsDropdown && <div className={styles.tagsDropdown}>
+                                    <div className={styles.tagsDropdownHeader}>
+                                        <button onClick={() => {setShowTagsDropdown(false)}}> CLOSE ME </button>
+                                    </div>
+                                    <div className={styles.tagsDropdownSearch}>
+                                        <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value)}}/>
+                                    </div>
+                                    <div className={styles.tagsDropdownList}>
+                                        {
+                                            filteredTags.map((tag) => {
+                                                if (!currTags.includes(tag)) {
+                                                    return(
+                                                        <p onClick={() => {
+                                                            setCurrTags((prev) => [...prev, tag])
+                                                        }}>{tag}</p>
+                                                    )
+                                                }
+                                            })
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div> */}
+                </div>
+            </div>
+
             {/* lower half */}
             {
                 (viewingPDF) ? (
