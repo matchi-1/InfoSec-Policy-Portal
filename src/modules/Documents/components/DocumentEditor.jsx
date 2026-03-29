@@ -2,10 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/DocumentEditor.module.css";
 import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
+import { MDXEditor, headingsPlugin, quotePlugin, thematicBreakPlugin, toolbarPlugin, listsPlugin, linkPlugin, imagePlugin, tablePlugin, markdownShortcutPlugin } from '@mdxeditor/editor';
+import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable} from "@mdxeditor/editor";
+import '@mdxeditor/editor/style.css'
+
+
+// TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
+import { controlTags } from "../data/controlTags.js";
 
 
 function BodyContent({ doc, onBack }) {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
+    console.log("(debug) doc: ", doc)
     // const sections = doc.sections ?? [];
     console.log(`(debug) pdf url: ${backend_base_url}/documents/get-pdf/${doc.pdf_filename}`)
     const query = ""; //temporary -Harley
@@ -26,8 +34,22 @@ function BodyContent({ doc, onBack }) {
 
     const [viewingPDF, setViewingPDF] = useState(false);
 
-    const [showPDFModal, setShowPDFModal] = useState(true);
+    const [showUploadModal, setShowUploadModal] = useState(false);
+    const [fileToUpload, setFileToUpload] = useState(null);
 
+    const [currTags, setCurrTags] = useState(doc.tags);
+    const [showTagsDropdown, setShowTagsDropdown] = useState(false);
+    const [tagQuery, setTagQuery] = useState("");
+    const [filteredTags, setFilteredTags] = useState(controlTags);
+
+    const [sectionTitleEditID, setSectionTitleEditID] = useState(null);
+    const [sectionTitleTemp, setSectionTitleTemp] = useState(null);
+
+    const [subTitleEditID, setSubTitleEditID] = useState(null);
+    const [subTitleTemp, setSubTitleTemp] = useState(null);
+
+    const [currentMarkdown, setCurrentMarkdown] = useState("")
+    const [initialMarkdown, setInitialMarkdown] = useState("")
     // Normalize query
     const q = useMemo(() => query.trim().toLowerCase(), [query]);
 
@@ -35,8 +57,10 @@ function BodyContent({ doc, onBack }) {
 
     // Filter sections/subsections by query
     const filteredSections = useMemo(() => {
+        console.log("(debug) updating filtered sections")
+        console.log("(debug) sections: ", sections)
         if (!q) return sections;
-
+        console.log("(debug) q exists: ", q)
         const out = [];
 
         for (const sec of sections) {
@@ -112,6 +136,20 @@ function BodyContent({ doc, onBack }) {
         });
     };
 
+    useEffect(() => {
+        if (tagQuery == "") {
+            setFilteredTags(controlTags)
+        } else {
+            const filteredData = controlTags.filter(item => {
+                return Object.values(item)
+                    .join('')
+                    .toLowerCase()
+                    .includes(tagQuery.toLowerCase());
+            });
+            setFilteredTags(filteredData);
+        }
+    }, [tagQuery])
+
     const openSection = filteredSections.find((s) => s.id === openSectionId);
     const openSubs = openSection?.subsections ?? [];
 
@@ -178,7 +216,6 @@ function BodyContent({ doc, onBack }) {
 
     return (
         <div className={styles.documents}>
-            <PDFUploadModal />
             {/* header */}
             <div className={styles.titleHeader}>
                 <div className={styles.titleDropdowns}>
@@ -278,9 +315,46 @@ function BodyContent({ doc, onBack }) {
                                 <button onClick={() => {setViewingPDF(false)}}>clsoe pdf</button>
                             )
                         }
-                        <button>upload pdf</button>
+                        <button onClick={() => {setShowUploadModal(true)}}>upload pdf</button>
+                        {fileToUpload != null ? <p>*not saved</p> : null}
                     </div>
                 </div>
+                // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley
+                {/* <div className={styles.tagsContainer}>
+                    {
+                        currTags.map((tag) => {
+                            return (
+                                <p onClick={() => {
+                                    setCurrTags((prev) => prev.filter((item) => item !== tag));
+                                }}>{tag} </p>
+                            )
+                        })
+                    }
+                    <button onClick={() => setShowTagsDropdown(true)}>add tag +</button>
+                    {
+                        showTagsDropdown && <div className={styles.tagsDropdown}>
+                            <div className={styles.tagsDropdownHeader}>
+                                <button onClick={() => {setShowTagsDropdown(false)}}> CLOSE ME </button>
+                            </div>
+                            <div className={styles.tagsDropdownSearch}>
+                                <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value)}}/>
+                            </div>
+                            <div className={styles.tagsDropdownList}>
+                                {
+                                    filteredTags.map((tag) => {
+                                        if (!currTags.includes(tag)) {
+                                            return(
+                                                <p onClick={() => {
+                                                    setCurrTags((prev) => [...prev, tag])
+                                                }}>{tag}</p>
+                                            )
+                                        }
+                                    })
+                                }
+                            </div>
+                        </div>
+                    }
+                </div> */}
             </div>
             {/* lower half */}
             {
@@ -296,7 +370,7 @@ function BodyContent({ doc, onBack }) {
                     <div className={styles.policyAccordion}>
                         {filteredSections.map((section) => {
                             const isOpen = section.id === openSectionId;
-
+                            
                             return (
                                 <div key={section.id} className={styles.policySection}>
                                     <button
@@ -312,7 +386,46 @@ function BodyContent({ doc, onBack }) {
                                             ▶
                                         </span>
                                         <span className={styles.policySectionTitle}>
-                                            {highlightText(section.title, query, styles.highlight)}
+                                            {
+                                                section.id === sectionTitleEditID ? (
+                                                    <div>
+                                                        <input type="text" value={sectionTitleTemp} onChange={(e) => {setSectionTitleTemp(e.target.value)}} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => {stopPropagation();}}/>
+                                                        <button onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const newSections = sections.map((sect) => {
+                                                                if (sect.id === sectionTitleEditID) {
+                                                                    return {
+                                                                        ...sect,
+                                                                        title: sectionTitleTemp
+                                                                    }
+                                                                } else {
+                                                                    return sect;
+                                                                }
+                                                            });
+                                                            setSections(newSections);
+                                                            console.log("(debug) new sections: ", sections)
+                                                            setSectionTitleEditID(null);
+                                                            setSectionTitleTemp(null);
+                                                        }}>ok</button>
+                                                        <button onClick={(e) => {e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null);}}>cancel</button>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        {highlightText(section.title, query, styles.highlight)}
+                                                        <button onClick={(e) => {e.stopPropagation(); setSectionTitleEditID(section.id); setSectionTitleTemp(section.title);}}>edit</button>
+                                                        <span>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSections(
+                                                                        sections.filter(sect => sect.id != section.id)
+                                                                    )
+                                                                }}
+                                                            >delete</button>
+                                                        </span>
+                                                    </div>
+                                                )
+                                            }
                                         </span>
                                     </button>
 
@@ -332,17 +445,109 @@ function BodyContent({ doc, onBack }) {
                                                                 type="button"
                                                                 className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""
                                                                     }`}
-                                                                onClick={() =>
-                                                                    setActiveSubBySection((old) => ({
-                                                                        ...old,
-                                                                        [section.id]: sub.id,
-                                                                    }))
+                                                                onClick={() => {
+                                                                        setInitialMarkdown(activeSub?.content);
+                                                                        setActiveSubBySection((old) => ({
+                                                                            ...old,
+                                                                            [section.id]: sub.id,
+                                                                        }))
+                                                                    }
                                                                 }
                                                             >
-                                                                {highlightText(sub.title, query, styles.highlight)}
+                                                                {
+                                                                    sub.id === subTitleEditID ?
+                                                                    (
+                                                                        <div>
+                                                                            <input type="text" value={subTitleTemp} onChange={(e) => {setSubTitleTemp(e.target.value)}} onClick={(e) => {e.stopPropagation()}} onMouseDown={(e) => {e.stopPropagation()}}/>
+                                                                            <button onClick={(e) =>{
+                                                                                e.stopPropagation();
+                                                                                setSections(prevSections => 
+                                                                                    prevSections.map((sect) => {
+                                                                                        if (sect.id === openSectionId) {
+                                                                                            return ({
+                                                                                                ...sect,
+                                                                                                subsections: sect.subsections.map((sub) => {
+                                                                                                    if (sub.id === subTitleEditID) {
+                                                                                                        return {
+                                                                                                            ...sub,
+                                                                                                            title: subTitleTemp
+                                                                                                        }
+                                                                                                    } else {
+                                                                                                        return sub;
+                                                                                                    }
+                                                                                                })
+                                                                                            })
+                                                                                        } else {
+                                                                                            return sect;
+                                                                                        }
+                                                                                    })
+                                                                                )
+                                                                                setSubTitleEditID(null);
+                                                                                setSubTitleTemp(null);
+                                                                            }}>ok</button>
+                                                                            <button onClick={(e) => {
+                                                                                e.stopPropagation();
+                                                                                setSubTitleEditID(null);
+                                                                                setSubTitleTemp(null);
+                                                                            }}>cancel</button>
+                                                                        </div>
+                                                                    ) : (
+                                                                        <div>
+                                                                            <span>
+                                                                                {highlightText(sub.title, query, styles.highlight)}
+                                                                            </span>
+                                                                            <span>
+                                                                                <button onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setSubTitleEditID(sub.id);
+                                                                                    setSubTitleTemp(sub.title);
+                                                                                }}>edit</button>
+                                                                            </span>
+                                                                            <span>
+                                                                                <button onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setSections(prevSections => 
+                                                                                        prevSections.map((sect) => {
+                                                                                            if (sect.id === openSectionId) {
+                                                                                                return (
+                                                                                                    {
+                                                                                                        ...sect,
+                                                                                                        subsections: sect.subsections.filter(subsec => subsec.id != sub.id)
+                                                                                                    }
+                                                                                                )
+                                                                                            } else {
+                                                                                                return sect
+                                                                                            }
+                                                                                        })
+                                                                                    )
+                                                                                }}>delete</button>
+                                                                            </span>
+                                                                        </div>
+                                                                    )
+                                                                }
                                                             </button>
                                                         );
                                                     })}
+                                                    <button onClick={() => {
+                                                        setSections(prevSections => 
+                                                            prevSections.map((section) => {
+                                                                if (section.id === openSectionId) {
+                                                                    return {
+                                                                        ...section,
+                                                                        subsections: [...section.subsections, 
+                                                                            {   
+                                                                                id: "new"+crypto.randomUUID(),
+                                                                                title: "New subsection",
+                                                                                content: "New subsection content"
+                                                                            }
+                                                                        ]
+                                                                    }
+                                                                } else {
+                                                                    return section;
+                                                                }
+                                                            })
+                                                        )
+                                                    }}>create new subssection</button>
                                                 </div>
 
                                                 <div className={styles.policyContent}>
@@ -352,9 +557,40 @@ function BodyContent({ doc, onBack }) {
                                                         </h3>
 
                                                         <div className={styles.policyContentText}>
-                                                            <ul className={styles.policyBulletList}>
+                                                            {/* <ul className={styles.policyBulletList}>
                                                                 {activeSub ? renderContent(activeSub.content) : null}
-                                                            </ul>
+                                                            </ul> */}
+                                                            <MDXEditor
+                                                                key={initialMarkdown}
+                                                                contentEditableClassName="prose"
+                                                                placeholder="Write information here!"
+                                                                markdown={initialMarkdown}
+                                                                onChange={(md) => {setCurrentMarkdown(md)}}
+                                                                plugins={[
+                                                                    toolbarPlugin({
+                                                                    toolbarClassName: 'my-classname',
+                                                                    toolbarContents: () => (
+                                                                        <>
+                                                                        <UndoRedo />
+                                                                        <BlockTypeSelect />
+                                                                        <BoldItalicUnderlineToggles />
+                                                                        <ListsToggle />
+                                                                        <InsertThematicBreak />
+                                                                        <InsertImage />
+                                                                        <InsertTable />
+                                                                        </>
+                                                                    )
+                                                                    }),
+                                                                    linkPlugin(),
+                                                                    tablePlugin(),
+                                                                    headingsPlugin(),
+                                                                    quotePlugin(),
+                                                                    listsPlugin(),
+                                                                    thematicBreakPlugin(),
+                                                                    markdownShortcutPlugin()
+                        
+                                                                ]}
+                                                                />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -366,12 +602,12 @@ function BodyContent({ doc, onBack }) {
                         })}
                         <button className={styles.SectionCreateButton} onClick={() => {
                             setSections(prevSections => [...prevSections, {
-                                id: crypto.randomUUID(),
+                                id: "new"+crypto.randomUUID(),
                                 description: "New section description",
                                 title: "New section",
                                 subsections: [
                                     {   
-                                        id: crypto.randomUUID(),
+                                        id: "new"+crypto.randomUUID(),
                                         title: "New subsection",
                                         content: "New subsection content"
                                     }
@@ -383,7 +619,7 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
-            
+            {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload}/>}
         </div>
     );
 }
