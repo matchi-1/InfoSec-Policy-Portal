@@ -1,81 +1,477 @@
+/* =========================
+   Document Editor - Image UI Match
+   ========================= */
+
 .documents {
+  --bg-page: #eef4fd;
+  --card-bg: #ffffff;
+  --line: #cfd9e8;
+  --line-strong: #9fb4d3;
+  --soft-blue: #dbe9ff;
+  --soft-blue-2: #edf4ff;
+  --primary-blue: #1f4f95;
+  --primary-blue-2: #2f66b3;
+  --primary-blue-3: #3f73bb;
+  --text-main: #183153;
+  --text-sub: #5f7090;
+  --text-muted: #7f8ea8;
+  --danger: #e53935;
+  --success: #0b8f8f;
+  --success-dark: #087b7b;
+
   display: flex;
+  flex-direction: column;
   width: 100%;
   height: 100%;
-  flex-direction: column;
-}
+  min-height: 0;
+  gap: 0.95rem;
 
-.policyAccordion{
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 0.6rem;
-
-  width: 100%;
-  height: 100%;
-
-  overflow-y: auto;
-  padding: 0.5rem;
+  padding: 1.25rem;
   box-sizing: border-box;
 
-  scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;
-
-  border-top: 1px solid #bdc8d6;
+  background: var(--bg-page);
+  border: 1px solid #d9e5f4;
+  border-radius: 1rem;
+  overflow: hidden;
 }
 
-.policyAccordion::-webkit-scrollbar{ width: 10px; }
-.policyAccordion::-webkit-scrollbar-track{ background: transparent; }
-.policyAccordion::-webkit-scrollbar-thumb{
-  background: #94A9C6;
-  border-radius: 999px;
+/* =========================
+   Top Header
+   ========================= */
+
+.titleHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  padding: 1.15rem 1.2rem 1rem;
+  box-shadow: 0 2px 12px rgba(28, 66, 125, 0.06);
 }
 
-.policySection{ 
-    width: 100%; 
+.titleDropdowns {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
 }
 
-.policySectionHeader{
-  width: 100%;
+.title {
+  flex: 1;
+  min-width: 0;
+}
+
+.title > p {
+  margin: 0 0 0.55rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #7a879d;
+  text-transform: capitalize;
+  cursor: pointer;
+}
+
+.titleText,
+.titleEditor {
   display: flex;
   align-items: center;
   gap: 0.6rem;
+  flex-wrap: wrap;
+}
 
-  padding: 0.5rem 0.9rem;
+.titleText h1 {
+  margin: 0;
+  font-size: clamp(2rem, 2.2vw, 2.35rem);
+  line-height: 1.1;
+  font-weight: 600;
+  color: var(--primary-blue);
+  letter-spacing: -0.02em;
+}
+
+.titleText button,
+.titleEditor button,
+.descText button,
+.descEdit button {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  color: var(--primary-blue-2);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.titleText button:hover,
+.titleEditor button:hover,
+.descText button:hover,
+.descEdit button:hover {
+  color: var(--primary-blue);
+  text-decoration: underline;
+}
+
+.titleEditor input {
+  width: min(38rem, 100%);
+  height: 2.7rem;
+  padding: 0 0.9rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.65rem;
+  outline: none;
+  font: inherit;
+  color: var(--text-main);
+  background: #fff;
+}
+
+.titleEditor input:focus {
+  border-color: var(--primary-blue-2);
+  box-shadow: 0 0 0 3px rgba(47, 102, 179, 0.12);
+}
+
+.dropdowns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 20rem;
+  flex-shrink: 0;
+}
+
+.dropdownContainer {
+  display: grid;
+  grid-template-columns: 6.3rem 1fr;
+  align-items: center;
+  gap: 0.55rem;
+  position: relative;
+}
+
+.dropdownContainer > p {
+  margin: 0;
+  color: var(--primary-blue);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.dropDownSection {
+  position: relative;
+  min-height: 2.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+
+  padding: 0 0.9rem;
+  border: 2px solid #5c83bb;
+  border-radius: 999px;
+  background: #eef5ff;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.dropDownSection:hover {
+  background: #e7f0ff;
+}
+
+.dropDownSection > p {
+  margin: 0;
+  color: var(--primary-blue);
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dropDownSection::after {
+  content: "⌄";
+  color: var(--primary-blue);
+  font-size: 1rem;
+  line-height: 1;
+  transform: translateY(-1px);
+}
+
+.dropdownList {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  right: 0;
+  z-index: 10;
+
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 0.85rem;
+  box-shadow: 0 10px 22px rgba(17, 53, 110, 0.12);
+  padding: 0.7rem 0.85rem;
+  color: var(--text-sub);
+  font-size: 0.9rem;
+}
+
+.descButtons {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.descContainer {
+  flex: 1;
+  min-width: 0;
+}
+
+.descText,
+.descEdit {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.descText p {
+  flex: 1;
+  margin: 0;
+  min-height: 3rem;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.45rem;
+  background: #f9fbfe;
+  color: var(--primary-blue-2);
+  font-size: 0.92rem;
+  font-style: italic;
+  line-height: 1.15;
+}
+
+.descEdit textarea {
+  flex: 1;
+  min-height: 4.2rem;
+  resize: vertical;
+  padding: 0.7rem 0.85rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 0.55rem;
+  outline: none;
+  font: inherit;
+  color: var(--text-main);
+  background: #fff;
+}
+
+.descEdit textarea:focus {
+  border-color: var(--primary-blue-2);
+  box-shadow: 0 0 0 3px rgba(47, 102, 179, 0.12);
+}
+
+.buttonsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+}
+
+.buttonsContainer > button {
+  appearance: none;
+  border: none;
+  border-radius: 999px;
+  min-height: 2.4rem;
+  padding: 0 1rem;
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 160ms ease, opacity 160ms ease, background 160ms ease;
+}
+
+.buttonsContainer > button:hover {
+  transform: translateY(-1px);
+}
+
+.buttonsContainer > button:first-child {
+  background: #69707d;
+  color: #fff;
+}
+
+.buttonsContainer > button:first-child + button {
+  background: var(--primary-blue);
+  color: #fff;
+}
+
+.buttonsContainer > button:last-of-type {
+  background: var(--success);
+  color: #fff;
+}
+
+.buttonsContainer > button:last-of-type:hover {
+  background: var(--success-dark);
+}
+
+.buttonsContainer > p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #c35d4c;
+  font-weight: 600;
+}
+
+/* =========================
+   PDF View
+   ========================= */
+
+.pdfViewerContainer {
+  flex: 1;
+  min-height: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 12px rgba(28, 66, 125, 0.05);
+}
+
+.pdfIframe {
+  width: 100%;
+  height: 100%;
+  min-height: 30rem;
+  border: 0;
+  display: block;
+  background: #f7f9fd;
+}
+
+/* =========================
+   Accordion Wrapper
+   ========================= */
+
+.policyAccordion {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  gap: 0.85rem;
+
+  width: 100%;
+  overflow-y: auto;
+  padding: 0.15rem;
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6 transparent;
+}
+
+.policyAccordion::-webkit-scrollbar { width: 10px; }
+.policyAccordion::-webkit-scrollbar-track { background: transparent; }
+.policyAccordion::-webkit-scrollbar-thumb {
+  background: #94a9c6;
+  border-radius: 999px;
+}
+
+.policySection {
+  width: 100%;
+}
+
+/* =========================
+   Section Header
+   ========================= */
+
+.policySectionHeader {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+
+  padding: 0.95rem 1rem;
+  border: 1px solid #b9ccea;
+  border-radius: 0.8rem;
 
   background: #dbe9ff;
-  border-bottom: 2px solid #4777ba;
-  color: #1b3b6f;
-
+  color: var(--primary-blue);
   cursor: pointer;
   user-select: none;
+  text-align: left;
 
-  transition: background-color 180ms ease, color 180ms ease, border-color 180ms ease;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.policySectionHeaderOpen{
+.policySectionHeader:hover {
+  background: #d2e4ff;
+}
+
+.policySectionHeaderOpen {
   background: var(--primary-blue);
   border-color: var(--primary-blue);
-  color: white;
+  color: #fff;
+  border-radius: 0.8rem 0.8rem 0 0;
 }
 
-.policyChevron{
+.policyChevron {
   display: inline-block;
   transition: transform 220ms ease;
-  font-size: 0.8rem;
+  font-size: 0.85rem;
   line-height: 1;
+  flex-shrink: 0;
 }
-.policyChevronOpen{
+
+.policyChevronOpen {
   transform: rotate(90deg);
 }
 
+.policySectionTitle {
+  flex: 1;
+  min-width: 0;
+  font-size: 1rem;
+  font-weight: 500;
+}
 
-/* --- OUTER/INNER accordion animation --- */
-.policyPanelOuter{
-    
+.policySectionTitle > div {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+
+.policySectionTitle input {
+  height: 2rem;
+  min-width: 14rem;
+  padding: 0 0.7rem;
+  border: 1px solid #9eb5d7;
+  border-radius: 0.45rem;
+  font: inherit;
+  outline: none;
+}
+
+.policySectionTitle input:focus {
+  border-color: var(--primary-blue-2);
+  box-shadow: 0 0 0 3px rgba(47, 102, 179, 0.12);
+}
+
+.policySectionHeader button,
+.policySectionTitle button {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  color: inherit;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  opacity: 0.95;
+}
+
+.policySectionHeader button:hover,
+.policySectionTitle button:hover {
+  text-decoration: underline;
+}
+
+.policySectionHeaderOpen .policySectionTitle button {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+/* =========================
+   Open / close animation
+   ========================= */
+
+.policyPanelOuter {
   display: grid;
   grid-template-rows: 0fr;
-
   opacity: 0;
   transform: translateY(-4px);
   pointer-events: none;
@@ -86,182 +482,507 @@
     transform 220ms ease;
 }
 
-.policyPanelOuterOpen{
+.policyPanelOuterOpen {
   grid-template-rows: 1fr;
-
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
-/* clamps content while the outer row animates */
-.policyPanelInner{
+.policyPanelInner {
   overflow: hidden;
 }
 
-.policySectionTitle{
-  font-size: 0.9rem;
-  font-weight: 500;
-}
+/* =========================
+   Section Body
+   ========================= */
 
-.policyPanel{
+.policyPanel {
   display: flex;
   width: 100%;
-
-  border: 1px solid #94A9C6;
+  border: 1px solid #b9ccea;
   border-top: none;
-
-  border-radius: 0 0 0.45rem 0.45rem;
+  border-radius: 0 0 0.95rem 0.95rem;
   overflow: hidden;
-
-  background: white;
+  background: #fff;
   box-sizing: border-box;
+  box-shadow: 0 8px 18px rgba(31, 79, 149, 0.06);
 }
 
-
-
-/* open state */
-.policyPanelOpen{
-  min-height: 16rem;
-  max-height: 16rem;  
+.policyPanelOpen {
+  min-height: 20rem;
+  max-height: 20rem;
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
 }
 
+/* =========================
+   Left Subsection Nav
+   ========================= */
 
-/* Left subsections */
-.policySubnav{
-  width: 16rem;
-  min-width: 16rem;
-
-  background: #f2f6fb;
-  border-right: 1px solid #94A9C6;
-
+.policySubnav {
+  width: 17.5rem;
+  min-width: 17.5rem;
   display: flex;
   flex-direction: column;
+  background: #fbfdff;
+  border-right: 1px solid var(--line-strong);
 
-  min-height: 16rem;
-  max-height: 16rem;
+  min-height: 20rem;
+  max-height: 20rem;
   overflow-y: auto;
 
   box-sizing: border-box;
-
   scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;
+  scrollbar-color: #94a9c6 transparent;
 }
 
-.policySubnav::-webkit-scrollbar{ width: 10px; }
-.policySubnav::-webkit-scrollbar-track{ background: transparent; }
-.policySubnav::-webkit-scrollbar-thumb{
-  background: #94A9C6;
+.policySubnav::-webkit-scrollbar { width: 10px; }
+.policySubnav::-webkit-scrollbar-track { background: transparent; }
+.policySubnav::-webkit-scrollbar-thumb {
+  background: #94a9c6;
   border-radius: 999px;
 }
 
-.policySubnavItem{
+.policySubnavItem {
   width: 100%;
   text-align: left;
-
-  padding: 0.85rem 0.9rem;
+  padding: 0.95rem 0.95rem;
   border: none;
-  background: transparent;
+  border-bottom: 1px solid #d8e2f0;
+  background: #f8fafc;
 
-  font-size: 0.85rem;
-  color: #3b4a63;
-
-  border-bottom: 1px solid #bdc8d6;
-
+  font-size: 0.92rem;
+  color: #61728f;
   cursor: pointer;
   user-select: none;
+
+  transition: background-color 160ms ease, color 160ms ease, border-color 160ms ease;
 }
 
-.policySubnavItem:hover{
-  background: rgba(148, 169, 198, 0.18);
+.policySubnavItem:hover {
+  background: #eef4fd;
 }
 
-.policySubnavItemActive{
-  background: white;
-  font-weight: 600;
-  color: var(--primary-blue);
+.policySubnavItem > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.45rem;
   width: 100%;
-  border-left: 0.2rem solid var(--primary-blue);
 }
 
-.policySubnavItemActive:hover{
-  background: white;
+.policySubnavItem > div > span:first-child {
+  flex: 1;
+  min-width: 0;
+  line-height: 1.2;
 }
 
-/* Right content */
-.policyContent{
+.policySubnavItemActive {
+  background: #ffffff;
+  color: var(--primary-blue);
+  font-weight: 700;
+  border-left: 4px solid var(--primary-blue);
+  padding-left: calc(0.95rem - 4px);
+}
+
+.policySubnavItemActive:hover {
+  background: #ffffff;
+}
+
+.policySubnavItem input {
+  width: 100%;
+  min-width: 0;
+  height: 2rem;
+  padding: 0 0.6rem;
+  border: 1px solid #9eb5d7;
+  border-radius: 0.45rem;
+  font: inherit;
+  outline: none;
+}
+
+.policySubnavItem input:focus {
+  border-color: var(--primary-blue-2);
+  box-shadow: 0 0 0 3px rgba(47, 102, 179, 0.12);
+}
+
+.policySubnavItem button {
+  appearance: none;
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  color: #7d91af;
+  font-size: 0.75rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.policySubnavItem button:hover {
+  color: var(--primary-blue);
+  text-decoration: underline;
+}
+
+/* create new subsection button */
+.policySubnav > button:last-child {
+  margin: auto 0 0;
+  padding: 0.95rem 1rem;
+  border: none;
+  border-top: 1px solid #d8e2f0;
+  background: #ffffff;
+  color: var(--success);
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.policySubnav > button:last-child:hover {
+  background: #f6fbfb;
+}
+
+/* =========================
+   Right Editor Content
+   ========================= */
+
+.policyContent {
   flex: 1;
   min-width: 0;
   display: flex;
-  background: white;
-
-  /* match height with subnav */
-  min-height: 16rem;
-  max-height: 16rem;
+  background: #fff;
+  min-height: 20rem;
+  max-height: 20rem;
 }
 
-
-.policyContentInner{
+.policyContentInner {
   flex: 1;
   min-width: 0;
-
-  padding: 0.9rem 1rem;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
   box-sizing: border-box;
-
-  overflow-y: auto;
-
-  scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;
 }
 
-.policyContentInner::-webkit-scrollbar{ width: 10px; }
-.policyContentInner::-webkit-scrollbar-track{ background: transparent; }
-.policyContentInner::-webkit-scrollbar-thumb{
-  background: #94A9C6;
+.policyContentTitle {
+  margin: 0;
+  padding: 0.95rem 1rem 0.65rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--text-main);
+  border-bottom: 1px solid #dbe3ef;
+}
+
+.policyContentText {
+  flex: 1;
+  min-height: 0;
+  padding: 0.6rem 0.85rem 0.85rem;
+  background: #fff;
+}
+
+/* =========================
+   MDXEditor skin
+   ========================= */
+
+.policyContentText :global(.mdxeditor) {
+  height: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #cfd9e8;
+  border-radius: 0.35rem;
+  overflow: hidden;
+
+  --accentBase: #f2f6fc;
+  --accentBg: #edf4ff;
+  --accentBgHover: #e3eeff;
+  --accentLine: #c8d6ea;
+  --accentBorder: #b7cae3;
+  --accentSolid: #2f66b3;
+  --accentSolidHover: #25579d;
+  --accentText: #214e91;
+
+  --baseBase: #ffffff;
+  --baseBg: #ffffff;
+  --baseBgHover: #f6f9fd;
+  --baseLine: #dde5f0;
+  --baseBorder: #d2dce9;
+  --baseText: #2c3f5d;
+  background: #fff;
+}
+
+.policyContentText :global(.mdxeditor-toolbar) {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid #dbe3ef;
+  background: #f7faff;
+}
+
+.policyContentText :global(.mdxeditor-toolbar button) {
+  border-radius: 0.35rem;
+}
+
+.policyContentText :global(.mdxeditor-toolbar button:hover) {
+  background: #eaf2ff;
+}
+
+.policyContentText :global(.mdxeditor-toolbar [data-state="on"]) {
+  background: #dceaff;
+  color: var(--primary-blue);
+}
+
+.policyContentText :global(.mdxeditor-root-contenteditable) {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 1rem 1rem 1.1rem;
+  font-size: 0.95rem;
+  line-height: 1.55;
+  color: #31425d;
+  background: #fff;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6 transparent;
+}
+
+.policyContentText :global(.mdxeditor-root-contenteditable::-webkit-scrollbar) {
+  width: 10px;
+}
+
+.policyContentText :global(.mdxeditor-root-contenteditable::-webkit-scrollbar-track) {
+  background: transparent;
+}
+
+.policyContentText :global(.mdxeditor-root-contenteditable::-webkit-scrollbar-thumb) {
+  background: #94a9c6;
   border-radius: 999px;
 }
 
-.policyContentTitle{
-  margin: 0 0 0.6rem 0;
+/* because your JSX uses contentEditableClassName="prose" */
+.policyContentText :global(.prose) {
+  color: #31425d;
   font-size: 0.95rem;
-  font-weight: 600;
-  color: #1b3b6f;
+  line-height: 1.55;
 }
 
-.policyContentText{
-  font-size: 0.85rem;
-  color: #2d3442;
+.policyContentText :global(.prose p) {
+  margin: 0 0 0.8rem;
 }
 
-.policyLine{ margin: 0.35rem 0; }
-.policyLineHeading{
-  margin: 0.55rem 0 0.25rem 0;
-  font-weight: 600;
+.policyContentText :global(.prose h1),
+.policyContentText :global(.prose h2),
+.policyContentText :global(.prose h3) {
+  color: var(--text-main);
+  line-height: 1.25;
+  margin: 1rem 0 0.55rem;
 }
 
-.policyBulletList{
+.policyContentText :global(.prose h1) { font-size: 1.3rem; }
+.policyContentText :global(.prose h2) { font-size: 1.15rem; }
+.policyContentText :global(.prose h3) { font-size: 1rem; }
+
+.policyContentText :global(.prose ul),
+.policyContentText :global(.prose ol) {
+  padding-left: 1.25rem;
+  margin: 0.4rem 0 0.9rem;
+}
+
+.policyContentText :global(.prose li) {
+  margin: 0.2rem 0;
+}
+
+.policyContentText :global(.prose blockquote) {
+  margin: 0.95rem 0;
+  padding: 0.7rem 0.9rem;
+  border-left: 4px solid #9db7df;
+  background: #f5f9ff;
+  color: #506684;
+}
+
+.policyContentText :global(.prose table) {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.9rem 0 1rem;
+}
+
+.policyContentText :global(.prose th),
+.policyContentText :global(.prose td) {
+  border: 1px solid #d7e0ec;
+  padding: 0.55rem 0.7rem;
+  vertical-align: top;
+}
+
+.policyContentText :global(.prose th) {
+  background: #f3f7fd;
+  color: var(--text-main);
+  font-weight: 700;
+}
+
+/* =========================
+   Old content rendering classes
+   ========================= */
+
+.policyLine {
+  margin: 0.35rem 0;
+}
+
+.policyLineHeading {
+  margin: 0.55rem 0 0.25rem;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.policyBulletList {
   margin: 0;
   padding-left: 1.1rem;
 }
 
-.policyBullet{
+.policyBullet {
   margin: 0.25rem 0;
 }
 
-.policySpacer{
+.policySpacer {
   height: 0.5rem;
 }
 
+/* =========================
+   Utility / empty state
+   ========================= */
 
-
-.policyNoResults{
-  padding: 1rem;
-  border: 1px dashed #94A9C6;
-  border-radius: 0.5rem;
-  background: rgba(148,169,198,0.10);
-  color: #1b3b6f;
+.highlight {
+  background: #fff1a8;
+  color: inherit;
+  border-radius: 0.2rem;
+  padding: 0 0.12rem;
 }
 
+.policyNoResults {
+  padding: 1rem;
+  border: 1px dashed #94a9c6;
+  border-radius: 0.75rem;
+  background: rgba(148, 169, 198, 0.1);
+  color: var(--primary-blue);
+}
+
+.SectionCreateButton {
+  align-self: flex-start;
+  appearance: none;
+  border: 1px solid #7fb6af;
+  background: #ffffff;
+  color: var(--success);
+  border-radius: 999px;
+  padding: 0.75rem 1.05rem;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.SectionCreateButton:hover {
+  background: #f6fbfb;
+}
+
+/* =========================
+   Optional tags section
+   ========================= */
+
+.tagsContainer {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  flex-wrap: wrap;
+}
+
+.tagsContainer p {
+  margin: 0;
+  padding: 0.38rem 0.7rem;
+  border-radius: 999px;
+  background: #eef4ff;
+  color: var(--primary-blue);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.tagsContainer button {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--primary-blue-2);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tagsDropdown {
+  margin-top: 0.45rem;
+  border: 1px solid var(--line);
+  border-radius: 0.8rem;
+  background: #fff;
+  padding: 0.85rem;
+  box-shadow: 0 10px 22px rgba(17, 53, 110, 0.1);
+}
+
+.tagsDropdownHeader,
+.tagsDropdownSearch,
+.tagsDropdownList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+/* =========================
+   Responsive
+   ========================= */
+
+@media (max-width: 1100px) {
+  .titleDropdowns,
+  .descButtons {
+    flex-direction: column;
+  }
+
+  .dropdowns {
+    width: 100%;
+    max-width: 28rem;
+  }
+
+  .policyPanel {
+    flex-direction: column;
+  }
+
+  .policySubnav {
+    width: 100%;
+    min-width: 0;
+    max-height: 14rem;
+    min-height: 12rem;
+    border-right: none;
+    border-bottom: 1px solid var(--line-strong);
+  }
+
+  .policyContent {
+    min-height: 24rem;
+    max-height: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .documents {
+    padding: 0.8rem;
+  }
+
+  .titleHeader {
+    padding: 0.95rem;
+  }
+
+  .titleText h1 {
+    font-size: 1.6rem;
+  }
+
+  .dropdownContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .dropdownContainer > p {
+    margin-bottom: 0.15rem;
+  }
+}
