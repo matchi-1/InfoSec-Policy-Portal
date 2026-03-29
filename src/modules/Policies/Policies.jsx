@@ -44,6 +44,10 @@ const BodyContent = () => {
     const getUniqueOptions = (items, key) =>
         [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
 
+    const hasActiveDocFilters = Object.values(docFilters).some(
+        (value) => String(value ?? "").trim() !== ""
+    );
+
 
     const documentFilterFields = useMemo(() => {
         return [
@@ -162,19 +166,37 @@ const BodyContent = () => {
                     </div>
 
                     <div className={styles.filterAndFileNumContainer}>
-                        <FilterPopup
-                            title="Filter documents"
-                            buttonLabel="Filter"
-                            iconSrc="/icons/filter-blue.png"
-                            fields={documentFilterFields}
-                            values={docFilters}
-                            onApply={setDocFilters}
-                            onClear={setDocFilters}
-                        />
+                        <div className={styles.filterActions}>
+                            <FilterPopup
+                                title="Filter documents"
+                                buttonLabel="Filter"
+                                iconSrc="/icons/filter-blue.png"
+                                fields={documentFilterFields}
+                                values={docFilters}
+                                onApply={setDocFilters}
+                                onClear={setDocFilters}
+                            />
 
-                        {/* reflect DB */}
+                            {hasActiveDocFilters && (
+                                <button
+                                    type="button"
+                                    className={styles.clearFilterText}
+                                    onClick={() =>
+                                        setDocFilters({
+                                            classification: "",
+                                            status: "",
+                                            authoredBy: "",
+                                            reviewedBy: "",
+                                        })
+                                    }
+                                >
+                                    Clear
+                                </button>
+                            )}
+                        </div>
+
                         <span className={styles.fileNumText}>
-                            {docSearch.trim()
+                            {docSearch.trim() || hasActiveDocFilters
                                 ? `${filteredDocs.length} of ${dbDocs.length} Files`
                                 : `${dbDocs.length} Files`}
                         </span>

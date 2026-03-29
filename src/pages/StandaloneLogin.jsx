@@ -5,6 +5,13 @@ import styles from "./StandaloneLogin.module.css";
 import emailjs from "@emailjs/browser";
 
 export default function StandaloneLogin() {
+
+  // remove this after backend fix (this is for ez bypass)
+  const quickFillLogin = (email, password) => {
+    setCredentials({ email, password });
+    setLoginError("");
+  };
+
   const [credentials, setCredentials] = useState({
     email: "",
     password: "",

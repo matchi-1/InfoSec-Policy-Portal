@@ -508,3 +508,31 @@ h2 {
   background: white;
   border-radius: 0.5rem;
 }
+
+
+.filterActions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  min-width: 0;
+}
+
+.clearFilterText {
+  border: none;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  font-size: 0.72rem;
+  color: #6f7f98;
+  text-decoration: underline;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.clearFilterText:hover {
+  color: var(--primary-blue);
+}
+
+.clearFilterText:active {
+  opacity: 0.75;
+}
