@@ -3,7 +3,7 @@ import styles from "../styles/DocumentEditor.module.css";
 import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
 import { MDXEditor, headingsPlugin, quotePlugin, thematicBreakPlugin, toolbarPlugin, listsPlugin, linkPlugin, imagePlugin, tablePlugin, markdownShortcutPlugin } from '@mdxeditor/editor';
-import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable} from "@mdxeditor/editor";
+import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable } from "@mdxeditor/editor";
 import '@mdxeditor/editor/style.css'
 
 
@@ -220,14 +220,14 @@ function BodyContent({ doc, onBack }) {
             <div className={styles.titleHeader}>
                 <div className={styles.titleDropdowns}>
                     <div className={styles.title}>
-                        <p onClick={onBack}>back to doc</p>
+                        <p onClick={onBack}>⬅ Back to Documents</p>
                         {
                             (!editingTitle) ? (
                                 <div className={styles.titleText}>
                                     <h1 onClick={() => setEditingTitle(true)}>{currTitle}</h1>
                                     <button onClick={() => setEditingTitle(true)}>edit</button>
                                 </div>
-                            ) :(
+                            ) : (
                                 <div className={styles.titleEditor}>
                                     <input
                                         type="text"
@@ -238,7 +238,7 @@ function BodyContent({ doc, onBack }) {
                                         setEditingTitle(false);
                                     }}>checkmark here</button>
                                 </div>
-                                
+
                             )
                         }
                     </div>
@@ -291,17 +291,17 @@ function BodyContent({ doc, onBack }) {
                         {!editingDesc ? (
                             <div className={styles.descText}>
                                 <p>{currDesc}</p>
-                                <button onClick={() => {setEditingDesc(true)}}>edit</button>
+                                <button onClick={() => { setEditingDesc(true) }}>edit</button>
                             </div>
                         ) : (
                             <div className={styles.descEdit}>
                                 <textarea
                                     value={currDesc}
-                                    onChange={(e) => {setCurrDesc(e.target.value)}}
+                                    onChange={(e) => { setCurrDesc(e.target.value) }}
                                     rows={5}
                                     cols={30}
                                 />
-                                <button onClick={() => {setEditingDesc(false)}}>check</button>
+                                <button onClick={() => { setEditingDesc(false) }}>check</button>
                             </div>
                         )}
                     </div>
@@ -312,14 +312,14 @@ function BodyContent({ doc, onBack }) {
                                     doc.pdf_filename == "null" ? alert("no pdfs?") : setViewingPDF(true)
                                 }}>view pdf</button>
                             ) : (
-                                <button onClick={() => {setViewingPDF(false)}}>clsoe pdf</button>
+                                <button onClick={() => { setViewingPDF(false) }}>clsoe pdf</button>
                             )
                         }
-                        <button onClick={() => {setShowUploadModal(true)}}>upload pdf</button>
+                        <button onClick={() => { setShowUploadModal(true) }}>upload pdf</button>
                         {fileToUpload != null ? <p>*not saved</p> : null}
                     </div>
                 </div>
-                // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley
+                {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
                 {/* <div className={styles.tagsContainer}>
                     {
                         currTags.map((tag) => {
@@ -370,7 +370,7 @@ function BodyContent({ doc, onBack }) {
                     <div className={styles.policyAccordion}>
                         {filteredSections.map((section) => {
                             const isOpen = section.id === openSectionId;
-                            
+
                             return (
                                 <div key={section.id} className={styles.policySection}>
                                     <button
@@ -389,7 +389,7 @@ function BodyContent({ doc, onBack }) {
                                             {
                                                 section.id === sectionTitleEditID ? (
                                                     <div>
-                                                        <input type="text" value={sectionTitleTemp} onChange={(e) => {setSectionTitleTemp(e.target.value)}} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => {stopPropagation();}}/>
+                                                        <input type="text" value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => { stopPropagation(); }} />
                                                         <button onClick={(e) => {
                                                             e.stopPropagation();
                                                             const newSections = sections.map((sect) => {
@@ -407,12 +407,12 @@ function BodyContent({ doc, onBack }) {
                                                             setSectionTitleEditID(null);
                                                             setSectionTitleTemp(null);
                                                         }}>ok</button>
-                                                        <button onClick={(e) => {e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null);}}>cancel</button>
+                                                        <button onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null); }}>cancel</button>
                                                     </div>
                                                 ) : (
                                                     <div>
                                                         {highlightText(section.title, query, styles.highlight)}
-                                                        <button onClick={(e) => {e.stopPropagation(); setSectionTitleEditID(section.id); setSectionTitleTemp(section.title);}}>edit</button>
+                                                        <button onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(section.id); setSectionTitleTemp(section.title); }}>edit</button>
                                                         <span>
                                                             <button
                                                                 onClick={(e) => {
@@ -446,100 +446,100 @@ function BodyContent({ doc, onBack }) {
                                                                 className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""
                                                                     }`}
                                                                 onClick={() => {
-                                                                        setInitialMarkdown(activeSub?.content);
-                                                                        setActiveSubBySection((old) => ({
-                                                                            ...old,
-                                                                            [section.id]: sub.id,
-                                                                        }))
-                                                                    }
+                                                                    setInitialMarkdown(activeSub?.content);
+                                                                    setActiveSubBySection((old) => ({
+                                                                        ...old,
+                                                                        [section.id]: sub.id,
+                                                                    }))
+                                                                }
                                                                 }
                                                             >
                                                                 {
                                                                     sub.id === subTitleEditID ?
-                                                                    (
-                                                                        <div>
-                                                                            <input type="text" value={subTitleTemp} onChange={(e) => {setSubTitleTemp(e.target.value)}} onClick={(e) => {e.stopPropagation()}} onMouseDown={(e) => {e.stopPropagation()}}/>
-                                                                            <button onClick={(e) =>{
-                                                                                e.stopPropagation();
-                                                                                setSections(prevSections => 
-                                                                                    prevSections.map((sect) => {
-                                                                                        if (sect.id === openSectionId) {
-                                                                                            return ({
-                                                                                                ...sect,
-                                                                                                subsections: sect.subsections.map((sub) => {
-                                                                                                    if (sub.id === subTitleEditID) {
-                                                                                                        return {
-                                                                                                            ...sub,
-                                                                                                            title: subTitleTemp
-                                                                                                        }
-                                                                                                    } else {
-                                                                                                        return sub;
-                                                                                                    }
-                                                                                                })
-                                                                                            })
-                                                                                        } else {
-                                                                                            return sect;
-                                                                                        }
-                                                                                    })
-                                                                                )
-                                                                                setSubTitleEditID(null);
-                                                                                setSubTitleTemp(null);
-                                                                            }}>ok</button>
-                                                                            <button onClick={(e) => {
-                                                                                e.stopPropagation();
-                                                                                setSubTitleEditID(null);
-                                                                                setSubTitleTemp(null);
-                                                                            }}>cancel</button>
-                                                                        </div>
-                                                                    ) : (
-                                                                        <div>
-                                                                            <span>
-                                                                                {highlightText(sub.title, query, styles.highlight)}
-                                                                            </span>
-                                                                            <span>
+                                                                        (
+                                                                            <div>
+                                                                                <input type="text" value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} />
                                                                                 <button onClick={(e) => {
                                                                                     e.stopPropagation();
-                                                                                    setSubTitleEditID(sub.id);
-                                                                                    setSubTitleTemp(sub.title);
-                                                                                }}>edit</button>
-                                                                            </span>
-                                                                            <span>
-                                                                                <button onClick={(e) => {
-                                                                                    e.stopPropagation();
-                                                                                    setSections(prevSections => 
+                                                                                    setSections(prevSections =>
                                                                                         prevSections.map((sect) => {
                                                                                             if (sect.id === openSectionId) {
-                                                                                                return (
-                                                                                                    {
-                                                                                                        ...sect,
-                                                                                                        subsections: sect.subsections.filter(subsec => subsec.id != sub.id)
-                                                                                                    }
-                                                                                                )
+                                                                                                return ({
+                                                                                                    ...sect,
+                                                                                                    subsections: sect.subsections.map((sub) => {
+                                                                                                        if (sub.id === subTitleEditID) {
+                                                                                                            return {
+                                                                                                                ...sub,
+                                                                                                                title: subTitleTemp
+                                                                                                            }
+                                                                                                        } else {
+                                                                                                            return sub;
+                                                                                                        }
+                                                                                                    })
+                                                                                                })
                                                                                             } else {
-                                                                                                return sect
+                                                                                                return sect;
                                                                                             }
                                                                                         })
                                                                                     )
-                                                                                }}>delete</button>
-                                                                            </span>
-                                                                        </div>
-                                                                    )
+                                                                                    setSubTitleEditID(null);
+                                                                                    setSubTitleTemp(null);
+                                                                                }}>ok</button>
+                                                                                <button onClick={(e) => {
+                                                                                    e.stopPropagation();
+                                                                                    setSubTitleEditID(null);
+                                                                                    setSubTitleTemp(null);
+                                                                                }}>cancel</button>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <div>
+                                                                                <span>
+                                                                                    {highlightText(sub.title, query, styles.highlight)}
+                                                                                </span>
+                                                                                <span>
+                                                                                    <button onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        setSubTitleEditID(sub.id);
+                                                                                        setSubTitleTemp(sub.title);
+                                                                                    }}>edit</button>
+                                                                                </span>
+                                                                                <span>
+                                                                                    <button onClick={(e) => {
+                                                                                        e.stopPropagation();
+                                                                                        setSections(prevSections =>
+                                                                                            prevSections.map((sect) => {
+                                                                                                if (sect.id === openSectionId) {
+                                                                                                    return (
+                                                                                                        {
+                                                                                                            ...sect,
+                                                                                                            subsections: sect.subsections.filter(subsec => subsec.id != sub.id)
+                                                                                                        }
+                                                                                                    )
+                                                                                                } else {
+                                                                                                    return sect
+                                                                                                }
+                                                                                            })
+                                                                                        )
+                                                                                    }}>delete</button>
+                                                                                </span>
+                                                                            </div>
+                                                                        )
                                                                 }
                                                             </button>
                                                         );
                                                     })}
                                                     <button onClick={() => {
-                                                        setSections(prevSections => 
+                                                        setSections(prevSections =>
                                                             prevSections.map((section) => {
                                                                 if (section.id === openSectionId) {
                                                                     return {
                                                                         ...section,
-                                                                        subsections: [...section.subsections, 
-                                                                            {   
-                                                                                id: "new"+crypto.randomUUID(),
-                                                                                title: "New subsection",
-                                                                                content: "New subsection content"
-                                                                            }
+                                                                        subsections: [...section.subsections,
+                                                                        {
+                                                                            id: "new" + crypto.randomUUID(),
+                                                                            title: "New subsection",
+                                                                            content: "New subsection content"
+                                                                        }
                                                                         ]
                                                                     }
                                                                 } else {
@@ -565,21 +565,21 @@ function BodyContent({ doc, onBack }) {
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
                                                                 markdown={initialMarkdown}
-                                                                onChange={(md) => {setCurrentMarkdown(md)}}
+                                                                onChange={(md) => { setCurrentMarkdown(md) }}
                                                                 plugins={[
                                                                     toolbarPlugin({
-                                                                    toolbarClassName: 'my-classname',
-                                                                    toolbarContents: () => (
-                                                                        <>
-                                                                        <UndoRedo />
-                                                                        <BlockTypeSelect />
-                                                                        <BoldItalicUnderlineToggles />
-                                                                        <ListsToggle />
-                                                                        <InsertThematicBreak />
-                                                                        <InsertImage />
-                                                                        <InsertTable />
-                                                                        </>
-                                                                    )
+                                                                        toolbarClassName: 'my-classname',
+                                                                        toolbarContents: () => (
+                                                                            <>
+                                                                                <UndoRedo />
+                                                                                <BlockTypeSelect />
+                                                                                <BoldItalicUnderlineToggles />
+                                                                                <ListsToggle />
+                                                                                <InsertThematicBreak />
+                                                                                <InsertImage />
+                                                                                <InsertTable />
+                                                                            </>
+                                                                        )
                                                                     }),
                                                                     linkPlugin(),
                                                                     tablePlugin(),
@@ -588,9 +588,9 @@ function BodyContent({ doc, onBack }) {
                                                                     listsPlugin(),
                                                                     thematicBreakPlugin(),
                                                                     markdownShortcutPlugin()
-                        
+
                                                                 ]}
-                                                                />
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
@@ -602,24 +602,24 @@ function BodyContent({ doc, onBack }) {
                         })}
                         <button className={styles.SectionCreateButton} onClick={() => {
                             setSections(prevSections => [...prevSections, {
-                                id: "new"+crypto.randomUUID(),
+                                id: "new" + crypto.randomUUID(),
                                 description: "New section description",
                                 title: "New section",
                                 subsections: [
-                                    {   
-                                        id: "new"+crypto.randomUUID(),
+                                    {
+                                        id: "new" + crypto.randomUUID(),
                                         title: "New subsection",
                                         content: "New subsection content"
                                     }
                                 ]
                             }])
                         }}>
-                                create section
+                            create section
                         </button>
                     </div>
                 )
             }
-            {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload}/>}
+            {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />}
         </div>
     );
 }
