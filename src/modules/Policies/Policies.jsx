@@ -43,6 +43,7 @@ const BodyContent = () => {
         setIsHeaderCollapsed(false); // reset header collapse state when changing docs
     };
 
+
     const getUniqueOptions = (items, key) =>
         [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
 

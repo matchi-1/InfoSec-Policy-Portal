@@ -257,7 +257,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     alt={"Plus Icon"}
                                 />
                             </div>
-                            Create New</div>
+                            Create New Document</div>
                     </div>
 
                     <div className={styles.resultsContainer}>
