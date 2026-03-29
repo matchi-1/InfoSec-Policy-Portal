@@ -12,12 +12,46 @@
   border: none;
   padding: 0;
   margin: 0;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease, transform 0.12s ease;
+}
+
+.triggerButtonOpen {
+  background-color: #e6f0ff;
 }
 
 .triggerIcon {
   width: 0.75rem;
   height: 0.75rem;
   flex-shrink: 0;
+  transition: background-color 0.18s ease, box-shadow 0.18s ease,
+    border-color 0.18s ease, transform 0.12s ease;
+}
+
+.filterContainer {
+  font-size: 0.75rem;
+  min-width: 4rem;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  margin-right: 1rem;
+  padding: 0.1rem 0.5rem 0.1rem 0.5rem;
+  border: 1px solid var(--primary-blue);
+  border-radius: 0.25rem;
+  color: var(--primary-blue);
+  gap: 0.25rem;
+  cursor: pointer;
+}
+
+.filterContainer:hover {
+  background-color: #e6f0ff;
+
+}
+
+.filterContainer img{ 
+  width: 0.75rem;
+  height: 0.75rem;
 }
 
 .activeCountBadge {
@@ -38,7 +72,7 @@
 .popup {
   position: absolute;
   top: calc(100% + 0.45rem);
-  right: 0;
+  left: 0;
   width: 17rem;
   max-width: min(17rem, calc(100vw - 2rem));
   background-color: white;
@@ -47,6 +81,8 @@
   box-shadow: 0 0.5rem 1.2rem rgba(31, 54, 94, 0.16);
   padding: 0.85rem;
   box-sizing: border-box;
+  transform-origin: top left;
+  animation: filterPopupEnter 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .popupHeader {
@@ -140,4 +176,15 @@
 
 .applyButton:active {
   transform: translateY(1px);
+}
+
+@keyframes filterPopupEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.45rem) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }

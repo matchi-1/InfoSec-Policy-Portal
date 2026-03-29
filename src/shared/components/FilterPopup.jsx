@@ -101,13 +101,15 @@ const FilterPopup = ({
         <div className={popupStyles.wrapper} ref={wrapperRef}>
             <button
                 type="button"
-                className={`${popupStyles.triggerButton} ${buttonClassName}`}
+                className={`${popupStyles.triggerButton} ${buttonClassName} ${isOpen ? popupStyles.triggerButtonOpen : ""
+                    }`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
                 <img
                     src={iconSrc}
                     alt="Filter"
-                    className={`${popupStyles.triggerIcon} ${buttonIconClassName}`}
+                    className={`${popupStyles.triggerIcon} ${buttonIconClassName} ${isOpen ? popupStyles.triggerIconOpen : ""
+                        }`}
                 />
                 <span>{buttonLabel}</span>
 

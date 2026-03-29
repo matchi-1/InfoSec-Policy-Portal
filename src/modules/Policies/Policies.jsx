@@ -298,15 +298,6 @@ const BodyContent = () => {
                                 value={policySearch}
                                 onChange={setPolicySearch}
                             />
-
-                            <div className={styles.filterContainer}>
-                                <img
-                                    src={"/icons/filter-blue.png"}
-                                    alt={"Filter Icon"}
-                                    className={styles.filterIcon}
-                                />
-                                <p>Filter</p>
-                            </div>
                         </div>
 
                         <div className={styles.documentButtonsContainer}>
