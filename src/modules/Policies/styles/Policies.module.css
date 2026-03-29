@@ -152,27 +152,118 @@ h2 {
   color: rgb(75, 75, 75);
   background-color: #E7E7E7;
   border-radius: 0.3rem;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 5.6rem;
+  height: 5.6rem;
+  padding: 0.55rem 0.6rem;
+  border: 1px solid rgb(172, 172, 172);
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
 
+.documentItem {
+  font-size: 0.88rem;
+  color: rgb(75, 75, 75);
+  background-color: #E7E7E7;
+  border-radius: 0.3rem;
   width: 100%;
   box-sizing: border-box;
 
-  min-height: 3.75rem;
-  height: 3.75rem;          
-  padding: 0.5rem;
+  min-height: 6.4rem;
+  height: auto;
+
+  padding: 0.55rem 0.6rem;
   border: 1px solid rgb(172, 172, 172);
 
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: stretch;
+  justify-content: flex-start;
 
-  overflow: hidden;      
-  cursor: pointer; 
-  transition: background-color 0.2s, color 0.2s;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
 }
 
-.documentItem.selected{
+.documentItemContent {
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.18rem;
+}
+
+.documentTitle {
+  margin: 0;
+  width: 100%;
+  min-width: 0;
+  text-align: left;
+  line-height: 0.95rem;
+  font-weight: 500;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.documentMetaChips {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.2rem;
+  min-width: 0;
+  margin-top: 0.08rem;
+  margin-bottom: 0.05rem;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.05rem 0.32rem;
+  border-radius: 999px;
+  background-color: #dbe7f7;
+  color: #204c8b;
+  font-size: 0.58rem;
+  line-height: 0.8rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.documentMetaLine {
+  width: 100%;
+  min-width: 0;
+  font-size: 0.64rem;
+  line-height: 0.8rem;
+  color: #6a6a6a;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.documentItem.selected {
   background-color: var(--primary-blue);
   color: white;
+}
+
+.documentItem.selected .documentMetaLine {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.documentItem.selected .metaChip {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.18);
 }
 
 .documentItem.selected:hover{
