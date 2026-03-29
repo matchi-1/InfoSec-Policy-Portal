@@ -166,8 +166,6 @@ const BodyContent = () => {
                             title="Filter documents"
                             buttonLabel="Filter"
                             iconSrc="/icons/filter-blue.png"
-                            buttonClassName={styles.filterContainer}
-                            buttonIconClassName={styles.filterIcon}
                             fields={documentFilterFields}
                             values={docFilters}
                             onApply={setDocFilters}

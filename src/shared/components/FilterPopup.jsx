@@ -28,8 +28,6 @@ const FilterPopup = ({
     values = {},
     onApply,
     onClear,
-    buttonClassName = "",
-    buttonIconClassName = "",
 }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [draftValues, setDraftValues] = useState(buildSyncedValues(fields, values));
@@ -101,14 +99,14 @@ const FilterPopup = ({
         <div className={popupStyles.wrapper} ref={wrapperRef}>
             <button
                 type="button"
-                className={`${popupStyles.triggerButton} ${buttonClassName} ${isOpen ? popupStyles.triggerButtonOpen : ""
+                className={`${popupStyles.filterContainer} ${isOpen ? popupStyles.triggerButtonOpen : ""
                     }`}
                 onClick={() => setIsOpen((prev) => !prev)}
             >
                 <img
                     src={iconSrc}
                     alt="Filter"
-                    className={`${popupStyles.triggerIcon} ${buttonIconClassName} ${isOpen ? popupStyles.triggerIconOpen : ""
+                    className={`${popupStyles.filterIcon} ${isOpen ? popupStyles.triggerIconOpen : ""
                         }`}
                 />
                 <span>{buttonLabel}</span>
