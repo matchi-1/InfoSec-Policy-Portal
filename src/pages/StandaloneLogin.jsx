@@ -14,7 +14,6 @@ export default function StandaloneLogin() {
   const [view, setView] = useState("login"); // login | forgot | regis
 
   const initialResetData = {
-    kinetiq_email: "",
     valid_email: "",
     code: "",
     newPassword: "",
@@ -22,7 +21,8 @@ export default function StandaloneLogin() {
   };
 
   const initialRegisInfo = {
-    regis_username: "",
+    regis_firstName: "",
+    regist_lastName: "",
     regis_valid_email: "",
     regis_code: "",
     regis_pass: "",
@@ -39,14 +39,14 @@ export default function StandaloneLogin() {
 
   const isNewPassSame = async (newPass) => {
     console.log("checking password");
-    console.log("KINETIK EMAIL" + resetData.kinetiq_email);
+    console.log("EMAIL" + resetData.valid_email);
     console.log("NEW PASS INPUTTED: " + newPass);
 
     const res = await fetch("http://127.0.0.1:8000/check-password/", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: resetData.kinetiq_email,
+        email: resetData.valid_email,
         password: newPass,
       }),
     });
@@ -108,9 +108,12 @@ export default function StandaloneLogin() {
       const data = response.data;
 
       if (data.success) {
-        localStorage.setItem("login_attempts", "0");
+        localStorage.setItem('login_attempts', '0');
+        console.log("Login successful:", data);
+        localStorage.setItem("user", JSON.stringify(data.data));
         setLoginError("");
-        setView("mfa");
+        //setView("mfa");
+        navigate("/");
       }
     } catch (err) {
       if (err.response && err.response.data) {
@@ -170,22 +173,6 @@ export default function StandaloneLogin() {
     }
   };
 
-  const checkEmail = async (email) => {
-    const response = await fetch("http://127.0.0.1:8000/check-email/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const result = await response.json();
-
-    if (result.exists) {
-      return true;
-    } else {
-      setLoginError("* Invalid Kinetiq email address. *");
-      return false;
-    }
-  };
 
   const handleChangePassword = async () => {
     const savedCode = localStorage.getItem("reset_code");
@@ -198,17 +185,17 @@ export default function StandaloneLogin() {
       return;
     }
 
-    if (resetData.code !== savedCode) {
-      setLoginError("* Invalid code. Please try again.* ");
-      return;
-    }
+    //if (resetData.code !== savedCode) {
+    //  setLoginError("* Invalid code. Please try again.* ");
+    //  return;
+    //}
 
-    if (resetData.valid_email !== savedEmail) {
-      setLoginError(
-        "* Email does not match the code. Please check and try again. *"
-      );
-      return;
-    }
+    //if (resetData.valid_email !== savedEmail) {
+    //  setLoginError(
+    //   "* Email does not match the code. Please check and try again. *"
+    //  );
+    //  return;
+    //}
 
     if (resetData.newPassword.length < 8) {
       setLoginError("* Password must be at least 8 characters long. *");
@@ -225,7 +212,7 @@ export default function StandaloneLogin() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          email: resetData.kinetiq_email,
+          email: resetData.valid_email,
           newPassword: resetData.newPassword,
         }),
       });
@@ -234,7 +221,7 @@ export default function StandaloneLogin() {
 
       if (result.success) {
         setLoginError(
-          `Password change for ${resetData.kinetiq_email} successful.`
+          `Password change for ${resetData.valid_email} successful.`
         );
         localStorage.removeItem("reset_code");
         localStorage.removeItem("reset_email");
@@ -399,17 +386,9 @@ export default function StandaloneLogin() {
                       setLoginError("* Please enter a valid email address *");
                       return;
                     }
-
-                    const isValidKinetiqAcc =
-                      /^[\w.%+-]+@kinetiq\.ph$/.test(resetData.kinetiq_email);
-                    if (!isValidKinetiqAcc) {
-                      setLoginError(
-                        "* Please enter a valid Kinetiq email address *"
-                      );
-                      return;
-                    }
-
-                    setView("reset");
+                    
+                    handleChangePassword();
+                    
                   }}
                 >
                   <div className={styles["reset-info-inner"]}>
@@ -585,59 +564,90 @@ export default function StandaloneLogin() {
                     e.preventDefault();
 
                     const isValidEmail =
-                      /^[^\s@]+@[^\s@]+\.(com)$/.test(resetData.valid_email);
+                      /^[^\s@]+@[^\s@]+\.(com)$/.test(regisInfo.regis_valid_email);
 
                     if (!isValidEmail) {
                       setLoginError("* Please enter a valid email address *");
                       return;
                     }
+                    //setLoginError(""); // clear any old error
+                    //generateAndSendCode(resetData.valid_email, credentials.email, true); // send the code to the email
+                    //const savedCode = localStorage.getItem("reset_code"); // better: use a regis_code key
+                     // if (code !== savedCode) {
+                    //    setLoginError("* Incorrect code, please try again *");
+                    //    return;
+                     // }
 
-                    generateAndSendCode(
-                      resetData.valid_email,
-                      credentials.email,
-                      true
-                    );
-                    setView("mfaVerify");
+                      try {
+                        const resp = await axios.post("http://127.0.0.1:8000/register/", {
+                          first_name: regisInfo.regis_firstName,
+                          last_name: regisInfo.regis_lastName,
+                          email: regisInfo.regis_valid_email,
+                          password: regisInfo.regis_pass,
+                          confirm_password: regisInfo.regis_confirm_pass,
+                        });
+
+                        if (resp.data.success) {
+                          localStorage.setItem("user", JSON.stringify(resp.data.data));
+                          setLoginError("");
+                          navigate("/");
+                        } else {
+                          // just in case backend ever returns 200 with success:false
+                          setLoginError(`* ${resp.data.message || "Registration failed"} *`);
+                        }
+                      } catch (err) {
+                        const msg =
+                          err?.response?.data?.message ||
+                          err?.response?.data?.detail || // DRF sometimes uses "detail"
+                          "Something went wrong. Please try again.";
+
+                        setLoginError(`* ${msg} *`);
+                      }
+
                   }}
                 >
                   <div className={styles["regis-info-inner"]}>
                     <div className={styles["regis-info-form-left"]}>
-                      <h4 className={styles.labelWithInfo}>
-                        Username
-                        <span
-                          className={styles.infoWrap}
-                          tabIndex={0}
-                          aria-label="Password requirements"
-                        >
-                          <img
-                            className={styles.infoIcon}
-                            src="../public/icons/i-icon.png"
-                            alt=""
-                          />
-                          <span className={styles.tooltip}>
-                            Placeholder ehe <br />
-                            Placeholder ehe
-                            <br />
-                            Placeholder ehe <br />
-                            Placeholder ehe
-                          </span>
-                        </span>
-                      </h4>
+                      
+                      
+                      <div className={`${styles.rowHeaderEqual}`}>
+                        <h4 className={styles.primaryCol}>First Name</h4>
+                        <h4 className={styles.secondaryCol}>Last Name</h4>
+                      </div>
 
-                      <input
-                        type="text"
-                        name="username"
-                        placeholder="Enter your preferred username"
-                        value={regisInfo.regis_username}
-                        onChange={(e) => {
-                          setRegisInfo({
-                            ...regisInfo,
-                            regis_username: e.target.value,
-                          });
-                        }}
-                        required
-                        className={styles.noBottomMargin}
-                      />
+                      <div className={styles.splitRowEqual}>
+                        <input
+                          type="text"
+                          name="username"
+                          placeholder="Enter your first name"
+                          value={regisInfo.regis_firstName}
+                          onChange={(e) => {
+                            setRegisInfo({
+                              ...regisInfo,
+                              regis_firstName: e.target.value,
+                            });
+                          }}
+                          required
+                          className={styles.primaryCol}
+                        />
+
+                        <input
+                          type="text"
+                          name="last name"
+                          placeholder="Enter your last name"
+                          value={regisInfo.regis_lastName}
+                          onChange={(e) => {
+                            setRegisInfo({
+                              ...regisInfo,
+                              regis_lastName: e.target.value,
+                            });
+                          }}
+                          required
+                          className={styles.primaryCol}
+                         // style = {width="50%"} 
+                        />
+                      </div>
+
 
                       <div className={`${styles.rowHeader} ${styles.topSpaced}`}>
                         <h4 className={styles.primaryCol}>Valid Email Address</h4>
@@ -701,13 +711,10 @@ export default function StandaloneLogin() {
                             >
                               <img
                                 className={styles.infoIcon}
-                                src={`${import.meta.env.BASE_URL}icons/tooltip.png`}
+                                src="/icons/i-icon.png"
                                 alt=""
                               />
                               <span className={styles.tooltip}>
-                                Use at least 8 characters, <br />
-                                with a mix of letters and numbers.
-                                <br />
                                 Use at least 8 characters, <br />
                                 with a mix of letters and numbers.
                                 <br />
@@ -810,88 +817,7 @@ export default function StandaloneLogin() {
               </div>
             )}
 
-            {view === "mfaVerify" && (
-              <>
-                <h2>Enter Your Code</h2>
-
-                <p className={styles["login-pass-details"]}>
-                  We’ve sent a 6-digit code to{" "}
-                  <strong>{resetData.valid_email}</strong>.
-                </p>
-
-                <form
-                  className={`${styles["code-form"]} ${styles.formPanel} ${styles.panelFromRight}`}
-                  onSubmit={async (e) => {
-                    e.preventDefault();
-                    const code = e.target.elements.code.value.trim();
-                    const savedCode = localStorage.getItem("reset_code");
-
-                    if (code === savedCode) {
-                      try {
-                        const response = await axios.post(
-                          "http://127.0.0.1:8000/login/",
-                          {
-                            email: credentials.email,
-                            password: credentials.password,
-                          }
-                        );
-
-                        const data = response.data;
-
-                        if (data.success) {
-                          localStorage.setItem("login_attempts", "0");
-                          console.log("Login successful:", data);
-                          localStorage.setItem(
-                            "user",
-                            JSON.stringify(data.data)
-                          );
-                          navigate("/");
-                        }
-                      } catch (e) {
-                        console.error("Login error:", e);
-                        alert("Something went wrong. Please try again.");
-                      }
-                    } else {
-                      setLoginError("* Incorrect code, please try again *");
-                    }
-                  }}
-                >
-                  <label className={styles.codeLabel}>
-                    Confirmation Code:
-                    <input
-                      type="text"
-                      name="code"
-                      placeholder="123456"
-                      maxLength={6}
-                      required
-                      inputMode="numeric"
-                      pattern="\d{6}"
-                    />
-                  </label>
-
-                  {loginError && (
-                    <p className={styles["login-error"]}>{loginError}</p>
-                  )}
-
-                  <div className={styles["button-back-container"]}>
-                    <button type="submit" className={styles["login-btn"]}>
-                      Verify Code
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles["back-btn"]}
-                      onClick={() => {
-                        setView("login");
-                        setCredentials({ email: "", password: "" });
-                      }}
-                    >
-                      Back to login
-                    </button>
-                  </div>
-                </form>
-              </>
-            )}
+           
           </div>
         </div>
       </div>

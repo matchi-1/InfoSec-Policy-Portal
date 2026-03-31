@@ -482,6 +482,10 @@ input:-webkit-autofill {
   object-position: center;
 }
 
+.regis-info-form-right .password-wrapper {
+  margin-bottom: 1rem; /* matches default input margin-bottom */
+}
+
 /* responsive */
 @media (max-width: 900px) {
   .login-container {
@@ -558,6 +562,21 @@ input:-webkit-autofill {
 .splitRow {
   display: grid;
   grid-template-columns: 2.3fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.rowHeaderEqual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  width: 100%;
+  align-items: end;
+}
+
+.splitRowEqual {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 0.75rem;
   width: 100%;
 }
