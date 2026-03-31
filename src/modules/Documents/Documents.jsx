@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import styles from "./styles/Documents.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import DocumentEditor from "./components/DocumentEditor";
@@ -8,6 +8,7 @@ import { highlightText } from "../../utils/highlightText";
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
 
 const BodyContent = ({ setActiveSubModule }) => {
+    const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [docSearch, setDocSearch] = useState("");
 
@@ -20,7 +21,18 @@ const BodyContent = ({ setActiveSubModule }) => {
     const [isReviewerOpen, setIsReviewerOpen] = useState(false);
 
     // local state so delete works in UI for dummy data
-    const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
+    // const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
+    const [dbDocs, setDbDocs] = useState([]);
+    useEffect(() => { 
+        const fetchDocuments = async () => {
+            console.log("(debug) fetching docs from backend...")
+            const resp = await fetch(backend_base_url + "/documents/get-documents/")
+            const docs = await resp.json()
+            console.log("(debug) fetched docs: " + docs)
+            setDbDocs(docs)
+        }
+        fetchDocuments();
+    }, [])
 
     const getDocCategories = (doc) => {
         if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
@@ -107,8 +119,8 @@ const BodyContent = ({ setActiveSubModule }) => {
                 details: "New Document Description",
                 authoredBy: "",
                 reviewedBy: "",
-                lastUpdated: "",
-                lastReviewed: "---------",
+                lastUpdated: null,
+                lastReviewed: null,
                 pdf_filename: "null",
                 sections: [],
             };
@@ -356,7 +368,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                 {filteredDocs.length > 0 ? (
                                     filteredDocs.map((doc) => {
                                         const categories = getDocCategories(doc);
-
+                                        console.log("(debug) listing docs: doc: ", doc)
                                         return (
                                             <tr
                                                 key={doc.id}
@@ -366,7 +378,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                                 <td>{categories.length ? categories.join(", ") : "—"}</td>
                                                 <td>{doc.authoredBy || "—"}</td>
                                                 <td>{doc.reviewedBy || "—"}</td>
-                                                <td>{doc.lastUpdated || "—"}</td>
+                                                <td>{doc.lastUpdated?new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "—"}</td>
 
                                                 <td>
                                                     <button

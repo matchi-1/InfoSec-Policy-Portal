@@ -41,6 +41,8 @@
   background: var(--card-bg);
   padding: 1rem 1.1rem 0.95rem;
   box-sizing: border-box;
+
+  overflow: visible;
 }
 
 .titleDropdowns {
@@ -196,7 +198,7 @@
   top: calc(100% + 0.3rem);
   left: 0;
   right: 0;
-  z-index: 12;
+  z-index: 99;
 
   background: #fff;
   border: 1px solid #d3ddeb;
@@ -1086,7 +1088,7 @@
 .titleHeaderWrap {
   max-height: 32rem;
   opacity: 1;
-  overflow: hidden;
+  overflow: visible;
   transition:
     max-height 280ms ease,
     opacity 180ms ease,
@@ -1189,7 +1191,7 @@
 .titleHeaderWrap {
   max-height: 32rem;
   opacity: 1;
-  overflow: hidden;
+  overflow: visible;
   transition:
     max-height 280ms ease,
     opacity 180ms ease,

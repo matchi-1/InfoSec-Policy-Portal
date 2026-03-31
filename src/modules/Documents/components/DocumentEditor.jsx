@@ -4,6 +4,8 @@ import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
 import { MDXEditor, headingsPlugin, quotePlugin, thematicBreakPlugin, toolbarPlugin, listsPlugin, linkPlugin, imagePlugin, tablePlugin, markdownShortcutPlugin } from '@mdxeditor/editor';
 import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable } from "@mdxeditor/editor";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import '@mdxeditor/editor/style.css'
 
 
@@ -37,7 +39,7 @@ function BodyContent({ doc, onBack }) {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
 
-    const [currTags, setCurrTags] = useState(doc.tags);
+    const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
     const [tagQuery, setTagQuery] = useState("");
     const [filteredTags, setFilteredTags] = useState(controlTags);
@@ -51,6 +53,10 @@ function BodyContent({ doc, onBack }) {
     const [currentMarkdown, setCurrentMarkdown] = useState("")
     const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+
+    const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
+
+    const [showConfModal, setShowConfModal] = useState(false);
 
     // Normalize query
     const q = useMemo(() => query.trim().toLowerCase(), [query]);
@@ -291,12 +297,12 @@ function BodyContent({ doc, onBack }) {
                                     setShowAuthoredDropdown(!showAuthoredDropdown);
                                 }}>
                                     <p>{doc.authoredBy}</p>
-                                    {showAuthoredDropdown && (
-                                        <div className={styles.dropdownList}>
-                                            users here
-                                        </div>
-                                    )}
                                 </div>
+                                {showAuthoredDropdown && (
+                                    <div className={styles.dropdownList}>
+                                        users here
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.dropdownContainer}>
@@ -305,12 +311,12 @@ function BodyContent({ doc, onBack }) {
                                     setShowReviewedDropdown(!showReviewedDropdown);
                                 }}>
                                     <p>{doc.reviewedBy}</p>
-                                    {showReviewedDropdown && (
-                                        <div className={styles.dropdownList}>
-                                            users here
-                                        </div>
-                                    )}
                                 </div>
+                                {showReviewedDropdown && (
+                                    <div className={styles.dropdownList}>
+                                        users here
+                                    </div>
+                                )}
                             </div>
 
                             <div className={styles.dropdownContainer}>
@@ -318,13 +324,14 @@ function BodyContent({ doc, onBack }) {
                                 <div className={styles.dropDownSection} onClick={() => {
                                     setShowDateDropdown(!showDateDropdown);
                                 }}>
-                                    <p>{doc.lastReviewed}</p>
-                                    {showDateDropdown && (
-                                        <div className={styles.dropdownList}>
-                                            datepicker here
-                                        </div>
-                                    )}
+                                    <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                 </div>
+                                {showDateDropdown && (
+                                    <div className={styles.dropdownList}>
+                                        <DatePicker showIcon popperPlacement="bottom" selected={selectDate} onChange={(date) => setSelectDate(date)} />
+                                        <button onClick={() => {setShowDateDropdown(false)}}>ok</button>
+                                    </div>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -369,7 +376,7 @@ function BodyContent({ doc, onBack }) {
                         </div>
                     </div>
                     {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
-                    {/* <div className={styles.tagsContainer}>
+                    <div className={styles.tagsContainer}>
                             {
                                 currTags.map((tag) => {
                                     return (
@@ -403,7 +410,7 @@ function BodyContent({ doc, onBack }) {
                                     </div>
                                 </div>
                             }
-                        </div> */}
+                        </div>
                 </div>
             </div>
 
@@ -699,10 +706,34 @@ function BodyContent({ doc, onBack }) {
                         }}>
                             create section
                         </button>
+                        <button onClick={() => {setShowConfModal(true)}}>save changes</button>
                     </div>
                 )
             }
             {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />}
+            {showConfModal && 
+                <div className={styles.confModal}>
+                    <p>are u sure</p>
+                    <button onClick={async () => {
+                        const data = new FormData()
+                        data.append('id', doc.id)
+                        data.append('title', currTitle)
+                        data.append('details', currDesc)
+                        // author and review stuff
+                        data.append('lastReviewed', selectDate.toISOString())
+                        data.append('tags', JSON.stringify(currTags))
+                        data.append('sections', JSON.stringify(sections))
+                        if (fileToUpload) {
+                            data.append('pdf_file', fileToUpload)
+                        }
+                        const resp = await fetch(`${backend_base_url}/documents/create-update-doc/`, {
+                            method: 'POST',
+                            body: data
+                        })
+                    }}>yes</button>
+                    <button onClick={() => {setShowConfModal(false)}}>no</button>
+                </div>
+            }
         </div>
     );
 }
