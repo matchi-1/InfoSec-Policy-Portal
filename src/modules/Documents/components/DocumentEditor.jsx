@@ -50,9 +50,10 @@ function BodyContent({ doc, onBack }) {
     const [subTitleEditID, setSubTitleEditID] = useState(null);
     const [subTitleTemp, setSubTitleTemp] = useState(null);
 
-    const [currentMarkdown, setCurrentMarkdown] = useState("")
+    // const [currentMarkdown, setCurrentMarkdown] = useState("")
     const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
+    
 
     const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
 
@@ -165,6 +166,9 @@ function BodyContent({ doc, onBack }) {
     const activeSub =
         openSubs.find((sub) => sub.id === activeSubId) ?? openSubs[0] ?? null;
 
+    useEffect(() =>{
+        setInitialMarkdown(activeSub?.content ?? "")
+    }, [activeSub?.id])
     // render content from a string (supports headings-ish + bullets)
     const renderContent = (text = "") => {
         const lines = String(text).split("\n");
@@ -521,7 +525,7 @@ function BodyContent({ doc, onBack }) {
                                                                 className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""
                                                                     }`}
                                                                 onClick={() => {
-                                                                    setInitialMarkdown(activeSub?.content);
+                                                                    // setInitialMarkdown(activeSub?.content);
                                                                     setActiveSubBySection((old) => ({
                                                                         ...old,
                                                                         [section.id]: sub.id,
@@ -651,11 +655,36 @@ function BodyContent({ doc, onBack }) {
                                                                 {activeSub ? renderContent(activeSub.content) : null}
                                                             </ul> */}
                                                             <MDXEditor
-                                                                key={initialMarkdown}
+                                                                // key={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
+                                                                key = {initialMarkdown}
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
-                                                                markdown={initialMarkdown}
-                                                                onChange={(md) => { setCurrentMarkdown(md) }}
+                                                                // markdown={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
+                                                                // markdown={sections.find((sect)=>sect.id===openSectionId)?.subsections?.find((subsect)=>subsect.id===activeSubId).content ?? ""}
+                                                                markdown={activeSub?.content ?? ""}
+                                                                onChange={(md) => {
+                                                                    setSections(prevSections =>
+                                                                        prevSections.map((sect) => {
+                                                                            if (sect.id === openSectionId) {
+                                                                                return ({
+                                                                                    ...sect,
+                                                                                    subsections: sect.subsections.map((sub) => {
+                                                                                        if (sub.id === activeSubId) {
+                                                                                            return {
+                                                                                                ...sub,
+                                                                                                content: md
+                                                                                            }
+                                                                                        } else {
+                                                                                            return sub;
+                                                                                        }
+                                                                                    })
+                                                                                })
+                                                                            } else {
+                                                                                return sect;
+                                                                            }
+                                                                        })
+                                                                    )
+                                                                }}
                                                                 plugins={[
                                                                     toolbarPlugin({
                                                                         toolbarClassName: 'my-classname',
