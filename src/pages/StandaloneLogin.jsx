@@ -37,7 +37,7 @@ export default function StandaloneLogin() {
   const location = useLocation();
   const [loginError, setLoginError] = useState("");
 
-  const isNewPassSame = async (newPass) => {
+  /*const isNewPassSame = async (newPass) => {
     console.log("checking password");
     console.log("EMAIL" + resetData.valid_email);
     console.log("NEW PASS INPUTTED: " + newPass);
@@ -61,7 +61,7 @@ export default function StandaloneLogin() {
       return false;
     }
   };
-
+*/
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value.trim() }));
@@ -134,6 +134,7 @@ export default function StandaloneLogin() {
         } else if (parseInt(localStorage.getItem("login_attempts")) >= 10) {
           console.log("sending to forgot page");
           localStorage.setItem("login_attempts", "0");
+          setLoginError("");
           setView("forgot");
         }
 
@@ -178,12 +179,12 @@ export default function StandaloneLogin() {
     const savedCode = localStorage.getItem("reset_code");
     const savedEmail = localStorage.getItem("reset_email");
 
-    if (await isNewPassSame(resetData.newPassword)) {
-      setLoginError(
-        "* New password cannot be the same as the current password. *"
-      );
-      return;
-    }
+    //if (await isNewPassSame(resetData.newPassword)) {
+     // setLoginError(
+      //  "* New password cannot be the same as the current password. *"
+      //);
+      //return;
+    //}
 
     //if (resetData.code !== savedCode) {
     //  setLoginError("* Invalid code. Please try again.* ");
@@ -228,10 +229,15 @@ export default function StandaloneLogin() {
         setResetData(initialResetData);
         setView("login");
       } else {
-        setLoginError("Error: " + result.error);
+        setLoginError(`* ${result.message || "Something went wrong."} *`);
       }
-    } catch (error) {
-      setLoginError("* Something went wrong. Please try again. *");
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Something went wrong. Please try again.";
+
+      setLoginError(`* ${msg} *`);
     }
   };
 
@@ -248,7 +254,10 @@ export default function StandaloneLogin() {
           <button
             type="button"
             className={`${styles.tab} ${isLoginActive ? styles.active : ""}`}
-            onClick={() => setView("login")}
+            onClick={() => {
+              setView("login");
+              setLoginError("");
+            }}
             role="tab"
             aria-selected={isLoginActive}
           >
@@ -258,7 +267,10 @@ export default function StandaloneLogin() {
           <button
             type="button"
             className={`${styles.tab} ${view === "regis" ? styles.active : ""}`}
-            onClick={() => setView("regis")}
+            onClick={() => {
+              setView("regis");
+              setLoginError("");
+            }}
             role="tab"
             aria-selected={view === "regis"}
           >
@@ -280,12 +292,12 @@ export default function StandaloneLogin() {
                   className={styles["login-info-form"]}
                   onSubmit={handleLogin}
                 >
-                  <h4>Username/Email</h4>
+                  <h4>Email</h4>
 
                   <input
                     type="text"
                     name="email"
-                    placeholder="Email/Username"
+                    placeholder="Email"
                     value={credentials.email}
                     onChange={handleChange}
                     required
@@ -353,6 +365,7 @@ export default function StandaloneLogin() {
                       className={styles["forgot-password"]}
                       onClick={(e) => {
                         e.preventDefault();
+                        setLoginError("");
                         setView("forgot");
                       }}
                     >
@@ -546,6 +559,7 @@ export default function StandaloneLogin() {
                       type="button"
                       className={styles["back-btn"]}
                       onClick={() => {
+                        setLoginError("");
                         setView("login");
                       }}
                     >
@@ -570,7 +584,7 @@ export default function StandaloneLogin() {
                       setLoginError("* Please enter a valid email address *");
                       return;
                     }
-                    //setLoginError(""); // clear any old error
+                    setLoginError(""); // clear any old error
                     //generateAndSendCode(resetData.valid_email, credentials.email, true); // send the code to the email
                     //const savedCode = localStorage.getItem("reset_code"); // better: use a regis_code key
                      // if (code !== savedCode) {
