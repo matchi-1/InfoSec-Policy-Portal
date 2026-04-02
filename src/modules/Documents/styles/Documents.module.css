@@ -94,6 +94,7 @@
 .activeSelectedOption {
     width: 100%;
     display: flex;
+    align-items: center;
     flex-direction: row;
     justify-content: space-between;
     padding: 0.2rem 0.5rem 0.2rem 0.5rem;
@@ -103,16 +104,19 @@
 
 .selectedOption p, 
 .activeSelectedOption p {
-    max-width: 7rem;
+    flex: 1;               
+    min-width: 0;          
+    overflow: hidden;
     text-overflow: ellipsis;
-    overflow-x: hidden;
     white-space: nowrap;
 }
 
 .selectedOption img, 
 .activeSelectedOption img {
     width: 1rem;
-    height: 1rem;
+    height: auto;
+    object-fit: contain;
+    flex-shrink: 0;
 }
 
 .activeSelectedOption {
