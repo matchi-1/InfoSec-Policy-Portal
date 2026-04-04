@@ -260,6 +260,7 @@ function App() {
 
   const loadMainModule = (moduleId) => {
     const moduleFile = `./modules/${moduleFileNames[moduleId]}/${moduleFileNames[moduleId]}.jsx`;
+    console.log("HERE" + moduleFile);
 
     if (mainModules[moduleFile]) {
       const LazyComponent = lazy(mainModules[moduleFile]);
@@ -279,7 +280,6 @@ function App() {
       console.warn(`Module file not found: ${moduleFile}`);
     }
   };
-
 
   const loadSubModule = (submoduleId, mainModule = activeModule) => {
     const submoduleFile = `./modules/${moduleFileNames[mainModule]}/submodules/${moduleSubmoduleFileNames[mainModule][submoduleId]}.jsx`;
@@ -303,26 +303,28 @@ function App() {
     }
   };
 
-
   const moduleFileNames = {
-    "Home": "Home",
-    "Documents": "Documents",
-    "Policies": "Policies",
+    Home: "Home",
+    Documents: "Documents",
+    Policies: "Policies",
     "Recent News": "RecentNews",
-    "Others": "Others",
+    Others: "Others",
+    "User Management": "UserManagement",
   };
 
   const moduleSubmoduleFileNames = {
-    "Home": {},
-    "Documents": {},
-    "Policies": {
-    },
+    Home: {},
+    Documents: {},
+    Policies: {},
     "Recent News": {
       "Recent News Dashboard": "RecentNews-dsh",
     },
-    "Others": {
+    Others: {
       "Others Dashboard": "Others-dsh",
-    }
+    },
+    "User Management": {
+      "Role Management": "RoleManagement",
+    },
   };
 
 
