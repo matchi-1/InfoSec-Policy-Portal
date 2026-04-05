@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState } from "react";
 import styles from "../styles/DocumentEditor.module.css";
 import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
@@ -58,6 +58,26 @@ function BodyContent({ doc, onBack }) {
     const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
 
     const [showConfModal, setShowConfModal] = useState(false);
+
+    const [authoredBy, setAuthoredBy] = useState(doc.authoredBy ?? null);
+    const [reviewedBy, setReviewedBy] = useState(doc.reviewedBy ?? null);
+    const [currAuthorName, setCurrAuthorName] = useState(doc.authoredBy ? doc.authorName : null)
+    const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
+    const [userList, setUserList] = useState([]);
+
+    useEffect(() => {
+        const get_docs = async () => {
+            const resp = await fetch(`${backend_base_url}/documents/get-users/`);
+            const data = await resp.json()
+            setUserList(data);
+        }
+        get_docs();
+    }, [])
+
+    useEffect(() => {
+        console.log("user list")
+        console.log(userList)
+    }, [userList])
 
     // Normalize query
     const q = useMemo(() => query.trim().toLowerCase(), [query]);
@@ -383,7 +403,7 @@ function BodyContent({ doc, onBack }) {
                                     setShowReviewedDropdown(false);
                                     setShowDateDropdown(false);
                                 }}>
-                                    <p>{ doc.authoredBy ? doc.authoredBy : "Select Author" }</p>
+                                    <p>{ authoredBy ? currAuthorName : "Select Author" }</p>
                                     <img
                                         src={
                                             doc.authoredBy === ""
@@ -396,7 +416,15 @@ function BodyContent({ doc, onBack }) {
 
                                 {showAuthoredDropdown && (
                                     <div className={styles.dropdownList}>
-                                        users here
+                                        {userList.map((user) => {
+                                            return(
+                                                <p onClick={() => {
+                                                    setAuthoredBy(user.id)
+                                                    setShowAuthoredDropdown(false)
+                                                    setCurrAuthorName(`${user.first_name} ${user.last_name}`)
+                                                }}>{user.first_name} {user.last_name}</p>
+                                            )
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -413,7 +441,7 @@ function BodyContent({ doc, onBack }) {
                                     setShowAuthoredDropdown(false);
                                     setShowDateDropdown(false);
                                 }}>
-                                    <p>{ doc.reviewedBy ? doc.reviewedBy : "Select Reviewer" }</p>
+                                    <p>{ reviewedBy ? currReviewerName : "Select Reviewer" }</p>
                                     <img
                                         src={
                                             doc.reviewedBy === ""
@@ -425,7 +453,15 @@ function BodyContent({ doc, onBack }) {
                                 </div>
                                 {showReviewedDropdown && (
                                     <div className={styles.dropdownList}>
-                                        users here
+                                        {userList.map((user) => {
+                                            return(
+                                                <p onClick={() => {
+                                                    setReviewedBy(user.id)
+                                                    setShowReviewedDropdown(false)
+                                                    setCurrReviewerName(`${user.first_name} ${user.last_name}`)
+                                                }}>{user.first_name} {user.last_name}</p>
+                                            )
+                                        })}
                                     </div>
                                 )}
                             </div>
@@ -746,7 +782,6 @@ function BodyContent({ doc, onBack }) {
                                                                                 <BoldItalicUnderlineToggles />
                                                                                 <ListsToggle />
                                                                                 <InsertThematicBreak />
-                                                                                <InsertImage />
                                                                                 <InsertTable />
                                                                             </>
                                                                         )
@@ -797,6 +832,7 @@ function BodyContent({ doc, onBack }) {
                 <div className={styles.confModal}>
                     <p>are u sure</p>
                     <button onClick={async () => {
+                        setShowConfModal(false)
                         const data = new FormData()
                         data.append('id', doc.id)
                         data.append('title', currTitle)
@@ -805,6 +841,8 @@ function BodyContent({ doc, onBack }) {
                         data.append('lastReviewed', selectDate.toISOString())
                         data.append('tags', JSON.stringify(currTags))
                         data.append('sections', JSON.stringify(sections))
+                        data.append('authoredBy', authoredBy)
+                        data.append('reviewedBy', reviewedBy)
                         if (fileToUpload) {
                             data.append('pdf_file', fileToUpload)
                         }
