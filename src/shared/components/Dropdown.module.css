@@ -1,0 +1,176 @@
+.shell {
+  position: relative;
+  width: min(100%, 11.2rem);
+}
+
+.trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.55rem;
+  border-radius: 0.28rem;
+  border: 1px solid rgba(223, 229, 237, 0.95);
+  background: linear-gradient(180deg, #f7f8fa 0%, #edf2f6 100%);
+  color: #2f3642;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+  cursor: pointer;
+  text-align: left;
+}
+
+.trigger:focus-visible {
+  border-color: #7a97c2;
+  box-shadow:
+    0 0 0 2px rgba(70, 112, 175, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.72);
+}
+
+.triggerLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.chevron {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 1.5px solid #75849a;
+  border-bottom: 1.5px solid #75849a;
+  transform: translateY(-12%) rotate(45deg);
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.chevronOpen {
+  transform: translateY(12%) rotate(-135deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 0.25rem);
+  left: 0;
+  z-index: 240;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  border-radius: 0.35rem;
+  border: 1px solid rgba(201, 214, 230, 0.95);
+  background: #ffffff;
+  box-shadow: 0 12px 24px rgba(35, 56, 89, 0.15);
+  max-height: 14rem;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.menuUp {
+  top: auto;
+  bottom: calc(100% + 0.25rem);
+}
+
+.searchRow {
+  flex-shrink: 0;
+  z-index: 2;
+  background: #ffffff;
+  padding: 0.2rem;
+  margin: 0;
+  border-bottom: 1px solid #dde6f1;
+}
+
+.searchInput {
+  display: block;
+  width: 100%;
+  height: 1.8rem;
+  border: 0;
+  border-bottom: 1px solid #d8e2f0;
+  border-radius: 0;
+  font-size: 0.78rem;
+  color: #2c3b4f;
+  background: #f8fbff;
+  outline: none;
+  box-sizing: border-box;
+  padding: 0 0.65rem;
+  margin-bottom: 0 !important;
+}
+
+.searchInput:focus {
+  border-bottom-color: #7a97c2;
+  box-shadow: inset 0 -2px 0 rgba(70, 112, 175, 0.22);
+}
+
+.optionsList {
+  list-style: none;
+  margin: 0;
+  padding: 0.15rem;
+  overflow-y: auto;
+  min-height: 0;
+  flex: 1;
+}
+
+.option {
+  width: 100%;
+  border: 0;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: #2f3642;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.optionLabel {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.selectedMark {
+  color: #214c8b;
+  font-size: 0.78rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.optionHighlighted {
+  background: #eef4ff;
+}
+
+.optionSelected {
+  background: #e3ecfb;
+  color: #244f8d;
+  font-weight: 600;
+}
+
+.emptyState {
+  color: #72849a;
+  font-size: 0.78rem;
+  padding: 0.4rem 0.5rem;
+}
+
+.md .trigger {
+  height: 2.1rem;
+  padding: 0 2rem 0 0.75rem;
+  font-size: 0.84rem;
+}
+
+.md .option {
+  min-height: 1.85rem;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.82rem;
+}
+
+.sm .trigger {
+  height: 2rem;
+  padding: 0 1.9rem 0 0.7rem;
+  font-size: 0.8rem;
+}
+
+.sm .option {
+  min-height: 1.7rem;
+  padding: 0.16rem 0.5rem;
+  font-size: 0.76rem;
+}
