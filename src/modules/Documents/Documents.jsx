@@ -121,6 +121,8 @@ const BodyContent = ({ setActiveSubModule }) => {
                 reviewedBy: "",
                 lastUpdated: null,
                 lastReviewed: null,
+                authorName: null,
+                reviewerName: null,
                 pdf_filename: "null",
                 sections: [],
             };
@@ -376,8 +378,8 @@ const BodyContent = ({ setActiveSubModule }) => {
                                             >
                                                 <td>{highlightText(doc.title, docSearch)}</td>
                                                 <td>{categories.length ? categories.join(", ") : "—"}</td>
-                                                <td>{doc.authoredBy || "—"}</td>
-                                                <td>{doc.reviewedBy || "—"}</td>
+                                                <td>{doc.authorName || "—"}</td>
+                                                <td>{doc.reviewerName || "—"}</td>
                                                 <td>{doc.lastUpdated?new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "—"}</td>
 
                                                 <td>
