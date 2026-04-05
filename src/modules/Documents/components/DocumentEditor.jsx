@@ -403,7 +403,7 @@ function BodyContent({ doc, onBack }) {
                                     setShowReviewedDropdown(false);
                                     setShowDateDropdown(false);
                                 }}>
-                                    <p>{ doc.authoredBy ? currAuthorName : "Select Author" }</p>
+                                    <p>{ authoredBy ? currAuthorName : "Select Author" }</p>
                                     <img
                                         src={
                                             doc.authoredBy === ""
@@ -441,7 +441,7 @@ function BodyContent({ doc, onBack }) {
                                     setShowAuthoredDropdown(false);
                                     setShowDateDropdown(false);
                                 }}>
-                                    <p>{ doc.reviewedBy ? currReviewerName : "Select Reviewer" }</p>
+                                    <p>{ reviewedBy ? currReviewerName : "Select Reviewer" }</p>
                                     <img
                                         src={
                                             doc.reviewedBy === ""
@@ -782,7 +782,6 @@ function BodyContent({ doc, onBack }) {
                                                                                 <BoldItalicUnderlineToggles />
                                                                                 <ListsToggle />
                                                                                 <InsertThematicBreak />
-                                                                                <InsertImage />
                                                                                 <InsertTable />
                                                                             </>
                                                                         )

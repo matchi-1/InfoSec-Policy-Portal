@@ -1,6 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import styles from "../styles/PolicySections.module.css";
 import { highlightText } from "../../../utils/highlightText";
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm";
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
+import { defaultSchema } from 'hast-util-sanitize';
+
 
 /**
  * data shape:
@@ -14,6 +20,17 @@ import { highlightText } from "../../../utils/highlightText";
  * - if only subsections match, we keep only matching subsections
  */
 export default function PolicySections({ data = [], query = "", isDocumentSelected = false }) {
+    const extendedSchema = {
+      ...defaultSchema,
+      tagNames: [
+        ...(defaultSchema.tagNames || []),
+        'u',
+      ],
+      attributes: {
+        ...defaultSchema.attributes,
+        u: [],
+      },
+    };
     const sections = useMemo(() => data ?? [], [data]);
 
     const [openSectionId, setOpenSectionId] = useState(null);
@@ -234,7 +251,10 @@ export default function PolicySections({ data = [], query = "", isDocumentSelect
 
                                             <div className={styles.policyContentText}>
                                                 <ul className={styles.policyBulletList}>
-                                                    {activeSub ? renderContent(activeSub.content) : null}
+                                                    {/* {activeSub ? renderContent(activeSub.content) : null} */}
+                                                    {activeSub ? 
+                                                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, [rehypeSanitize, extendedSchema]]}>{activeSub.content}</ReactMarkdown>
+                                                    : null}
                                                 </ul>
                                             </div>
                                         </div>

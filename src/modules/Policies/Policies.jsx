@@ -9,24 +9,36 @@ import FilterPopup from "../../shared/components/FilterPopup";
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
 
 const BodyContent = () => {
+    const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
     const [docSearch, setDocSearch] = useState("");
     const [policySearch, setPolicySearch] = useState("");
+    const [dbDocs, setDbDocs] = useState([])
+    useEffect(() => { 
+            const fetchDocuments = async () => {
+                console.log("(debug) fetching docs from backend...")
+                const resp = await fetch(backend_base_url + "/documents/get-documents/")
+                const docs = await resp.json()
+                console.log("(debug) fetched docs: " + docs)
+                setDbDocs(docs)
+            }
+            fetchDocuments();
+        }, [])
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
     const emptyDocFilters = {
         category: "",
-        authoredBy: "",
-        reviewedBy: "",
+        authorName: "",
+        reviewerName: "",
     };
     const [docFilters, setDocFilters] = useState(emptyDocFilters);
 
-    // DB docs (full objects)
-    const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
+    // DB docs (full objects) dummy data vv
+    // const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
 
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
@@ -62,17 +74,17 @@ const BodyContent = () => {
                 emptyLabel: "All categories",
             },
             {
-                key: "authoredBy",
+                key: "authorName",
                 label: "Authored by",
                 type: "select",
-                options: getUniqueOptions(dbDocs, "authoredBy"),
+                options: getUniqueOptions(dbDocs, "authorName"),
                 emptyLabel: "All authors",
             },
             {
-                key: "reviewedBy",
+                key: "reviewerName",
                 label: "Reviewed by",
                 type: "select",
-                options: getUniqueOptions(dbDocs, "reviewedBy"),
+                options: getUniqueOptions(dbDocs, "reviewerName"),
                 emptyLabel: "All reviewers",
             },
         ];
@@ -93,12 +105,12 @@ const BodyContent = () => {
                 docCategories.includes(docFilters.category);
 
             const matchesAuthoredBy =
-                !docFilters.authoredBy ||
-                d.authoredBy === docFilters.authoredBy;
+                !docFilters.authorName ||
+                d.authorName === docFilters.authorName;
 
             const matchesReviewedBy =
-                !docFilters.reviewedBy ||
-                d.reviewedBy === docFilters.reviewedBy;
+                !docFilters.reviewerName ||
+                d.reviewerName === docFilters.reviewerName;
 
             return (
                 matchesSearch &&
@@ -207,11 +219,11 @@ const BodyContent = () => {
                                             </div>
 
                                             <div className={styles.documentMetaLine}>
-                                                {doc.authoredBy ? `By ${doc.authoredBy}` : "No author"}
+                                                {doc.authoredBy ? `By ${doc.authorName}` : "No author"}
                                             </div>
 
                                             <div className={`${styles.documentMetaLine} ${styles.documentUpdatedLine}`}>
-                                                {doc.lastUpdated ? `Upd ${doc.lastUpdated}` : "No update date"}
+                                                {doc.lastUpdated ? `Upd ${new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}` : "No update date"}
                                             </div>
                                         </div>
                                     </div>
@@ -273,15 +285,15 @@ const BodyContent = () => {
                                     <div className={styles.documentDescription}>
                                         <p>Please select a document from the list to view its details.</p>
                                     </div>
-                                </div>
+                                </div>  
                             )}
 
                             {selectedDoc && (
                                 <div className={styles.documentMetadata}>
-                                    <p>Authored by: {selectedDoc.authoredBy}</p>
-                                    <p>Last Updated: {selectedDoc.lastUpdated}</p>
-                                    <p>Reviewed by: {selectedDoc.reviewedBy}</p>
-                                    <p>Last Reviewed: {selectedDoc.lastReviewed}</p>
+                                    <p>Authored by: {selectedDoc.authorName}</p>
+                                    <p>Last Updated: {new Date(selectedDoc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+                                    <p>Reviewed by: {selectedDoc.reviewerName}</p>
+                                    <p>Last Reviewed: {new Date(selectedDoc.lastReviewed).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                 </div>
                             )}
                         </div>
@@ -308,10 +320,12 @@ const BodyContent = () => {
 
                             <a
                                 className={styles.documentButton}
-                                href={selectedDoc?.pdfUrl ?? "#"}
+                                href={selectedDoc?.pdf_filename ? `${backend_base_url}/documents/get-pdf/${selectedDoc.pdf_filename}#view=FitH&toolbar=1&navpanes=0` : "#"}
                                 download
+                                target="_blank"
+                                rel="noopener noreferrer"
                                 onClick={(e) => {
-                                    if (!selectedDoc?.pdfUrl) e.preventDefault();
+                                    if (!selectedDoc?.pdf_filename) e.preventDefault();
                                 }}
                                 aria-disabled={!selectedDocId}
                                 style={{
@@ -353,7 +367,7 @@ const BodyContent = () => {
                                 <div className={styles.pdfViewerContainer}>
                                     <iframe
                                         className={styles.pdfIframe}
-                                        src={`${selectedDoc.pdfUrl}#view=FitH&toolbar=1&navpanes=0`}
+                                        src={`${backend_base_url}/documents/get-pdf/${selectedDoc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`}
                                         title={selectedDoc.title}
                                     />
                                 </div>
