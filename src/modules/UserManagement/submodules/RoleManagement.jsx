@@ -7,33 +7,33 @@ const roleDefinitions = {
   "Senior Architect": {
     impactedUsers: 14,
     modules: {
-      "Module 1": { view: true, edit: true, delete: false },
-      "Module 2": { view: true, edit: false, delete: false },
-      "Module 3": { view: true, edit: true, delete: true },
-      "Module 4": { view: true, edit: false, delete: false },
+      "Module 1": { view: true },
+      "Module 2": { view: true },
+      "Module 3": { view: true },
+      "Module 4": { view: true },
     },
   },
   Administrator: {
     impactedUsers: 25,
     modules: {
-      "Module 1": { view: true, edit: true, delete: true },
-      "Module 2": { view: true, edit: true, delete: true },
-      "Module 3": { view: true, edit: true, delete: true },
-      "Module 4": { view: true, edit: true, delete: true },
+      "Module 1": { view: true },
+      "Module 2": { view: true },
+      "Module 3": { view: true },
+      "Module 4": { view: true },
     },
   },
   "Guest Viewer": {
     impactedUsers: 38,
     modules: {
-      "Module 1": { view: true, edit: false, delete: false },
-      "Module 2": { view: true, edit: false, delete: false },
-      "Module 3": { view: true, edit: false, delete: false },
-      "Module 4": { view: true, edit: false, delete: false },
+      "Module 1": { view: true },
+      "Module 2": { view: true },
+      "Module 3": { view: true },
+      "Module 4": { view: true },
     },
   },
 };
 
-const permissionColumns = ["view", "edit", "delete"];
+const permissionColumns = ["view"];
 
 const cloneModules = (modules) => JSON.parse(JSON.stringify(modules));
 
@@ -126,9 +126,7 @@ const BodyContent = () => {
           <div className={styles.permissionsCard}>
             <div className={styles.permissionsHeader}>
               <span>Module</span>
-              <span>View</span>
-              <span>Edit</span>
-              <span>Delete</span>
+              <span>Access</span>
             </div>
 
             <div className={styles.permissionsBody}>

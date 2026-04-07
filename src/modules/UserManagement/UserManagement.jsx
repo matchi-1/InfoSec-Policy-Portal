@@ -160,7 +160,6 @@ const BodyContent = () => {
           <div className={styles.tableHeader} role="row">
             <span>User</span>
             <span>Access Level</span>
-            <span>Activity</span>
           </div>
 
           <div className={styles.tableBody}>
@@ -189,14 +188,6 @@ const BodyContent = () => {
                     onChange={(nextRole) => handleRoleChange(user.id, nextRole)}
                     ariaLabel={`Access level for ${user.name}`}
                   />
-                </div>
-
-                <div className={styles.activityCell} role="cell">
-                  <span
-                    className={`${styles.statusPill} ${styles[user.statusTone]}`}
-                  >
-                    {user.status}
-                  </span>
                 </div>
               </div>
             ))}

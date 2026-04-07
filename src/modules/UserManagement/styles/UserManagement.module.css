@@ -128,7 +128,7 @@
 .tableHeader,
 .tableRow {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(12rem, 0.95fr) minmax(6rem, 0.6fr);
+  grid-template-columns: minmax(0, 1.8fr) minmax(12rem, 0.95fr);
   align-items: center;
 }
 
@@ -205,8 +205,7 @@
   text-overflow: ellipsis;
 }
 
-.roleCell,
-.activityCell {
+.roleCell {
   display: flex;
   align-items: center;
   justify-content: flex-start;
@@ -214,31 +213,6 @@
 
 .roleDropdown {
   width: min(100%, 11.2rem);
-}
-
-.statusPill {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 3.1rem;
-  padding: 0.2rem 0.45rem;
-  border-radius: 999px;
-  font-size: 0.58rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  border: 1px solid transparent;
-}
-
-.active {
-  color: #6f7d89;
-  background: #e7ecef;
-  border-color: #d7dde3;
-}
-
-.online {
-  color: #4d627d;
-  background: #e6eef9;
-  border-color: #d4e0f1;
 }
 
 .footerBar {
@@ -351,7 +325,7 @@
 
   .tableHeader,
   .tableRow {
-    grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 0.9fr) minmax(5rem, 0.45fr);
+    grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 0.9fr);
   }
 }
 
@@ -371,8 +345,7 @@
     align-items: start;
   }
 
-  .roleCell,
-  .activityCell {
+  .roleCell {
     justify-content: flex-start;
   }
 
