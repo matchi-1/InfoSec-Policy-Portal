@@ -41,23 +41,31 @@ function App() {
 
     const resetTimeout = () => {
       if (logoutTimeout) clearTimeout(logoutTimeout);
-      logoutTimeout = setTimeout(() => {
-        console.log("No activity detected for 10 minutes. Logging out.");
-        handleLogout();
-      }, 30 * 60 * 1000); // 30 minutes
+      logoutTimeout = setTimeout(
+        () => {
+          handleLogout();
+        },
+        30 * 60 * 1000,
+      ); // 30 minutes
     };
 
-    const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
-    activityEvents.forEach(event =>
-      window.addEventListener(event, resetTimeout)
+    const activityEvents = [
+      "mousemove",
+      "mousedown",
+      "keypress",
+      "scroll",
+      "touchstart",
+    ];
+    activityEvents.forEach((event) =>
+      window.addEventListener(event, resetTimeout),
     );
 
     resetTimeout();
 
     return () => {
       clearTimeout(logoutTimeout);
-      activityEvents.forEach(event =>
-        window.removeEventListener(event, resetTimeout)
+      activityEvents.forEach((event) =>
+        window.removeEventListener(event, resetTimeout),
       );
     };
   }, []);
@@ -78,8 +86,6 @@ function App() {
 
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-      console.log("User data loaded from localStorage:");
-      console.log(localStorage.getItem("user"));
 
       const storedModule = localStorage.getItem("activeModule");
       const storedSubModule = localStorage.getItem("activeSubModule");
@@ -91,7 +97,8 @@ function App() {
         setActiveSubModule(null);
       } else if (storedModule) {
         setActiveModule(storedModule);
-        if (storedSubModule && storedSubModule !== "null") setActiveSubModule(storedSubModule);
+        if (storedSubModule && storedSubModule !== "null")
+          setActiveSubModule(storedSubModule);
       }
     } else {
       // DEV: allow app without login
@@ -108,15 +115,13 @@ function App() {
     }
   }, []);
 
-
-
   const handleLogout = () => {
-    localStorage.removeItem("user");   // clear saved session
+    localStorage.removeItem("user"); // clear saved session
     localStorage.removeItem("activeModule");
     localStorage.removeItem("activeSubModule");
     localStorage.removeItem("showUserProfile");
-    setUser(null);   // clear local user state 
-    navigate("/login");  // redirect to login
+    setUser(null); // clear local user state
+    navigate("/login"); // redirect to login
   };
 
   const toggleProfileMenu = () => {
@@ -129,8 +134,8 @@ function App() {
 
     const handleClickOutsideProfileDropdown = (e) => {
       if (
-        !e.target.closest('.header-profile-container') &&
-        !e.target.closest('.profile-dropdown')
+        !e.target.closest(".header-profile-container") &&
+        !e.target.closest(".profile-dropdown")
       ) {
         setIsProfileMenuOpen(false);
       }
@@ -147,8 +152,8 @@ function App() {
 
     const handleClickOutsideNotif = (e) => {
       if (
-        !e.target.closest('.notif-icon') &&
-        !e.target.closest('.notif-menu')
+        !e.target.closest(".notif-icon") &&
+        !e.target.closest(".notif-menu")
       ) {
         setNotifOpen(false);
       }
@@ -160,85 +165,74 @@ function App() {
     };
   }, [notifOpen]);
 
-
   //fetch notifs
   const fetchNotifs = async (user) => {
-    console.log("Fetching notifs...")
     //const resp = await fetch(`http://127.0.0.1:8000/api/notifications/?user_id=${user?.user_id}`, { method: 'GET' })
     // const resp_text = await resp.text()
-    // console.log("resp text")
-    // console.log(resp_text)
     const resp_data = await resp.json();
-    const notif_items = resp_data.data
-    console.log("Notifs fetched:")
-    console.log(notif_items)
-    var temp_list = []
+    const notif_items = resp_data.data;
+    var temp_list = [];
     //populate notifs table
     notif_items.map((notif_item, i) => {
-      const origin = notif_item.module.split(/\/(.*)/s)
-      const orig_module = origin[0]
-      const orig_submodule = origin.length == 2 ? origin[1] : null
-      const time_formatted = new Date(notif_item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      const origin = notif_item.module.split(/\/(.*)/s);
+      const orig_module = origin[0];
+      const orig_submodule = origin.length == 2 ? origin[1] : null;
+      const time_formatted = new Date(notif_item.created_at).toLocaleTimeString(
+        [],
+        { hour: "2-digit", minute: "2-digit" },
+      );
       temp_list[i] = {
         id: notif_item.notifications_id,
         msg: notif_item.message,
         orig_module: orig_module,
         orig_submodule: orig_submodule,
-        read: notif_item.notifications_status == 'Read',
-        time: time_formatted
-      }
-    })
-    setNotifs(temp_list)
-    console.log('Final notif list:')
-    console.log(temp_list)
+        read: notif_item.notifications_status == "Read",
+        time: time_formatted,
+      };
+    });
+    setNotifs(temp_list);
 
     //notif icon toggle (for loop so we can break out)
     for (var i = 0; i < temp_list.length; ++i) {
       if (temp_list[i].read == false) {
-        console.log('found notif')
-        setHasNotification(true)
-        break
+        setHasNotification(true);
+        break;
       }
     }
-  }
+  };
 
   //func for marking notifs as read
   const readNotif = async (notif_id) => {
     const resp = await fetch(`http://127.0.0.1:8000/api/notifications/`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        "Content-Type": "application/json"
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        notifications_id: notif_id
-      })
-    })
-  }
+        notifications_id: notif_id,
+      }),
+    });
+  };
 
   //get notifs
   useEffect(() => {
     if (user) {
-      fetchNotifs(user)
+      fetchNotifs(user);
     }
   }, [user]);
 
   // hooks for loading modules
   useEffect(() => {
-    console.log("(debug) main hook")
     if (activeModule) {
-      console.log("(debug) calling loadmainmodule")
-      loadMainModule(activeModule)
+      loadMainModule(activeModule);
     }
   }, [activeModule]);
 
   useEffect(() => {
-    console.log("(debug) sub hook")
     if (activeSubModule) {
-      console.log("(debug) calling loadsubmodule for ", activeSubModule)
-      loadSubModule(activeSubModule)
+      loadSubModule(activeSubModule);
     } else {
-      console.log("(debug) calling loadmainmodule from sub hook")
-      loadMainModule(activeModule)
+      loadMainModule(activeModule);
     }
   }, [activeSubModule]);
 
@@ -255,12 +249,11 @@ function App() {
     }
   };
 
-  const mainModules = import.meta.glob('./modules/*/*.jsx');
-  const subModules = import.meta.glob('./modules/*/submodules/*.jsx');
+  const mainModules = import.meta.glob("./modules/*/*.jsx");
+  const subModules = import.meta.glob("./modules/*/submodules/*.jsx");
 
   const loadMainModule = (moduleId) => {
     const moduleFile = `./modules/${moduleFileNames[moduleId]}/${moduleFileNames[moduleId]}.jsx`;
-    console.log("HERE" + moduleFile);
 
     if (mainModules[moduleFile]) {
       const LazyComponent = lazy(mainModules[moduleFile]);
@@ -334,12 +327,6 @@ function App() {
   const rawPermissions = user?.role?.permissions || "";
   const allowedModules = rawPermissions.split(",").map(m => m.trim()).filter(Boolean);
 
-
-  console.log('raw permissions...')
-  console.log(rawPermissions)
-  console.log("allowed modules...")
-  console.log(allowedModules)
-
   // COMMENT THIS IF THERE ARE MODULES THAT SHOULDNT BE ACCESSIBLE BY ALL
 
   let filteredModuleFileNames = allowedModules.includes("All")
@@ -372,17 +359,11 @@ function App() {
     });
   }
 
-  console.log("filtered modules...");
-  console.log(filteredModuleFileNames);
-
 
   const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
     id: module,
     file: `${moduleFileNames[module]}.png`,
   }));
-
-  console.log('module icons...')
-  console.log(modulesIcons)
 
   return (
     <div className="shell">
