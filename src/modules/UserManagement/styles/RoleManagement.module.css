@@ -104,7 +104,7 @@
 .permissionsHeader,
 .permissionsRow {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 4.1rem 4.1rem 4.1rem;
+  grid-template-columns: minmax(0, 1fr) 4.1rem;
   align-items: center;
 }
 
@@ -222,8 +222,9 @@
   background: rgba(27, 40, 58, 0.2);
   display: flex;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   padding: 8rem 0 0 0;
+  z-index: 500;
 }
 
 .modalCard {
@@ -292,7 +293,7 @@
 
   .permissionsHeader,
   .permissionsRow {
-    grid-template-columns: minmax(0, 1fr) 3.5rem 3.5rem 3.5rem;
+    grid-template-columns: minmax(0, 1fr) 3.5rem;
     padding-left: 0.9rem;
     padding-right: 0.9rem;
   }

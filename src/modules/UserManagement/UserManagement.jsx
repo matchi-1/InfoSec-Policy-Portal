@@ -392,15 +392,6 @@ const BodyContent = () => {
         </footer>
 
         <div className={styles.actionsBar}>
-          <Button
-            variant="subtle"
-            size="sm"
-            className={styles.manageRolesButton}
-            icon={<span className={styles.manageRolesIcon}>♟</span>}
-          >
-            Manage Roles
-          </Button>
-
           <div className={styles.saveCluster}>
             <span className={styles.saveHint}>
               {errorMessage
