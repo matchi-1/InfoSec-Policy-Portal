@@ -21,16 +21,47 @@ function App() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMainModuleCollapsed, setIsMainModuleCollapsed] = useState(true);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [notifs, setNotifs] = useState([]);
+  const [rolePermissions, setRolePermissions] = useState([]);
 
   const displayName = user
     ? `${user.first_name} ${user.last_name?.charAt(0)}.`
-    : '';
+    : "";
 
   const iconsRef = useRef(null);
   const descsRef = useRef(null);
+
+  useEffect(() => {
+    // Permissions Access
+    if (!user?.role?.role_name) return;
+
+    const fetchRolePermissions = async () => {
+      try {
+        const resp = await fetch(
+          `http://127.0.0.1:8000/roles/${encodeURIComponent(
+            user.role.role_name,
+          )}/permissions/`,
+          { credentials: "include" },
+        );
+
+        if (!resp.ok) {
+          console.warn("roles permissions fetch failed", resp.status);
+          return;
+        }
+
+        const payload = await resp.json();
+        const data = payload?.data ?? payload ?? {};
+        const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+        setRolePermissions(perms);
+      } catch (err) {
+        console.error("fetchRolePermissions error:", err);
+      }
+    };
+
+    fetchRolePermissions();
+  }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -320,45 +351,64 @@ function App() {
     },
   };
 
+  const allowedModules = Array.isArray(rolePermissions)
+    ? rolePermissions
+        .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
+        .map((m) => m.trim())
+        .filter(Boolean)
+    : [];
 
+  const normalizeName = (s) =>
+    String(s ?? "")
+      .replace(/\s+/g, "")
+      .toLowerCase();
+  const normalizedAllowed = new Set(
+    allowedModules.map((a) => normalizeName(a)),
+  );
+  const isAll = normalizedAllowed.has(normalizeName("All"));
 
+  let filteredModuleFileNames = {};
 
-
-  const rawPermissions = user?.role?.permissions || "";
-  const allowedModules = rawPermissions.split(",").map(m => m.trim()).filter(Boolean);
-
-  // COMMENT THIS IF THERE ARE MODULES THAT SHOULDNT BE ACCESSIBLE BY ALL
-
-  let filteredModuleFileNames = allowedModules.includes("All")
-    ? moduleFileNames
-    : Object.fromEntries(
-      Object.entries(moduleFileNames).filter(([key]) =>
-        allowedModules.includes(key)
-      )
-    );
-
-
-  if (allowedModules.includes("All")) {
+  if (isAll) {
     // allow everything (all modules + all submodules)
     filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
-    // or: filteredModuleFileNames = JSON.parse(JSON.stringify(moduleSubmoduleFileNames));
   } else {
+    // First, include any whole-main-module permissions that match (case/space-insensitive)
+    Object.keys(moduleFileNames).forEach((mainKey) => {
+      if (normalizedAllowed.has(normalizeName(mainKey))) {
+        filteredModuleFileNames[mainKey] = {
+          ...moduleSubmoduleFileNames[mainKey],
+        };
+      }
+    });
+
+    // Then, process explicit perms that may include submodules like "Policies/PolicySections"
     allowedModules.forEach((permission) => {
-      const [main, sub] = permission.split(/\/(.*)/s);
+      const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
+      const mainKey = Object.keys(moduleSubmoduleFileNames).find(
+        (k) => normalizeName(k) === normalizeName(mainRaw),
+      );
+      if (!mainKey) return; // ignore unknown perms safely
 
-      if (!moduleSubmoduleFileNames[main]) return; // ignore unknown perms safely
+      if (!filteredModuleFileNames[mainKey])
+        filteredModuleFileNames[mainKey] = {};
 
-      if (!filteredModuleFileNames[main]) filteredModuleFileNames[main] = {};
-
-      if (!sub) {
+      if (!subRaw) {
         // allow all submodules under this main module
-        filteredModuleFileNames[main] = { ...moduleSubmoduleFileNames[main] };
-      } else if (moduleSubmoduleFileNames[main][sub]) {
-        filteredModuleFileNames[main][sub] = moduleSubmoduleFileNames[main][sub];
+        filteredModuleFileNames[mainKey] = {
+          ...moduleSubmoduleFileNames[mainKey],
+        };
+      } else {
+        const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
+          (sk) => normalizeName(sk) === normalizeName(subRaw),
+        );
+        if (subKey) {
+          filteredModuleFileNames[mainKey][subKey] =
+            moduleSubmoduleFileNames[mainKey][subKey];
+        }
       }
     });
   }
-
 
   const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
     id: module,
@@ -409,8 +459,11 @@ function App() {
                         setActiveSubModule(null);
                         loadMainModule(module.id);
                         setIsMainModuleCollapsed(true);
-                      } else { // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed ? setIsMainModuleCollapsed(false) : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                      } else {
+                        // if it's already active and is the opened module, toggle off
+                        isMainModuleCollapsed
+                          ? setIsMainModuleCollapsed(false)
+                          : setIsMainModuleCollapsed(true); // open submodules if reclicked
                         //setActiveModule(null);
                         setActiveSubModule(null);
                       }
@@ -439,8 +492,13 @@ function App() {
                 </div>
 
                 <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed && isSidebarOpen && activeModule === module.id ? "opened" : ""
-                    }`}
+                  className={`sidebar-submodule-empty-container ${
+                    isMainModuleCollapsed &&
+                    isSidebarOpen &&
+                    activeModule === module.id
+                      ? "opened"
+                      : ""
+                  }`}
                 >
                   {/* submodules - only show if this module is active */}
                   {filteredModuleFileNames[module.id] &&
@@ -452,7 +510,7 @@ function App() {
                         >
                           <p></p>
                         </div>
-                      )
+                      ),
                     )}
                 </div>
               </div>
@@ -460,7 +518,10 @@ function App() {
           </div>
 
           <div className="sidebar-kinetiq-footer">
-            <img src={"public/icons/InfoSecLogo.png"} alt={"InfoSec Logo"}></img>
+            <img
+              src={"public/icons/InfoSecLogo.png"}
+              alt={"InfoSec Logo"}
+            ></img>
           </div>
         </div>
 
@@ -492,8 +553,11 @@ function App() {
                         setActiveSubModule(null);
                         loadMainModule(module.id);
                         setIsMainModuleCollapsed(true);
-                      } else { // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed ? setIsMainModuleCollapsed(false) : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                      } else {
+                        // if it's already active and is the opened module, toggle off
+                        isMainModuleCollapsed
+                          ? setIsMainModuleCollapsed(false)
+                          : setIsMainModuleCollapsed(true); // open submodules if reclicked
                         //setActiveModule(null);
                         setActiveSubModule(null);
                       }
@@ -504,9 +568,7 @@ function App() {
                       setActiveSubModule(null);
                       loadMainModule(module.id);
                     }
-
                   }}
-
                   onMouseEnter={() => setHoveredModule(module.id)}
                   onMouseLeave={() => setHoveredModule(null)}
                 >
@@ -514,8 +576,13 @@ function App() {
                 </div>
 
                 <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed && isSidebarOpen && activeModule === module.id ? "opened" : ""
-                    }`}
+                  className={`sidebar-submodule-empty-container ${
+                    isMainModuleCollapsed &&
+                    isSidebarOpen &&
+                    activeModule === module.id
+                      ? "opened"
+                      : ""
+                  }`}
                 >
                   {/* Submodules - only show if the main module is active */}
                   {filteredModuleFileNames[module.id] &&
@@ -535,7 +602,7 @@ function App() {
                         >
                           <p>{sub}</p>
                         </div>
-                      )
+                      ),
                     )}
                 </div>
               </div>
@@ -549,11 +616,11 @@ function App() {
 
         {/* adjustable right content */}
         <div className="header-body-container">
-
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
-              className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
-                }`}
+              className={`header-tabs-container ${
+                !showUserProfile && activeModule ? "visible" : "hidden"
+              }`}
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
@@ -580,70 +647,107 @@ function App() {
 
             <div className="header-right-container">
               {/*<SearchBar />*/}
-              <img className="notif-icon"
-                src={`/icons/Notification-${hasNotification ? "active-" : ""
-                  }logo.png`}
+              <img
+                className="notif-icon"
+                src={`/icons/Notification-${
+                  hasNotification ? "active-" : ""
+                }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
-                  setNotifOpen(!notifOpen)
+                  setNotifOpen(!notifOpen);
                   setIsProfileMenuOpen(false); //close profile menu if notif menu is opened
-                  setHasNotification(false)
+                  setHasNotification(false);
                 }} //to be replaecd by func for setting notifs as read
               ></img>
-              {notifOpen && <div className="notif-menu">
-                <div className="notif-title"><p>Notifications</p></div>
-                {notifs.length === 0 ? (
-                  <div className="notif-empty">
-                    <p className="notif-msg">No notifications to show.</p>
+              {notifOpen && (
+                <div className="notif-menu">
+                  <div className="notif-title">
+                    <p>Notifications</p>
                   </div>
-                ) : (notifs.map((notif, i) =>
-                  <div className={notif.read ? "notif-item" : "notif-item-unread"}
-                    onClick={
-                      notif.orig_submodule ? () => {
-                        notifs[i].read = true
-                        readNotif(notif.id)
-                        setActiveModule(notif.orig_module)
-                        setActiveSubModule(notif.orig_submodule)
-                      }
-                        : () => {
-                          notifs[i].read = true
-                          readNotif(notif.id)
-                          setActiveModule(notif.orig_module)
-                          setActiveSubModule(null)
-                        }
-                    }
-                    key={i}
-                  >
-                    <div className="notif-toprow">
-                      <div className="notif-origin"><p>{notif.orig_submodule ? notif.orig_submodule : notif.orig_module}</p></div>
-                      <div className="notif-time-and-icon">
-                        <div className="notif-time"><p>{notif.time}</p></div>
-                        {!notif.read && <p className="unread-notif-icon"><img src="/icons/unread-notif-icon.png" /></p>/* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */}
-                      </div>
+                  {notifs.length === 0 ? (
+                    <div className="notif-empty">
+                      <p className="notif-msg">No notifications to show.</p>
                     </div>
-                    <div className="notif-msg"><p>{notif.msg}</p></div>
-                  </div>
-                ))}
-              </div>}
+                  ) : (
+                    notifs.map((notif, i) => (
+                      <div
+                        className={
+                          notif.read ? "notif-item" : "notif-item-unread"
+                        }
+                        onClick={
+                          notif.orig_submodule
+                            ? () => {
+                                notifs[i].read = true;
+                                readNotif(notif.id);
+                                setActiveModule(notif.orig_module);
+                                setActiveSubModule(notif.orig_submodule);
+                              }
+                            : () => {
+                                notifs[i].read = true;
+                                readNotif(notif.id);
+                                setActiveModule(notif.orig_module);
+                                setActiveSubModule(null);
+                              }
+                        }
+                        key={i}
+                      >
+                        <div className="notif-toprow">
+                          <div className="notif-origin">
+                            <p>
+                              {notif.orig_submodule
+                                ? notif.orig_submodule
+                                : notif.orig_module}
+                            </p>
+                          </div>
+                          <div className="notif-time-and-icon">
+                            <div className="notif-time">
+                              <p>{notif.time}</p>
+                            </div>
+                            {
+                              !notif.read && (
+                                <p className="unread-notif-icon">
+                                  <img src="/icons/unread-notif-icon.png" />
+                                </p>
+                              ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
+                            }
+                          </div>
+                        </div>
+                        <div className="notif-msg">
+                          <p>{notif.msg}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
               {isProfileMenuOpen && (
                 <div className="profile-dropdown">
                   <div className="profile-dropdown-header">
-                    <div className="profile-name">{user?.first_name} {user?.last_name}</div>
-                    <div className="profile-details">ID: {user?.employee_id}</div>
-                    <div className="profile-details">{user?.role?.role_name}</div>
+                    <div className="profile-name">
+                      {user?.first_name} {user?.last_name}
+                    </div>
+                    <div className="profile-details">
+                      ID: {user?.employee_id}
+                    </div>
+                    <div className="profile-details">
+                      {user?.role?.role_name}
+                    </div>
                   </div>
 
                   <div className="dropdown-divider"></div>
                   <div className="dropdown-menu">
-                    <div className="dropdown-item" onClick={handleLogout}><img src="/icons/logout.png" /> Logout</div>
+                    <div className="dropdown-item" onClick={handleLogout}>
+                      <img src="/icons/logout.png" /> Logout
+                    </div>
                   </div>
-
                 </div>
               )}
 
               <div className="header-profile-container">
-                <div className={`header-profile-icon-wrapper ${isProfileMenuOpen ? "opened" : ""}`}
-                  onClick={toggleProfileMenu}>
+                <div
+                  className={`header-profile-icon-wrapper ${isProfileMenuOpen ? "opened" : ""}`}
+                  onClick={toggleProfileMenu}
+                >
                   <div className="header-profile-icon">
                     {" "}
                     {displayName?.charAt(0)}
@@ -663,7 +767,11 @@ function App() {
                 />
               ) : (
                 ModuleComponent && (
-                  <Suspense fallback={<div className="loading-suspense">Loading...</div>}>
+                  <Suspense
+                    fallback={
+                      <div className="loading-suspense">Loading...</div>
+                    }
+                  >
                     <ModuleComponent
                       setActiveModule={setActiveModule}
                       loadSubModule={loadSubModule}
@@ -678,7 +786,7 @@ function App() {
           </QueryClientProvider>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
