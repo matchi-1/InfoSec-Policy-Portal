@@ -111,6 +111,7 @@ export default function StandaloneLogin() {
         localStorage.setItem('login_attempts', '0');
         console.log("Login successful:", data);
         localStorage.setItem("user", JSON.stringify(data.data));
+        console.log(data);
         setLoginError("");
         //setView("mfa");
         navigate("/");

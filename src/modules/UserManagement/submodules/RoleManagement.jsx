@@ -163,6 +163,16 @@ const BodyContent = () => {
     }));
   };
 
+  // Precompute stable toggle handlers so we don't create a new lambda per render
+  const toggleHandlers = useMemo(() => {
+    const map = {};
+    moduleNames.forEach((name) => {
+      map[name] = () =>
+        setDraftModules((current) => ({ ...current, [name]: !current[name] }));
+    });
+    return map;
+  }, [moduleNames, setDraftModules]);
+
   const handleDiscard = () => {
     setDraftModules(savedModules);
   };
@@ -355,29 +365,36 @@ const BodyContent = () => {
               )}
 
               {!isLoading &&
-                moduleNames.map((moduleName) => (
-                  <div key={moduleName} className={styles.permissionsRow}>
-                    <div className={styles.moduleName}>{moduleName}</div>
+                moduleNames.map((moduleName) => {
+                  const isHome = moduleName === "Home";
+                  const isForcedAdminUM =
+                    isAdminRole && moduleName === "UserManagement";
+                  const checked =
+                    isHome ||
+                    isForcedAdminUM ||
+                    Boolean(draftModules[moduleName]);
+                  const disabled =
+                    (!selectedRole && !isNewRoleModalOpen) ||
+                    isForcedAdminUM ||
+                    isHome;
 
-                    <label className={styles.checkboxCell}>
-                      <input
-                        type="checkbox"
-                        checked={Boolean(
-                          isAdminRole && moduleName === "UserManagement"
-                            ? true
-                            : draftModules[moduleName],
-                        )}
-                        onChange={() => toggleModule(moduleName)}
-                        aria-label={`Access permission for ${moduleName}`}
-                        disabled={
-                          (!selectedRole && !isNewRoleModalOpen) ||
-                          (isAdminRole && moduleName === "UserManagement")
-                        }
-                      />
-                      <span className={styles.checkboxVisual} />
-                    </label>
-                  </div>
-                ))}
+                  return (
+                    <div key={moduleName} className={styles.permissionsRow}>
+                      <div className={styles.moduleName}>{moduleName}</div>
+
+                      <label className={styles.checkboxCell}>
+                        <input
+                          type="checkbox"
+                          checked={checked}
+                          onChange={toggleHandlers[moduleName]}
+                          aria-label={`Access permission for ${moduleName}`}
+                          disabled={disabled}
+                        />
+                        <span className={styles.checkboxVisual} />
+                      </label>
+                    </div>
+                  );
+                })}
             </div>
           </div>
         </section>
@@ -429,6 +446,6 @@ const BodyContent = () => {
       </div>
     </div>
   );
-};
+};;
 
 export default BodyContent;
