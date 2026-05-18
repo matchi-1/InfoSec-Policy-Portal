@@ -53,7 +53,7 @@ function BodyContent({ doc, onBack }) {
     // const [currentMarkdown, setCurrentMarkdown] = useState("")
     const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-    
+
 
     const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
 
@@ -186,7 +186,7 @@ function BodyContent({ doc, onBack }) {
     const activeSub =
         openSubs.find((sub) => sub.id === activeSubId) ?? openSubs[0] ?? null;
 
-    useEffect(() =>{
+    useEffect(() => {
         setInitialMarkdown(activeSub?.content ?? "")
     }, [activeSub?.id])
     // render content from a string (supports headings-ish + bullets)
@@ -250,15 +250,15 @@ function BodyContent({ doc, onBack }) {
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
                 <p className={styles.backDocuBtn} onClick={onBack}>
-                    <img src="/icons/to-left.png"/>
+                    <img src="/icons/to-left.png" />
                     Back to Documents
                 </p>
                 <div className={styles.headerRegion}>
                     <div className={styles.headerDock}>
                         <button
-                            className={styles.saveBtn} 
-                            onClick={() => {setShowConfModal(true)}}>
-                            <img src="/icons/save-green.png"/>
+                            className={styles.saveBtn}
+                            onClick={() => { setShowConfModal(true) }}>
+                            <img src="/icons/save-green.png" />
                             <p>Save</p>
                         </button>
                         <button
@@ -354,29 +354,48 @@ function BodyContent({ doc, onBack }) {
                             )}
                         </div>
                         <div className={styles.tagsContainer}>
-                            {
-                                currTags.map((tag) => {
-                                    return (
-                                        <p onClick={() => {
-                                            setCurrTags((prev) => prev.filter((item) => item !== tag));
-                                        }}>{tag} </p>
-                                    )
-                                })
-                            }
-                            <button onClick={() => setShowTagsDropdown(true)}>add tag +</button>
+                            <button>
+                                <div className={styles.chipsContainer}>
+                                {currTags.length > 0 ?
+                                    currTags.map((tag) => {
+                                        return (
+                                            <div className={styles.tagChips}>
+                                                <p>{tag}</p>
+                                                <img
+                                                    onClick={() => {
+                                                        setCurrTags((prev) => prev.filter((item) => item !== tag));
+                                                    }}
+                                                    src="/icons/close.png" alt="Remove tag" />
+                                            </div>
+                                        )
+                                    }) : <h3 onClick={() => setShowTagsDropdown(!showTagsDropdown)} >Add ISO / NIST Tags</h3>
+                                }
+                                </div>
+                                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
+                                    <img 
+                                        style={{width: '1.4rem', height: '1.4rem'}} 
+                                        src="/icons/close-gray.png" alt="remove all tags" 
+                                        onClick={() => setCurrTags([])}
+                                        />
+                                    <img 
+                                        style={{width: '1.2rem', height: '1.2rem'}}
+                                        src="/icons/down-gray.png" alt="collapse tag" 
+                                        onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                                        />
+                                </div>
+                            </button>
                             {
                                 showTagsDropdown && <div className={styles.tagsDropdown}>
-                                    <div className={styles.tagsDropdownHeader}>
-                                        <button onClick={() => {setShowTagsDropdown(false)}}> CLOSE ME </button>
-                                    </div>
                                     <div className={styles.tagsDropdownSearch}>
-                                        <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value)}}/>
+                                        <img src="/icons/search-icon.png"/>
+                                        <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value) }} />
                                     </div>
                                     <div className={styles.tagsDropdownList}>
                                         {
+                                            filteredTags.length == 0 ? <p style={{fontSize: '0.75rem', padding: '0.5rem', opacity: 0.7}}>No tags found</p> :
                                             filteredTags.map((tag) => {
                                                 if (!currTags.includes(tag)) {
-                                                    return(
+                                                    return (
                                                         <p onClick={() => {
                                                             setCurrTags((prev) => [...prev, tag])
                                                         }}>{tag}</p>
@@ -395,20 +414,20 @@ function BodyContent({ doc, onBack }) {
                                 <p>authored by:</p>
                                 <div className={
                                     doc.authoredBy
-                                    ? styles.dropDownSectionSelected
-                                    : styles.dropDownSection } 
-                                    
+                                        ? styles.dropDownSectionSelected
+                                        : styles.dropDownSection}
+
                                     onClick={() => {
-                                    setShowAuthoredDropdown(!showAuthoredDropdown);
-                                    setShowReviewedDropdown(false);
-                                    setShowDateDropdown(false);
-                                }}>
-                                    <p>{ authoredBy ? currAuthorName : "Select Author" }</p>
+                                        setShowAuthoredDropdown(!showAuthoredDropdown);
+                                        setShowReviewedDropdown(false);
+                                        setShowDateDropdown(false);
+                                    }}>
+                                    <p>{authoredBy ? currAuthorName : "Select Author"}</p>
                                     <img
                                         src={
                                             doc.authoredBy === ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
+                                                ? "/icons/down.png"
+                                                : "/icons/down-white.png"
                                         }
                                         alt="Down Icon"
                                     />
@@ -417,7 +436,7 @@ function BodyContent({ doc, onBack }) {
                                 {showAuthoredDropdown && (
                                     <div className={styles.dropdownList}>
                                         {userList.map((user) => {
-                                            return(
+                                            return (
                                                 <p onClick={() => {
                                                     setAuthoredBy(user.id)
                                                     setShowAuthoredDropdown(false)
@@ -433,20 +452,20 @@ function BodyContent({ doc, onBack }) {
                                 <p>reviewed by:</p>
                                 <div className={
                                     doc.reviewedBy
-                                    ? styles.dropDownSectionSelected
-                                    : styles.dropDownSection }
-                                    
+                                        ? styles.dropDownSectionSelected
+                                        : styles.dropDownSection}
+
                                     onClick={() => {
-                                    setShowReviewedDropdown(!showReviewedDropdown);
-                                    setShowAuthoredDropdown(false);
-                                    setShowDateDropdown(false);
-                                }}>
-                                    <p>{ reviewedBy ? currReviewerName : "Select Reviewer" }</p>
+                                        setShowReviewedDropdown(!showReviewedDropdown);
+                                        setShowAuthoredDropdown(false);
+                                        setShowDateDropdown(false);
+                                    }}>
+                                    <p>{reviewedBy ? currReviewerName : "Select Reviewer"}</p>
                                     <img
                                         src={
                                             doc.reviewedBy === ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
+                                                ? "/icons/down.png"
+                                                : "/icons/down-white.png"
                                         }
                                         alt="Down Icon"
                                     />
@@ -454,7 +473,7 @@ function BodyContent({ doc, onBack }) {
                                 {showReviewedDropdown && (
                                     <div className={styles.dropdownList}>
                                         {userList.map((user) => {
-                                            return(
+                                            return (
                                                 <p onClick={() => {
                                                     setReviewedBy(user.id)
                                                     setShowReviewedDropdown(false)
@@ -475,14 +494,14 @@ function BodyContent({ doc, onBack }) {
                                 }}>
                                     <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                     <img
-                                        src={ "/icons/down-white.png" }
+                                        src={"/icons/down-white.png"}
                                         alt="Down Icon"
                                     />
                                 </div>
                                 {showDateDropdown && (
                                     <div className={styles.dropdownList}>
                                         <DatePicker showIcon popperPlacement="bottom" selected={selectDate} onChange={(date) => setSelectDate(date)} />
-                                        <button onClick={() => {setShowDateDropdown(false)}}>ok</button>
+                                        <button onClick={() => { setShowDateDropdown(false) }}>ok</button>
                                     </div>
                                 )}
                             </div>
@@ -743,7 +762,7 @@ function BodyContent({ doc, onBack }) {
                                                             </ul> */}
                                                             <MDXEditor
                                                                 // key={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
-                                                                key = {initialMarkdown}
+                                                                key={initialMarkdown}
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
                                                                 // markdown={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
@@ -806,7 +825,7 @@ function BodyContent({ doc, onBack }) {
                             );
                         })}
                         <div className={styles.SectionCreateButton}>
-                            <button  onClick={() => {
+                            <button onClick={() => {
                                 setSections(prevSections => [...prevSections, {
                                     id: "new" + crypto.randomUUID(),
                                     description: "New section description",
@@ -820,7 +839,7 @@ function BodyContent({ doc, onBack }) {
                                     ]
                                 }])
                             }}>
-                                <img src="icons/add-green.png"/>
+                                <img src="icons/add-green.png" />
                                 <p>Add Section</p>
                             </button>
                         </div>
@@ -828,7 +847,7 @@ function BodyContent({ doc, onBack }) {
                 )
             }
             {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />}
-            {showConfModal && 
+            {showConfModal &&
                 <div className={styles.confModal}>
                     <p>are u sure</p>
                     <button onClick={async () => {
@@ -851,7 +870,7 @@ function BodyContent({ doc, onBack }) {
                             body: data
                         })
                     }}>yes</button>
-                    <button onClick={() => {setShowConfModal(false)}}>no</button>
+                    <button onClick={() => { setShowConfModal(false) }}>no</button>
                 </div>
             }
         </div>
