@@ -834,6 +834,7 @@ function BodyContent({ doc, onBack }) {
                     <button onClick={async () => {
                         setShowConfModal(false)
                         const data = new FormData()
+                        data.append('curr_id', JSON.parse(localStorage.getItem('user')).user_id)
                         data.append('id', doc.id)
                         data.append('title', currTitle)
                         data.append('details', currDesc)

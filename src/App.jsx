@@ -10,6 +10,7 @@ import { User } from "lucide-react";
 import LandingPage from "./pages/LandingPage";
 
 function App() {
+  const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [hasNotification, setHasNotification] = useState(false);
   const [activeModule, setActiveModule] = useState(null);
@@ -198,52 +199,31 @@ function App() {
 
   //fetch notifs
   const fetchNotifs = async (user) => {
-    //const resp = await fetch(`http://127.0.0.1:8000/api/notifications/?user_id=${user?.user_id}`, { method: 'GET' })
-    // const resp_text = await resp.text()
-    const resp_data = await resp.json();
-    const notif_items = resp_data.data;
-    var temp_list = [];
-    //populate notifs table
-    notif_items.map((notif_item, i) => {
-      const origin = notif_item.module.split(/\/(.*)/s);
-      const orig_module = origin[0];
-      const orig_submodule = origin.length == 2 ? origin[1] : null;
-      const time_formatted = new Date(notif_item.created_at).toLocaleTimeString(
-        [],
-        { hour: "2-digit", minute: "2-digit" },
-      );
-      temp_list[i] = {
-        id: notif_item.notifications_id,
-        msg: notif_item.message,
-        orig_module: orig_module,
-        orig_submodule: orig_submodule,
-        read: notif_item.notifications_status == "Read",
-        time: time_formatted,
-      };
-    });
-    setNotifs(temp_list);
+    console.log("Fetching notifs...")
+    const resp = await fetch(`${backend_base_url}/api/notifications/`, { method: 'GET' })
+    const notif_items = await resp.json();
+    console.log("Notifs fetched:")
+    console.log(notif_items)
+    setNotifs(notif_items)
+    console.log('Final notif list:')
+    console.log(notif_items)
 
-    //notif icon toggle (for loop so we can break out)
-    for (var i = 0; i < temp_list.length; ++i) {
-      if (temp_list[i].read == false) {
-        setHasNotification(true);
-        break;
+    //look through notif times
+    // VERY placeholder/temp logic. for actual per-notif reading logic, use UserNotification many-to-many entity
+    notif_items.map((notif) => {
+      const notif_date = new Date(notif.created_at)
+      const latest_notif_open = new Date(localStorage.getItem("last_notif_open"))
+      // console.log("(debug) notif date: ", notif_date)
+      // console.log("(debug) latest open date: ", latest_notif_open)
+      if (notif_date > latest_notif_open) {
+        setHasNotification(true)
+        // console.log("(debug) we have a new notif, setting hasnotif to true")
+      } else {
+        // console.log("(debug) just old notif")
       }
-    }
-  };
 
-  //func for marking notifs as read
-  const readNotif = async (notif_id) => {
-    const resp = await fetch(`http://127.0.0.1:8000/api/notifications/`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        notifications_id: notif_id,
-      }),
-    });
-  };
+    })
+  }
 
   //get notifs
   useEffect(() => {
@@ -657,6 +637,7 @@ function App() {
                   setNotifOpen(!notifOpen);
                   setIsProfileMenuOpen(false); //close profile menu if notif menu is opened
                   setHasNotification(false);
+                  localStorage.setItem("last_notif_open", new Date().toISOString())
                 }} //to be replaecd by func for setting notifs as read
               ></img>
               {notifOpen && (
@@ -671,49 +652,60 @@ function App() {
                   ) : (
                     notifs.map((notif, i) => (
                       <div
-                        className={
-                          notif.read ? "notif-item" : "notif-item-unread"
-                        }
-                        onClick={
-                          notif.orig_submodule
-                            ? () => {
-                                notifs[i].read = true;
-                                readNotif(notif.id);
-                                setActiveModule(notif.orig_module);
-                                setActiveSubModule(notif.orig_submodule);
-                              }
-                            : () => {
-                                notifs[i].read = true;
-                                readNotif(notif.id);
-                                setActiveModule(notif.orig_module);
-                                setActiveSubModule(null);
-                              }
-                        }
+                        // className={
+                        //   notif.read ? "notif-item" : "notif-item-unread"
+                        // }
+                        className="notif-item"
+                        // onClick={
+                        //   notif.orig_submodule
+                        //     ? () => {
+                        //         notifs[i].read = true;
+                        //         readNotif(notif.id);
+                        //         setActiveModule(notif.orig_module);
+                        //         setActiveSubModule(notif.orig_submodule);
+                        //       }
+                        //     : () => {
+                        //         notifs[i].read = true;
+                        //         readNotif(notif.id);
+                        //         setActiveModule(notif.orig_module);
+                        //         setActiveSubModule(null);
+                        //       }
+                        // }
                         key={i}
                       >
                         <div className="notif-toprow">
                           <div className="notif-origin">
                             <p>
-                              {notif.orig_submodule
+                              {/* {notif.orig_submodule
                                 ? notif.orig_submodule
-                                : notif.orig_module}
+                                : notif.orig_module} */}
                             </p>
                           </div>
                           <div className="notif-time-and-icon">
                             <div className="notif-time">
-                              <p>{notif.time}</p>
+                              <p>
+                                {
+                                  new Intl.DateTimeFormat("en-US", {
+                                      // month: "short",
+                                      // day: "numeric",
+                                      hour: "numeric",
+                                      minute: "2-digit",
+                                      hour12: true,
+                                  }).format(new Date(notif.created_at))
+                                }
+                              </p>
                             </div>
                             {
-                              !notif.read && (
-                                <p className="unread-notif-icon">
-                                  <img src="/icons/unread-notif-icon.png" />
-                                </p>
-                              ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
+                              // !notif.read && (
+                              //   <p className="unread-notif-icon">
+                              //     <img src="/icons/unread-notif-icon.png" />
+                              //   </p>
+                              // ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
                             }
                           </div>
                         </div>
                         <div className="notif-msg">
-                          <p>{notif.msg}</p>
+                          <p>{notif.actor==JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.document_title}</p>
                         </div>
                       </div>
                     ))
