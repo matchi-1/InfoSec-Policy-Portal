@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import styles from "./StandaloneLogin.module.css";
 import emailjs from "@emailjs/browser";
+import tooltipIcon from "../public/icons/tooltip.png";
 
 export default function StandaloneLogin() {
 
@@ -724,10 +725,14 @@ export default function StandaloneLogin() {
                               tabIndex={0}
                               aria-label="Password requirements"
                             >
+                              
+
                               <img
                                 className={styles.infoIcon}
-                                src="/icons/i-icon.png"
-                                alt=""
+                                src={tooltipIcon}
+                                alt="Tooltip"
+                                onError={() => console.log("Tooltip image failed to load")}
+                                onLoad={() => console.log("Tooltip image loaded successfully")}
                               />
                               <span className={styles.tooltip}>
                                 Use at least 8 characters, <br />
