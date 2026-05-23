@@ -166,181 +166,191 @@ const BodyContent = ({ setActiveSubModule }) => {
                             />
                         </div>
 
-                        <div className={styles.filterContainer}>
-                            <h2>Filter by Category</h2>
-                            <div
-                                className={
-                                    selectedCategory !== ""
-                                        ? styles.activeSelectedOption
-                                        : styles.selectedOption
-                                }
-                                onClick={() => {
-                                    setIsCategoryOpen(!isCategoryOpen);
-                                    setIsAuthOpen(false);
-                                    setIsReviewerOpen(false);
-                                }}
-                            >
-                                <div><p>{selectedCategory || "All Categories"}</p></div>
-                                <div>
-                                    <img
-                                        src={
-                                            selectedCategory !== ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
-                                        }
-                                        alt="Down Icon"
-                                    />
-                                </div>
-                            </div>
+                        <div className={styles.filtersWrapper}>
 
-                            {isCategoryOpen && (
-                                <div className={styles.filterOptionsContainer}>
-                                    <div
-                                        className={styles.filterOptions}
-                                        onClick={() => {
-                                            setSelectedCategory("");
-                                            setIsCategoryOpen(false);
-                                        }}
-                                    >
-                                        All Categories
-                                    </div>
-
-                                    {uniqueCategories.map((category, index) => (
-                                        <div
-                                            className={
-                                                selectedCategory === category
-                                                    ? styles.activeFilter
-                                                    : styles.filterOptions
+                            <div className={styles.filterContainer}>
+                                <h2>Filter by Category</h2>
+                                <div
+                                    className={
+                                        selectedCategory !== ""
+                                            ? styles.activeSelectedOption
+                                            : styles.selectedOption
+                                    }
+                                    onClick={() => {
+                                        setIsCategoryOpen(!isCategoryOpen);
+                                        setIsAuthOpen(false);
+                                        setIsReviewerOpen(false);
+                                    }}
+                                >
+                                    <div><p>{selectedCategory || "All Categories"}</p></div>
+                                    <div>
+                                        <img
+                                            className={`${styles.dropdownArrow} ${isCategoryOpen ? styles.dropdownArrowOpen : ""
+                                                }`}
+                                            src={
+                                                selectedCategory !== ""
+                                                    ? "/icons/down-white.png"
+                                                    : "/icons/down.png"
                                             }
-                                            key={index}
+                                            alt="Down Icon"
+                                        />
+                                    </div>
+                                </div>
+
+                                {isCategoryOpen && (
+                                    <div className={styles.filterOptionsContainer}>
+                                        <div
+                                            className={styles.filterOptions}
                                             onClick={() => {
-                                                setSelectedCategory(category);
+                                                setSelectedCategory("");
                                                 setIsCategoryOpen(false);
                                             }}
                                         >
-                                            {category}
+                                            All Categories
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
 
-                        <div className={styles.filterContainer}>
-                            <h2>Filter by Author</h2>
-                            <div
-                                className={
-                                    selectedAuthor !== ""
-                                        ? styles.activeSelectedOption
-                                        : styles.selectedOption
-                                }
-                                onClick={() => {
-                                    setIsAuthOpen(!isAuthOpen);
-                                    setIsCategoryOpen(false);
-                                    setIsReviewerOpen(false);
-                                }}
-                            >
-                                <div><p>{selectedAuthor || "All Authors"}</p></div>
-                                <div>
-                                    <img
-                                        src={
-                                            selectedAuthor !== ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
-                                        }
-                                        alt="Down Icon"
-                                    />
-                                </div>
+                                        {uniqueCategories.map((category, index) => (
+                                            <div
+                                                className={
+                                                    selectedCategory === category
+                                                        ? styles.activeFilter
+                                                        : styles.filterOptions
+                                                }
+                                                key={index}
+                                                onClick={() => {
+                                                    setSelectedCategory(category);
+                                                    setIsCategoryOpen(false);
+                                                }}
+                                            >
+                                                {category}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
-                            {isAuthOpen && (
-                                <div className={styles.filterOptionsContainer}>
-                                    <div
-                                        className={styles.filterOptions}
-                                        onClick={() => {
-                                            setSelectedAuthor("");
-                                            setIsAuthOpen(false);
-                                        }}
-                                    >
-                                        All Authors
-                                    </div>
-
-                                    {uniqueAuthors.map((author, index) => (
-                                        <div
-                                            className={
-                                                selectedAuthor === author
-                                                    ? styles.activeFilter
-                                                    : styles.filterOptions
+                            <div className={styles.filterContainer}>
+                                <h2>Filter by Author</h2>
+                                <div
+                                    className={
+                                        selectedAuthor !== ""
+                                            ? styles.activeSelectedOption
+                                            : styles.selectedOption
+                                    }
+                                    onClick={() => {
+                                        setIsAuthOpen(!isAuthOpen);
+                                        setIsCategoryOpen(false);
+                                        setIsReviewerOpen(false);
+                                    }}
+                                >
+                                    <div><p>{selectedAuthor || "All Authors"}</p></div>
+                                    <div>
+                                        <img
+                                            className={`${styles.dropdownArrow} ${isAuthOpen ? styles.dropdownArrowOpen : ""
+                                                }`}
+                                            src={
+                                                selectedAuthor !== ""
+                                                    ? "/icons/down-white.png"
+                                                    : "/icons/down.png"
                                             }
-                                            key={index}
+                                            alt="Down Icon"
+                                        />
+                                    </div>
+                                </div>
+
+                                {isAuthOpen && (
+                                    <div className={styles.filterOptionsContainer}>
+                                        <div
+                                            className={styles.filterOptions}
                                             onClick={() => {
-                                                setSelectedAuthor(author);
+                                                setSelectedAuthor("");
                                                 setIsAuthOpen(false);
                                             }}
                                         >
-                                            {author}
+                                            All Authors
                                         </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
 
-                        <div className={styles.filterContainer}>
-                            <h2>Filter by Reviewer</h2>
-                            <div
-                                className={
-                                    selectedReviewer !== ""
-                                        ? styles.activeSelectedOption
-                                        : styles.selectedOption
-                                }
-                                onClick={() => {
-                                    setIsReviewerOpen(!isReviewerOpen);
-                                    setIsCategoryOpen(false);
-                                    setIsAuthOpen(false);
-                                }}
-                            >
-                                <div><p>{selectedReviewer || "All Reviewers"}</p></div>
-                                <div>
-                                    <img
-                                        src={
-                                            selectedReviewer !== ""
-                                                ? "/icons/down-white.png"
-                                                : "/icons/down.png"
-                                        }
-                                        alt="Down Icon"
-                                    />
-                                </div>
+                                        {uniqueAuthors.map((author, index) => (
+                                            <div
+                                                className={
+                                                    selectedAuthor === author
+                                                        ? styles.activeFilter
+                                                        : styles.filterOptions
+                                                }
+                                                key={index}
+                                                onClick={() => {
+                                                    setSelectedAuthor(author);
+                                                    setIsAuthOpen(false);
+                                                }}
+                                            >
+                                                {author}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
                             </div>
 
-                            {isReviewerOpen && (
-                                <div className={styles.filterOptionsContainer}>
-                                    <div
-                                        className={styles.filterOptions}
-                                        onClick={() => {
-                                            setSelectedReviewer("");
-                                            setIsReviewerOpen(false);
-                                        }}
-                                    >
-                                        All Reviewers
-                                    </div>
-
-                                    {uniqueReviewers.map((reviewer, index) => (
-                                        <div
-                                            className={
-                                                selectedReviewer === reviewer
-                                                    ? styles.activeFilter
-                                                    : styles.filterOptions
+                            <div className={styles.filterContainer}>
+                                <h2>Filter by Reviewer</h2>
+                                <div
+                                    className={
+                                        selectedReviewer !== ""
+                                            ? styles.activeSelectedOption
+                                            : styles.selectedOption
+                                    }
+                                    onClick={() => {
+                                        setIsReviewerOpen(!isReviewerOpen);
+                                        setIsCategoryOpen(false);
+                                        setIsAuthOpen(false);
+                                    }}
+                                >
+                                    <div><p>{selectedReviewer || "All Reviewers"}</p></div>
+                                    <div>
+                                        <img
+                                            className={`${styles.dropdownArrow} ${isReviewerOpen ? styles.dropdownArrowOpen : ""
+                                                }`}
+                                            src={
+                                                selectedReviewer !== ""
+                                                    ? "/icons/down-white.png"
+                                                    : "/icons/down.png"
                                             }
-                                            key={index}
+                                            alt="Down Icon"
+                                        />
+                                    </div>
+                                </div>
+
+                                {isReviewerOpen && (
+                                    <div className={styles.filterOptionsContainer}>
+                                        <div
+                                            className={styles.filterOptions}
                                             onClick={() => {
-                                                setSelectedReviewer(reviewer);
+                                                setSelectedReviewer("");
                                                 setIsReviewerOpen(false);
                                             }}
                                         >
-                                            {reviewer}
+                                            All Reviewers
                                         </div>
-                                    ))}
-                                </div>
-                            )}
+
+                                        {uniqueReviewers.map((reviewer, index) => (
+                                            <div
+                                                className={
+                                                    selectedReviewer === reviewer
+                                                        ? styles.activeFilter
+                                                        : styles.filterOptions
+                                                }
+                                                key={index}
+                                                onClick={() => {
+                                                    setSelectedReviewer(reviewer);
+                                                    setIsReviewerOpen(false);
+                                                }}
+                                            >
+                                                {reviewer}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
                         </div>
 
                         <div
@@ -353,7 +363,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     alt={"Plus Icon"}
                                 />
                             </div>
-                            Create New Document
+                            Create
                         </div>
                     </div>
 
