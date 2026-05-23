@@ -215,13 +215,8 @@ function App() {
     notif_items.map((notif) => {
       const notif_date = new Date(notif.created_at)
       const latest_notif_open = new Date(localStorage.getItem("last_notif_open"))
-      // console.log("(debug) notif date: ", notif_date)
-      // console.log("(debug) latest open date: ", latest_notif_open)
       if (notif_date > latest_notif_open) {
         setHasNotification(true)
-        // console.log("(debug) we have a new notif, setting hasnotif to true")
-      } else {
-        // console.log("(debug) just old notif")
       }
 
     })
@@ -229,9 +224,16 @@ function App() {
 
   //get notifs
   useEffect(() => {
-    if (user) {
+    if (!user) return;
+    //first fetch on pageload
+    fetchNotifs(user);
+
+    //fetching every 30s
+    const interval = setInterval(() => {
       fetchNotifs(user);
-    }
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, [user]);
 
   // hooks for loading modules
@@ -750,7 +752,7 @@ function App() {
                           </div>
                         </div>
                         <div className="notif-msg">
-                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.document_title}</p>
+                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.misc_title?notif.misc_title:notif.document_title}</p>
                         </div>
                       </div>
                     ))
