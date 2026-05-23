@@ -543,7 +543,7 @@ function BodyContent({ doc, onBack }) {
                                     setShowAuthoredDropdown(false);
                                     setShowReviewedDropdown(false);
                                 }}>
-                                    <CustomDatePicker
+                                    {/* <CustomDatePicker
                                         value={selectDate}
                                         onChange={(date) => setSelectDate(date)}
                                         slotProps={{
@@ -553,7 +553,7 @@ function BodyContent({ doc, onBack }) {
                                                 fullWidth: true,
                                             }
                                         }}
-                                    />
+                                    /> */}
                                     {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                     <img
                                         src={"/icons/down-white.png"}
@@ -982,10 +982,13 @@ function BodyContent({ doc, onBack }) {
                                     data.append('sections', JSON.stringify(sections))
                                     data.append('authoredBy', authoredBy)
                                     data.append('reviewedBy', reviewedBy)
+                                    data.append('curr_id', JSON.parse(localStorage.getItem("user")).user_id)
 
                                     if (fileToUpload) {
                                         data.append('pdf_file', fileToUpload)
                                     }
+                                    console.log("(debug) sending data to backend for doc update")
+                                    console.log("(debug)", [...data])
 
                                     await fetch(`${backend_base_url}/documents/create-update-doc/`, {
                                         method: 'POST',
