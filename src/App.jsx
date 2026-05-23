@@ -321,9 +321,7 @@ function App() {
     Home: {},
     Documents: {},
     Policies: {},
-    "Recent News": {
-      "Recent News Dashboard": "RecentNews-dsh",
-    },
+    "Recent News": {},
     "User Management": {
       "Role Management": "RoleManagement",
     },
