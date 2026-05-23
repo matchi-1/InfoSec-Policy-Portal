@@ -2,7 +2,24 @@ import React from "react";
 import styles from "./styles/RecentNews.module.css";
 
 const BodyContent = () => {
-    const newsItems = [
+    // BACKEND TODO:
+    // Replace this later with a fetch from your portal content endpoint.
+    // Example: GET /api/portal-content/
+    // This should be the one current pinned message shown to users.
+    const pinnedNotice = {
+        category: "Security Notice",
+        updatedAt: "Jan 20, 2026",
+        updatedBy: "InfoSec Department",
+        title: "Quarterly Security Awareness Campaign",
+        message:
+            "The InfoSec Department will conduct a quarterly security awareness campaign covering phishing prevention, data handling, and safe access practices.",
+    };
+
+    // BACKEND TODO:
+    // Replace this later with your existing notifications table/API.
+    // Example: GET /api/notifications/
+    // These should mirror recent system updates like edited documents, new policies, or module changes.
+    const latestUpdates = [
         {
             type: "Policy Update",
             date: "Jan 15, 2026",
@@ -35,47 +52,47 @@ const BodyContent = () => {
 
                     {/* EDIT THIS: Replace this placeholder description with the actual purpose of the Recent News module. */}
                     <p className={styles.pageDescription}>
-                        View recent information security announcements, advisories, policy
-                        updates, and department notices.
+                        View current InfoSec notices and recent system updates related to
+                        policies, documents, advisories, and department activities.
                     </p>
                 </div>
 
                 <div className={styles.contentGrid}>
-                    <section className={styles.featuredCard}>
+                    <section className={styles.pinnedNoticeCard}>
                         <div className={styles.cardHeader}>
-                            <p>Featured Announcement</p>
+                            <p>Pinned Notice</p>
                         </div>
 
-                        <div className={styles.featuredContent}>
+                        <div className={styles.pinnedNoticeContent}>
                             <div>
-                                <p className={styles.newsMeta}>Security Advisory • Jan 20, 2026</p>
-
-                                {/* EDIT THIS: Replace this placeholder announcement with the latest priority announcement. */}
-                                <h2>Quarterly Security Awareness Campaign</h2>
-
-                                <p>
-                                    The InfoSec Department will conduct a quarterly security
-                                    awareness campaign covering phishing prevention, data handling,
-                                    and safe access practices.
+                                <p className={styles.noticeMeta}>
+                                    {pinnedNotice.category} • {pinnedNotice.updatedAt}
                                 </p>
+
+                                {/* BACKEND TODO: Map this to pinnedNotice.title */}
+                                <h2>{pinnedNotice.title}</h2>
+
+                                {/* BACKEND TODO: Map this to pinnedNotice.message */}
+                                <p>{pinnedNotice.message}</p>
                             </div>
 
-                            <button type="button" className={styles.readButton}>
-                                View Details
-                            </button>
+                            <div className={styles.noticeFooter}>
+                                <span>Last updated by</span>
+                                <p>{pinnedNotice.updatedBy}</p>
+                            </div>
                         </div>
                     </section>
 
-                    <section className={styles.newsListCard}>
+                    <section className={styles.updatesCard}>
                         <div className={styles.cardHeader}>
                             <p>Latest Updates</p>
                         </div>
 
-                        <div className={styles.newsList}>
-                            {/* EDIT THIS: Replace these placeholder news items with real data from the backend later. */}
-                            {newsItems.map((item, index) => (
-                                <article key={index} className={styles.newsItem}>
-                                    <div className={styles.newsItemTop}>
+                        <div className={styles.updatesList}>
+                            {/* BACKEND TODO: Replace latestUpdates with notifications fetched from the backend. */}
+                            {latestUpdates.map((item, index) => (
+                                <article key={index} className={styles.updateItem}>
+                                    <div className={styles.updateItemTop}>
                                         <span>{item.type}</span>
                                         <p>{item.date}</p>
                                     </div>
