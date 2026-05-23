@@ -232,7 +232,7 @@ function App() {
     const interval = setInterval(() => {
       fetchNotifs(user);
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [user]);
 
@@ -752,7 +752,7 @@ function App() {
                           </div>
                         </div>
                         <div className="notif-msg">
-                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.misc_title?notif.misc_title:notif.document_title}</p>
+                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.misc_title ? notif.misc_title : notif.document_title}</p>
                         </div>
                       </div>
                     ))

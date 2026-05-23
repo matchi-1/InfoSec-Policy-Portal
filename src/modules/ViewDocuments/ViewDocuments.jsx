@@ -16,16 +16,16 @@ const BodyContent = () => {
     const [docSearch, setDocSearch] = useState("");
     const [policySearch, setPolicySearch] = useState("");
     const [dbDocs, setDbDocs] = useState([])
-    useEffect(() => { 
-            const fetchDocuments = async () => {
-                console.log("(debug) fetching docs from backend...")
-                const resp = await fetch(backend_base_url + "/documents/get-documents/")
-                const docs = await resp.json()
-                console.log("(debug) fetched docs: " + docs)
-                setDbDocs(docs)
-            }
-            fetchDocuments();
-        }, [])
+    useEffect(() => {
+        const fetchDocuments = async () => {
+            console.log("(debug) fetching docs from backend...")
+            const resp = await fetch(backend_base_url + "/documents/get-documents/")
+            const docs = await resp.json()
+            console.log("(debug) fetched docs: " + docs)
+            setDbDocs(docs)
+        }
+        fetchDocuments();
+    }, [])
 
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
@@ -137,6 +137,10 @@ const BodyContent = () => {
     const selectedDoc = useMemo(() => {
         return dbDocs.find((d) => d.id === selectedDocId) ?? null;
     }, [dbDocs, selectedDocId]);
+
+    const selectedPdfUrl = selectedDoc?.pdf_filename
+        ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}#view=FitH&toolbar=1&navpanes=0`
+        : "#";
 
     const handleNextPage = () => {
         setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -285,7 +289,7 @@ const BodyContent = () => {
                                     <div className={styles.documentDescription}>
                                         <p>Please select a document from the list to view its details.</p>
                                     </div>
-                                </div>  
+                                </div>
                             )}
 
                             {selectedDoc && (
@@ -299,14 +303,19 @@ const BodyContent = () => {
                         </div>
                     )}
 
-                    <div className={styles.documentButtonsAndSearchContainer}>
-                        <div className={styles.documentSearchFilterContainer}>
-                            <SearchBar
-                                placeholder="Search standards, policies, procedures..."
-                                value={policySearch}
-                                onChange={setPolicySearch}
-                            />
-                        </div>
+                    <div
+                        className={`${styles.documentButtonsAndSearchContainer} ${isPdfViewActive ? styles.pdfToolbarMode : ""
+                            }`}
+                    >
+                        {!isPdfViewActive && (
+                            <div className={styles.documentSearchFilterContainer}>
+                                <SearchBar
+                                    placeholder="Search standards, policies, procedures..."
+                                    value={policySearch}
+                                    onChange={setPolicySearch}
+                                />
+                            </div>
+                        )}
 
                         <div className={styles.documentButtonsContainer}>
                             <button
@@ -318,9 +327,20 @@ const BodyContent = () => {
                                 {isPdfViewActive ? "View Mode" : "View PDF"}
                             </button>
 
+                            {isPdfViewActive && selectedDoc && (
+                                <a
+                                    className={styles.documentButton}
+                                    href={selectedPdfUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Open PDF in New Tab
+                                </a>
+                            )}
+
                             <a
                                 className={styles.documentButton}
-                                href={selectedDoc?.pdf_filename ? `${backend_base_url}/documents/get-pdf/${selectedDoc.pdf_filename}#view=FitH&toolbar=1&navpanes=0` : "#"}
+                                href={selectedPdfUrl}
                                 download
                                 target="_blank"
                                 rel="noopener noreferrer"
@@ -367,7 +387,7 @@ const BodyContent = () => {
                                 <div className={styles.pdfViewerContainer}>
                                     <iframe
                                         className={styles.pdfIframe}
-                                        src={`${backend_base_url}/documents/get-pdf/${selectedDoc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`}
+                                        src={selectedPdfUrl}
                                         title={selectedDoc.title}
                                     />
                                 </div>

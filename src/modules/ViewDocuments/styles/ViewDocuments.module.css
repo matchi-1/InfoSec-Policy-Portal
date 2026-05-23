@@ -539,4 +539,10 @@ h2 {
 }
 
 
+.pdfToolbarMode {
+  justify-content: flex-end;
+}
 
+.documentButtonsContainer a {
+  text-decoration: none;
+}
