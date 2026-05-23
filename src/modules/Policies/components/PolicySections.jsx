@@ -21,15 +21,15 @@ import { defaultSchema } from 'hast-util-sanitize';
  */
 export default function PolicySections({ data = [], query = "", isDocumentSelected = false }) {
     const extendedSchema = {
-      ...defaultSchema,
-      tagNames: [
-        ...(defaultSchema.tagNames || []),
-        'u',
-      ],
-      attributes: {
-        ...defaultSchema.attributes,
-        u: [],
-      },
+        ...defaultSchema,
+        tagNames: [
+            ...(defaultSchema.tagNames || []),
+            'u',
+        ],
+        attributes: {
+            ...defaultSchema.attributes,
+            u: [],
+        },
     };
     const sections = useMemo(() => data ?? [], [data]);
 
@@ -252,9 +252,9 @@ export default function PolicySections({ data = [], query = "", isDocumentSelect
                                             <div className={styles.policyContentText}>
                                                 <ul className={styles.policyBulletList}>
                                                     {/* {activeSub ? renderContent(activeSub.content) : null} */}
-                                                    {activeSub ? 
+                                                    {activeSub ?
                                                         <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, [rehypeSanitize, extendedSchema]]}>{activeSub.content}</ReactMarkdown>
-                                                    : null}
+                                                        : null}
                                                 </ul>
                                             </div>
                                         </div>

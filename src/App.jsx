@@ -333,6 +333,19 @@ function App() {
     },
   };
 
+  const moduleDisplayNames = {
+    Home: "Home",
+    Documents: "Create/Edit Documents",
+    Policies: "View Documents",
+    "Recent News": "Recent News",
+    Others: "Others",
+    "User Management": "User Management",
+  };
+
+  const getModuleDisplayName = (moduleId) =>
+    moduleDisplayNames[moduleId] ?? moduleId;
+
+
   // DEV ONLY: Show all modules while backend permissions are not yet ready
   const filteredModuleFileNames = moduleSubmoduleFileNames;   // delete this and uncomment below once perms are ready
 
@@ -557,7 +570,7 @@ function App() {
                   onMouseEnter={() => setHoveredModule(module.id)}
                   onMouseLeave={() => setHoveredModule(null)}
                 >
-                  <p>{module.id}</p>
+                  <p>{getModuleDisplayName(module.id)}</p>
                 </div>
 
                 <div
@@ -607,7 +620,7 @@ function App() {
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
-                alt={activeModule}
+                alt={getModuleDisplayName(activeModule)}
               />
               <div className="header-module-names">
                 <p
@@ -619,7 +632,7 @@ function App() {
                     //loadSubModule(null);
                   }}
                 >
-                  {activeModule}
+                  {getModuleDisplayName(activeModule)}
                 </p>
                 <p className="fade-in">{activeSubModule ? ` > ` : ""}</p>
                 <p id="header-submodule-name" className="fade-in">
