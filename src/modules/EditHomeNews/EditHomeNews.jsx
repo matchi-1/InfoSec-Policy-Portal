@@ -250,7 +250,7 @@ const BodyContent = () => {
 
                             <span className={styles.modeDescription}>
                                 {isEditMode
-                                    ? "Save changes, cancel, or reset to last saved."
+                                    ? "NOTICE: Editing and saving this will notify all users of the update."
                                     : "Click Edit Content to make changes."}
                             </span>
                         </div>
