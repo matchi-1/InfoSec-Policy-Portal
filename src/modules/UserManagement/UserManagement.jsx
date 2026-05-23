@@ -262,14 +262,17 @@ const BodyContent = () => {
       <div className={styles.bodyContentContainer}>
         <div className={styles.topGlow} />
 
-        <header className={styles.header}>
-          <div className={styles.titleBlock}>
-            <p className={styles.eyebrow}>System Administration</p>
-            <h2>User Management</h2>
-          </div>
-
-          <SearchBar value={searchTerm} onChange={setSearchTerm} />
+        <header className={styles.headerSection}>
+          <p className={styles.pageLabel}>System Administration</p>
+          <h1>User Management</h1>
+          <p className={styles.pageDescription}>
+            View users, search accounts, and update assigned access roles.
+          </p>
         </header>
+
+        <div className={styles.searchRow}>
+          <SearchBar value={searchTerm} onChange={setSearchTerm} />
+        </div>
 
         <section
           className={styles.tableCard}
@@ -360,9 +363,8 @@ const BodyContent = () => {
                 <button
                   key={item}
                   type="button"
-                  className={`${styles.paginationPage} ${
-                    item === currentPage ? styles.paginationActive : ""
-                  }`}
+                  className={`${styles.paginationPage} ${item === currentPage ? styles.paginationActive : ""
+                    }`}
                   onClick={() => setCurrentPage(item)}
                   disabled={isLoadingUsers}
                 >
