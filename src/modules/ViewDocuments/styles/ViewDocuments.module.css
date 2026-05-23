@@ -2,514 +2,79 @@
   display: flex;
   width: 100%;
   height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
-h2 {
-  color:var(--primary-blue);
+.policies h2 {
+  color: var(--primary-blue);
   font-weight: 600;
 }
+
+/* =========================
+   MAIN LAYOUT
+   ========================= */
 
 .bodyContentContainer {
   width: 100%;
   height: 100%;
-  border-radius: 0.5rem;
-  background-color: white;
-  padding: 2rem 1.5rem 1.5rem 1.5rem;
-  box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
+  min-width: 0;
+  min-height: 30rem;
+
   display: flex;
   flex-direction: row;
-  align-items: start;
-
+  align-items: stretch;
   justify-content: flex-start;
 
-  min-width: 0rem;
-  min-height: 30rem;
+  padding: 2rem 1.5rem 1.5rem;
+  box-sizing: border-box;
+
+  border-radius: 0.5rem;
+  background-color: white;
+  box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
+
+  overflow: hidden;
 }
+
+/* =========================
+   LEFT: DOCUMENT LIST
+   ========================= */
 
 .sideDocumentContainer {
   display: flex;
   flex-direction: column;
-  align-items: start;
+  align-items: stretch;
   gap: 0.75rem;
 
-  height: 100%;
+  flex: 0 0 18rem;
+  width: 18rem;
   min-width: 18rem;
-  flex: 0 0 13.5rem;
-  width: 13.5rem;
   max-width: 18rem;
-
-  /* IMPORTANT for scroll layouts */
+  height: 100%;
   min-height: 0;
 
   border-right: 1px solid rgb(191, 191, 191);
 }
 
 .searchBarContainer {
-  padding-right: 0.75rem;
   width: 100%;
+  padding-right: 0.75rem;
+  box-sizing: border-box;
 }
-
 
 .filterAndFileNumContainer {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 0.5rem;
+
   width: 100%;
+  padding: 0.25rem 1rem 0 0;
+  box-sizing: border-box;
+
   font-size: 0.75rem;
   color: rgb(105, 105, 105);
-  padding: 0.25rem 1rem 0rem 0rem;
 }
-    
-
-/* document container should take the remaining height */
-.documentAndFooterContainer {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  width: 100%;
-  /* fills remaining space */
-  flex: 1;
-  min-height: 0;
-}
-
-
-/* Area that  expands (and scroll) */
-.documentsContainer {
-  width: 100%;
-  max-width: 100%;
-  background-color: #F5F9FF;
-
-  /* fill available space inside documentAndFooterContainer */
-  flex: 1;
-
-  /* so it can scroll instead of pushing footer off-screen */
-  overflow-y: auto;
-  overflow-x: hidden;
-
-  /* IMPORTANT in nested flex columns */
-  min-height: 0;
-
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 1rem 0.5rem;
-  gap: 1rem;
-
-  border-top: 1px solid rgb(184, 184, 184);
-  border-bottom: 1px solid rgb(184, 184, 184);
-
-  /*scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;*/
-}
-
-
-.documentsContainer::-webkit-scrollbar{
-  width: 0.3rem;
-}
-
-.documentsContainer::-webkit-scrollbar-track{
-  background: transparent;   /* no visible track */
-}
-
-.documentsContainer::-webkit-scrollbar-thumb{
-  background: #94A9C6;
-  border-radius: 5rem;      /* rounded rectangle */
-}
-
-.documentsContainer::-webkit-scrollbar-thumb:hover{
-  background: #8399ba;       
-}
-
-
-.documentItem {
-  font-size: 0.88rem;
-  color: rgb(75, 75, 75);
-  background-color: #E7E7E7;
-  border-radius: 0.3rem;
-  width: 100%;
-  box-sizing: border-box;
-
-  min-height: 6.4rem;
-  height: auto;
-
-  padding: 0.55rem 0.6rem;
-  border: 1px solid rgb(172, 172, 172);
-
-  display: flex;
-  align-items: stretch;
-  justify-content: flex-start;
-  flex-shrink: 0;
-
-  overflow: visible;
-  cursor: pointer;
-  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
-}
-
-.documentItemContent {
-  width: 100%;
-  min-width: 0;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: flex-start;
-  gap: 0.28rem;
-}
-
-.documentTitle {
-  margin: 0 0 0.2rem 0;
-  width: 100%;
-  min-width: 0;
-  text-align: left;
-
-  font-size: 0.88rem;
-  font-weight: 500;
-  line-height: 1.2rem;
-
-  display: block;
-  white-space: normal;
-  overflow: visible;
-  text-overflow: unset;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-
-  flex-shrink: 0;
-}
-
-.documentMetaLine {
-  width: 100%;
-  min-width: 0;
-  font-size: 0.68rem;
-  line-height: 0.82rem;
-  color: #6a6a6a;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.documentUpdatedLine {
-  color: #7a88a3;
-  font-style: italic;
-  font-size: 0.6rem;
-}
-
-.documentMetaChips {
-  width: 100%;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem;
-  min-width: 0;
-  margin-top: 0.18rem;
-  justify-content: start;
-}
-
-.metaChip {
-  display: inline-flex;
-  align-items: center;
-  max-width: 100%;
-  padding: 0.05rem 0.32rem;
-  border-radius: 999px;
-  background-color: #dbe7f7;
-  color: #204c8b;
-  border: 1px solid #c1d4e9;
-  font-size: 0.58rem;
-  line-height: 0.8rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.documentItem.selected {
-  background-color: var(--primary-blue);
-  color: white;
-}
-
-.documentItem.selected .documentMetaLine {
-  color: rgba(255, 255, 255, 0.82);
-}
-
-.documentItem.selected .metaChip {
-  background-color: rgba(255, 255, 255, 0.16);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.18);
-}
-
-.documentItem.selected:hover{
-  background-color: #0d3673;
-  color: white;
-}
-
-.documentItem:hover{
-  background-color: #dde5f1;
-}
-
-/* target the text directly */
-.documentItem p {
-  margin: 0;
-  width: 100%;
-  min-width: 0;            
-  text-align: center;
-  line-height: 1rem;
-
-  /* multi-line ellipsis */
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;   /* change to 1, 2, 3 lines */
-  overflow: hidden;
-
-  overflow-wrap: anywhere;
-}
-
-/* footer stays pinned at bottom */
-.paginationContainer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  /*border: 1px solid rgb(255, 0, 0);*/
-  width: 100%;
-  height: 2rem;
-  font-size: 0.75rem;
-  /* won't make it shrink away */
-  flex-shrink: 0;
-  padding-top: 0.4rem;
-}
-
-.pageButton {
-  background-color: transparent;
-  border: none;
-  font-size: 1rem;
-  cursor: pointer;
-  padding: 0rem 0.5rem;
-} 
-
-.pageButton:disabled {
-  visibility: hidden;   /* keeps space, hides button */
-  pointer-events: none;
-}
-
-.rightContentContainer{
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-  /* fills remaining space */
-  flex: 1 1 0;
-  min-height: 0;
-  /* min-width: 50rem; */
-  min-width: 0;
-  height:100%;
-  background-color: #F5F9FF;
-  border: 1px solid #a7acc5;
-  border-radius: 0.5rem;
-  margin-left: 1rem;
-}
-
-.documentHeaderContainer{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  width: 100%;
-  background-color: var(--primary-blue);
-  border-radius: 0.5rem 0.5rem 0 0;
-  color: white;
-  padding: 0.75rem 1.5rem 1rem 0.75rem;
-}
-
-.documentDetails{
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  width: 100%;
-}
-
-.documentTitleContainer{
-  max-height: 4rem;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #94a9c6a8 transparent;
-  width: 100%;
-  
-}
-
-.documentDetails h2{
-  color: white;
-  font-size: 1.3rem;
-  font-weight: 400;
-  word-break: break-word;
-  line-height: 1.7rem;
-}
-
-.documentDescription{
-  font-size: 0.8rem;
-  font-weight: 200;
-  font-style: italic;
-  letter-spacing: 0.02rem;
-  line-height: 1rem;
-  margin-top: 0.4rem;
-  min-height: 0;
-  max-height: 3rem;              /* fixed 3 lines (since line-height is 1rem) */
-  overflow-y: auto;          /* scroll only when needed */
-  overflow-x: hidden;
-  padding-right: 0.4rem;     /* small gap so text doesn't touch scrollbar */
-  background: transparent;  
-}
-
-/* SIMPLE SCROLLBAR (Chrome/Edge/Safari) */
-/* Firefox */
-.documentDescription{
-  scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;
-}
-
-.documentMetadata{
-  display: flex;
-  justify-content: flex-start;
-  align-items: flex-start;
-  flex-direction: column;
-  gap: 0.1rem;
-  font-size: 0.75rem;
-  color: rgb(233, 233, 233);
-  margin-left: 2rem;
-}
-
-
-.documentButtonsAndSearchContainer{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-direction: row;
-  width: 100%;
-  max-width: 100%;
-  padding: 0.75rem 1rem 0.25rem 0.75rem;
-}
-
-/* Button row */
-.documentButtonsContainer{
-  max-width: fit-content;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* Base button */
-.documentButton{
-  height: 2rem;
-  padding: 0 0.9rem;
-  border-radius: 0.3rem;
-  width: max-content;
-
-  border: 2px solid #8ea6c7;
-  background: transparent;
-  color: var(--primary-blue);
-
-  font-size: 0.85rem;
-  font-weight: 500;
-  letter-spacing: 0.01rem;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  user-select: none;
-
-  transition: transform 120ms ease, background-color 120ms ease, border-color 120ms ease, color 120ms ease, filter 120ms ease;
-}
-
-.documentButton:hover{
-  filter: brightness(0.97);
-  background-color: #e6f0ff;
-}
-
-.documentButton:active{
-  transform: translateY(1px);
-  background-color: #c8deff;
-}
-
-/* Accessible focus ring */
-.documentButton:focus-visible{
-  outline: 2px solid #94A9C6;
-  outline-offset: 2px;
-}
-
-/* Disabled (general) */
-.documentButton:disabled{
-  opacity: 0.5;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Selected state for View PDF (scoped to this button only) */
-.documentButton.documentButtonSelected{
-  background-color: var(--primary-blue);
-  border-color: var(--primary-blue);
-  color: white;
-}
-
-/* Keep selected button strong even if disabled (since you disable it in “view mode”) */
-.documentButton.documentButtonSelected:disabled{
-  opacity: 1;
-  cursor: default;
-}
-
-
-.documentSearchFilterContainer{
-  width: 35rem;
-  display: flex;
-  justify-content: start;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.documentContentContainer{
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  gap: 0.6rem;
-
-  width: 100%;
-  height: 100%;
-
-  overflow-y: auto;
-  padding: 0.5rem;
-  box-sizing: border-box;
-
-  scrollbar-width: thin;
-  scrollbar-color: #94A9C6 transparent;
-
-}
-
-.pdfViewerContainer{
-  width: 100%;
-  height: 100%;
-  flex: 1;
-  min-height: 0; 
-  border-radius: 0.5rem;
-  overflow: hidden;
-  background: white;
-}
-
-.pdfIframe{
-  width: 100%;
-  height: 100%;
-  border: 0;
-  display: block;
-}
-
-.pdfViewerPlaceholder{
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #4b4b4b;
-  background: white;
-  border-radius: 0.5rem;
-}
-
 
 .filterActions {
   display: flex;
@@ -523,11 +88,13 @@ h2 {
   background: transparent;
   padding: 0;
   margin: 0;
+
+  font-family: inherit;
   font-size: 0.72rem;
   color: #6f7f98;
   text-decoration: underline;
+
   cursor: pointer;
-  font-family: inherit;
 }
 
 .clearFilterText:hover {
@@ -538,57 +105,511 @@ h2 {
   opacity: 0.75;
 }
 
+.documentAndFooterContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
 
-.pdfToolbarMode {
-  justify-content: flex-end;
+  width: 100%;
+  flex: 1;
+  min-height: 0;
+}
+
+.documentsContainer {
+  width: 100%;
+  max-width: 100%;
+  flex: 1;
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+
+  padding: 1rem 0.5rem;
+  box-sizing: border-box;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background-color: #f5f9ff;
+  border-top: 1px solid rgb(184, 184, 184);
+  border-bottom: 1px solid rgb(184, 184, 184);
+}
+
+.documentsContainer::-webkit-scrollbar {
+  width: 0.3rem;
+}
+
+.documentsContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.documentsContainer::-webkit-scrollbar-thumb {
+  background: #94a9c6;
+  border-radius: 5rem;
+}
+
+.documentsContainer::-webkit-scrollbar-thumb:hover {
+  background: #8399ba;
+}
+
+.documentItem {
+  width: 100%;
+  min-height: 6.4rem;
+  height: auto;
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  padding: 0.55rem 0.6rem;
+  box-sizing: border-box;
+
+  overflow: visible;
+  cursor: pointer;
+
+  font-size: 0.88rem;
+  color: rgb(75, 75, 75);
+  background-color: #e7e7e7;
+  border: 1px solid rgb(172, 172, 172);
+  border-radius: 0.3rem;
+
+  transition:
+    background-color 0.2s,
+    color 0.2s,
+    border-color 0.2s;
+}
+
+.documentItem:hover {
+  background-color: #dde5f1;
+}
+
+.documentItem.selected {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.documentItem.selected:hover {
+  background-color: #0d3673;
+  color: white;
+}
+
+.documentItem.selected .documentMetaLine {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.documentItem.selected .metaChip {
+  background-color: rgba(255, 255, 255, 0.16);
+  color: white;
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.documentItemContent {
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: 0.28rem;
+}
+
+.documentTitle {
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+
+  margin: 0 0 0.2rem;
+
+  display: block;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: unset;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
+  text-align: left;
+  font-size: 0.88rem;
+  font-weight: 500;
+  line-height: 1.2rem;
+}
+
+.documentItem p {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+
+  overflow: hidden;
+  overflow-wrap: anywhere;
+
+  line-height: 1rem;
+  text-align: center;
+}
+
+.documentMetaChips {
+  width: 100%;
+  min-width: 0;
+  margin-top: 0.18rem;
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 0.25rem;
+}
+
+.metaChip {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+
+  padding: 0.05rem 0.32rem;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  border-radius: 999px;
+  background-color: #dbe7f7;
+  color: #204c8b;
+  border: 1px solid #c1d4e9;
+
+  font-size: 0.58rem;
+  line-height: 0.8rem;
+}
+
+.documentMetaLine {
+  width: 100%;
+  min-width: 0;
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  font-size: 0.68rem;
+  line-height: 0.82rem;
+  color: #6a6a6a;
+}
+
+.documentUpdatedLine {
+  color: #7a88a3;
+  font-style: italic;
+  font-size: 0.6rem;
+}
+
+/* =========================
+   PAGINATION
+   ========================= */
+
+.paginationContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+  height: 2rem;
+  flex-shrink: 0;
+
+  padding-top: 0.4rem;
+  box-sizing: border-box;
+
+  font-size: 0.75rem;
+}
+
+.pageButton {
+  background-color: transparent;
+  border: none;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0 0.5rem;
+}
+
+.pageButton:disabled {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* =========================
+   RIGHT: DOCUMENT DETAILS
+   ========================= */
+
+.rightContentContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 0;
+  height: 100%;
+  margin-left: 1rem;
+
+  background-color: #f5f9ff;
+  border: 1px solid #a7acc5;
+  border-radius: 0.5rem;
+}
+
+.documentHeaderContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  padding: 0.75rem 1.5rem 1rem 0.75rem;
+  box-sizing: border-box;
+
+  color: white;
+  background-color: var(--primary-blue);
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.documentDetails {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+}
+
+.documentTitleContainer {
+  width: 100%;
+  max-height: 4rem;
+
+  overflow-y: auto;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6a8 transparent;
+}
+
+.documentDetails h2 {
+  color: white;
+  font-size: 1.3rem;
+  font-weight: 400;
+  line-height: 1.7rem;
+  word-break: break-word;
+}
+
+.documentDescription {
+  margin-top: 0.4rem;
+  max-height: 3rem;
+  min-height: 0;
+  padding-right: 0.4rem;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  background: transparent;
+  font-size: 0.8rem;
+  font-weight: 200;
+  font-style: italic;
+  letter-spacing: 0.02rem;
+  line-height: 1rem;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6 transparent;
+}
+
+.documentMetadata {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  gap: 0.1rem;
+  margin-left: 2rem;
+
+  font-size: 0.75rem;
+  color: rgb(233, 233, 233);
+}
+
+.documentButtonsAndSearchContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  width: 100%;
+  max-width: 100%;
+  padding: 0.75rem 1rem 0.25rem 0.75rem;
+  box-sizing: border-box;
+}
+
+.documentSearchFilterContainer {
+  width: 35rem;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.documentButtonsContainer {
+  max-width: fit-content;
+
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .documentButtonsContainer a {
   text-decoration: none;
 }
 
-/* PDF toolbar mode */
+.documentButton {
+  width: max-content;
+  height: 2rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 0.9rem;
+
+  border: 2px solid #8ea6c7;
+  border-radius: 0.3rem;
+  background: transparent;
+  color: var(--primary-blue);
+
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.01rem;
+
+  cursor: pointer;
+  user-select: none;
+
+  transition:
+    transform 120ms ease,
+    background-color 120ms ease,
+    border-color 120ms ease,
+    color 120ms ease,
+    filter 120ms ease;
+}
+
+.documentButton:hover {
+  filter: brightness(0.97);
+  background-color: #e6f0ff;
+}
+
+.documentButton:active {
+  transform: translateY(1px);
+  background-color: #c8deff;
+}
+
+.documentButton:focus-visible {
+  outline: 2px solid #94a9c6;
+  outline-offset: 2px;
+}
+
+.documentButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.documentButton.documentButtonSelected {
+  background-color: var(--primary-blue);
+  border-color: var(--primary-blue);
+  color: white;
+}
+
+.documentButton.documentButtonSelected:disabled {
+  opacity: 1;
+  cursor: default;
+}
+
 .pdfToolbarMode {
   justify-content: flex-end;
 }
 
-.documentButtonsContainer a {
-  text-decoration: none;
+/* =========================
+   CONTENT / PDF VIEWER
+   ========================= */
+
+.documentContentContainer {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 0.6rem;
+
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+
+  overflow-y: auto;
+  padding: 0.5rem;
+  box-sizing: border-box;
+
+  scrollbar-width: thin;
+  scrollbar-color: #94a9c6 transparent;
 }
 
+.pdfViewerContainer {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex: 1;
 
-/* =====================================================
-   VIEW DOCUMENTS RESPONSIVE LAYOUT
-   1024px is used because the dashboard sidebar reduces space
-   ===================================================== */
+  overflow: hidden;
+
+  border-radius: 0.5rem;
+  background: white;
+}
+
+.pdfIframe {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  border: 0;
+}
+
+.pdfViewerPlaceholder {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #4b4b4b;
+  background: white;
+  border-radius: 0.5rem;
+}
+
+/* =========================
+   RESPONSIVE: TABLET / NARROW DESKTOP
+   Trigger early because the dashboard sidebar consumes width.
+   ========================= */
 
 @media (max-width: 1024px) {
   .policies {
-    width: 100%;
     height: 100%;
     min-height: 0;
     overflow: hidden;
   }
 
-  /*
-    This becomes the main scroll container.
-    Important: do NOT use overflow: visible here.
-    If overflow is visible, children can visually escape the white card.
-  */
   .bodyContentContainer {
-    width: 100%;
-    height: 100% !important;
-    max-height: 100%;
+    height: 100%;
     min-height: 0;
 
-    display: flex;
     flex-direction: column;
     align-items: stretch;
-    justify-content: flex-start;
     gap: 1rem;
 
     padding: 1rem;
-    box-sizing: border-box;
 
     overflow-y: auto;
     overflow-x: hidden;
@@ -597,14 +618,15 @@ h2 {
 
   .sideDocumentContainer {
     width: 100%;
-    max-width: none;
     min-width: 0;
+    max-width: none;
     height: auto;
     flex: 0 0 auto;
 
+    padding-bottom: 1rem;
+
     border-right: none;
     border-bottom: 1px solid rgb(191, 191, 191);
-    padding-bottom: 1rem;
   }
 
   .sideDocumentContainer h2 {
@@ -613,30 +635,54 @@ h2 {
   }
 
   .searchBarContainer {
-    width: 100%;
     padding-right: 0;
   }
 
   .filterAndFileNumContainer {
-    width: 100%;
     padding: 0;
-    gap: 0.75rem;
   }
 
   .documentAndFooterContainer {
-    width: 100%;
     flex: 0 0 auto;
-    min-height: 0;
   }
 
   .documentsContainer {
-    width: 100%;
-    flex: 0 0 auto;
-    max-height: 22rem;
-    min-height: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: stretch;
 
-    overflow-y: auto;
-    overflow-x: hidden;
+    flex: 0 0 auto;
+    max-height: 32rem;
+
+    padding: 0.9rem;
+    gap: 0.75rem;
+  }
+
+  .documentItem {
+    min-height: 6.3rem;
+    height: auto;
+
+    padding: 0.75rem;
+    align-items: flex-start;
+  }
+
+  .documentItemContent {
+    height: 100%;
+    gap: 0.35rem;
+  }
+
+  .documentTitle {
+    font-size: 0.86rem;
+    line-height: 1.15rem;
+  }
+
+  .documentItem p {
+    text-align: left;
+    -webkit-line-clamp: 2;
+  }
+
+  .documentMetaLine {
+    text-align: left;
   }
 
   .paginationContainer {
@@ -644,26 +690,29 @@ h2 {
     padding-top: 0.5rem;
   }
 
+  .pageNumber {
+    font-size: 0.7rem;
+  }
+
   .rightContentContainer {
     width: 100%;
     min-width: 0;
-    height: auto !important;
-    min-height: 0;
+    min-height: 34rem;
+    height: auto;
     flex: 0 0 auto;
 
     margin-left: 0;
-    overflow: visible;
+
+    display: flex;
+    flex-direction: column;
   }
 
   .documentHeaderContainer {
     flex-direction: column;
     align-items: stretch;
     gap: 0.75rem;
-    padding: 0.85rem;
-  }
 
-  .documentDetails {
-    min-width: 0;
+    padding: 0.85rem;
   }
 
   .documentTitleContainer {
@@ -674,7 +723,6 @@ h2 {
   .documentDetails h2 {
     font-size: 1.1rem;
     line-height: 1.35rem;
-    word-break: break-word;
   }
 
   .documentDescription {
@@ -685,8 +733,9 @@ h2 {
   .documentMetadata {
     width: 100%;
     margin-left: 0;
-    font-size: 0.7rem;
+
     gap: 0.15rem;
+    font-size: 0.7rem;
   }
 
   .documentMetadata p {
@@ -694,14 +743,12 @@ h2 {
   }
 
   .documentButtonsAndSearchContainer {
-    width: 100%;
     flex-direction: column;
     align-items: stretch;
     justify-content: flex-start;
-    gap: 0.65rem;
 
     padding: 0.75rem;
-    box-sizing: border-box;
+    gap: 0.65rem;
   }
 
   .documentSearchFilterContainer {
@@ -713,10 +760,8 @@ h2 {
     width: 100%;
     max-width: none;
 
-    display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
-    align-items: center;
     gap: 0.5rem;
   }
 
@@ -727,41 +772,36 @@ h2 {
     height: 2rem;
 
     padding: 0 0.65rem;
+
     font-size: 0.74rem;
     white-space: nowrap;
   }
 
   .documentContentContainer {
-    width: 100%;
-    height: auto !important;
-    min-height: 0;
-    flex: 0 0 auto;
+    height: auto;
+    min-height: 18rem;
+    flex: 1;
 
-    padding: 0.5rem;
     overflow: visible;
-    box-sizing: border-box;
+  }
+
+  .documentContentContainer > * {
+    flex: 1;
   }
 
   .pdfViewerContainer {
-    width: 100%;
     height: 70vh;
     min-height: 28rem;
     flex: 0 0 auto;
-
-    overflow: hidden;
   }
 
   .pdfIframe {
-    width: 100%;
     height: 100%;
     min-height: 100%;
   }
 
   /* PDF mode */
-  .pdfActive .sideDocumentContainer {
-    display: none;
-  }
-
+  .pdfActive .sideDocumentContainer,
   .pdfActive .documentHeaderContainer {
     display: none;
   }
@@ -769,6 +809,10 @@ h2 {
   .pdfActive .bodyContentContainer {
     padding: 0.6rem;
     gap: 0.6rem;
+  }
+
+  .pdfActive .rightContentContainer {
+    min-height: 0;
   }
 
   .pdfActive .documentButtonsAndSearchContainer {
@@ -784,10 +828,16 @@ h2 {
   .pdfActive .documentButton {
     min-width: 7.2rem;
     height: 1.9rem;
+
     font-size: 0.7rem;
   }
 
+  .pdfActive .backPdfButton {
+    min-width: 6rem;
+  }
+
   .pdfActive .documentContentContainer {
+    min-height: 0;
     padding: 0;
   }
 
@@ -797,13 +847,37 @@ h2 {
   }
 }
 
+/* =========================
+   RESPONSIVE: SMALL PHONES
+   ========================= */
+
 @media (max-width: 480px) {
   .bodyContentContainer {
     padding: 0.65rem;
   }
 
   .documentsContainer {
-    max-height: 17rem;
+    max-height: 24rem;
+    padding: 0.65rem;
+    gap: 0.6rem;
+  }
+
+  .documentItem {
+    min-height: 5.7rem;
+    padding: 0.65rem;
+  }
+
+  .documentTitle {
+    font-size: 0.8rem;
+    line-height: 1.05rem;
+  }
+
+  .documentMetaLine {
+    font-size: 0.62rem;
+  }
+
+  .metaChip {
+    font-size: 0.54rem;
   }
 
   .documentButtonsContainer {
@@ -815,6 +889,14 @@ h2 {
     font-size: 0.7rem;
   }
 
+  .rightContentContainer {
+    min-height: 32rem;
+  }
+
+  .documentContentContainer {
+    min-height: 16rem;
+  }
+
   .pdfActive .documentButton {
     min-width: 6.8rem;
     font-size: 0.68rem;
@@ -823,105 +905,5 @@ h2 {
   .pdfActive .pdfViewerContainer {
     height: calc(100dvh - 7rem);
     min-height: calc(100dvh - 7rem);
-  }
-}
-
-
-/* =====================================================
-   RESPONSIVE DOCUMENT CARDS - FIXED 2 COLUMNS
-   For 8 documents per page: 2 columns x 4 rows
-   ===================================================== */
-
-@media (max-width: 1024px) {
-  .documentsContainer {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: stretch;
-
-    width: 100%;
-    max-height: 32rem;
-
-    padding: 0.9rem;
-    gap: 0.75rem;
-
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
-
-  .documentItem {
-    width: 100%;
-    min-height: 6.3rem;
-    height: auto;
-
-    padding: 0.75rem;
-    align-items: flex-start;
-  }
-
-  .documentItemContent {
-    height: 100%;
-    justify-content: flex-start;
-    gap: 0.35rem;
-  }
-
-  .documentTitle {
-    text-align: left;
-    font-size: 0.86rem;
-    line-height: 1.15rem;
-    margin-bottom: 0.25rem;
-  }
-
-  .documentItem p {
-    text-align: left;
-    -webkit-line-clamp: 2;
-  }
-
-  .documentMetaLine {
-    text-align: left;
-  }
-
-  .documentMetaChips {
-    justify-content: flex-start;
-  }
-}
-
-@media (max-width: 560px) {
-  .documentsContainer {
-    grid-template-columns: 1fr;
-    max-height: 20rem;
-    padding: 0.75rem 0.5rem;
-  }
-
-  .documentItem {
-    min-height: 5.5rem;
-  }
-}
-
-/* Give the selected document area a document-like height on tablet/mobile */
-@media (max-width: 1024px) {
-  .rightContentContainer {
-    min-height: 34rem;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .documentContentContainer {
-    flex: 1;
-    min-height: 18rem;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .documentContentContainer > * {
-    flex: 1;
-  }
-}
-
-@media (max-width: 480px) {
-  .rightContentContainer {
-    min-height: 32rem;
-  }
-
-  .documentContentContainer {
-    min-height: 16rem;
   }
 }
