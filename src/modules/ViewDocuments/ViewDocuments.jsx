@@ -138,8 +138,12 @@ const BodyContent = () => {
         return dbDocs.find((d) => d.id === selectedDocId) ?? null;
     }, [dbDocs, selectedDocId]);
 
-    const selectedPdfUrl = selectedDoc?.pdf_filename
+    const selectedPdfPreviewUrl = selectedDoc?.pdf_filename
         ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}#view=FitH&toolbar=1&navpanes=0`
+        : "#";
+
+    const selectedPdfDownloadUrl = selectedDoc?.pdf_filename
+        ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}`
         : "#";
 
     const handleNextPage = () => {
@@ -151,7 +155,7 @@ const BodyContent = () => {
     };
 
     return (
-        <div className={styles.policies}>
+        <div className={`${styles.policies} ${isPdfViewActive ? styles.pdfActive : ""}`}>
             <div className={styles.bodyContentContainer}>
                 {/* LEFT */}
                 <div className={styles.sideDocumentContainer}>
@@ -318,32 +322,32 @@ const BodyContent = () => {
                         )}
 
                         <div className={styles.documentButtonsContainer}>
-                            <button
-                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}
-                                onClick={() => setIsPdfViewActive(true)}
-                                disabled={!selectedDocId || isPdfViewActive}
-                                type="button"
-                            >
-                                {isPdfViewActive ? "View Mode" : "View PDF"}
-                            </button>
+                            {!isPdfViewActive && (
+                                <button
+                                    className={styles.documentButton}
+                                    onClick={() => setIsPdfViewActive(true)}
+                                    disabled={!selectedDocId}
+                                    type="button"
+                                >
+                                    View PDF
+                                </button>
+                            )}
 
                             {isPdfViewActive && selectedDoc && (
                                 <a
                                     className={styles.documentButton}
-                                    href={selectedPdfUrl}
+                                    href={selectedPdfPreviewUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Open PDF in New Tab
+                                    Open in New Tab
                                 </a>
                             )}
 
                             <a
                                 className={styles.documentButton}
-                                href={selectedPdfUrl}
-                                download
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href={selectedPdfDownloadUrl}
+                                download={selectedDoc?.pdf_filename}
                                 onClick={(e) => {
                                     if (!selectedDoc?.pdf_filename) e.preventDefault();
                                 }}
@@ -358,7 +362,7 @@ const BodyContent = () => {
 
                             {isPdfViewActive && (
                                 <button
-                                    className={styles.documentButton}
+                                    className={`${styles.documentButton} ${styles.backPdfButton}`}
                                     onClick={() => {
                                         setIsPdfViewActive(false);
                                         setIsHeaderCollapsed(false);
@@ -366,16 +370,6 @@ const BodyContent = () => {
                                     type="button"
                                 >
                                     Back
-                                </button>
-                            )}
-
-                            {isPdfViewActive && selectedDoc && (
-                                <button
-                                    type="button"
-                                    className={styles.documentButton}
-                                    onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
-                                >
-                                    {isHeaderCollapsed ? "↓" : "↑"}
                                 </button>
                             )}
                         </div>
@@ -387,7 +381,7 @@ const BodyContent = () => {
                                 <div className={styles.pdfViewerContainer}>
                                     <iframe
                                         className={styles.pdfIframe}
-                                        src={selectedPdfUrl}
+                                        src={selectedPdfPreviewUrl}
                                         title={selectedDoc.title}
                                     />
                                 </div>
