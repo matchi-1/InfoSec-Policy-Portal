@@ -314,9 +314,12 @@ const BodyContent = () => {
   return (
     <div className={styles.rolemanagement}>
       <div className={styles.bodyContentContainer}>
-        <header className={styles.header}>
-          <p className={styles.eyebrow}>System Administration</p>
-          <h2>Role Management</h2>
+        <header className={styles.headerSection}>
+          <p className={styles.pageLabel}>System Administration</p>
+          <h1>Role Management</h1>
+          <p className={styles.pageDescription}>
+            Configure role-based module access and manage permissions assigned to user roles.
+          </p>
         </header>
 
         <section className={styles.workspace}>
@@ -472,7 +475,7 @@ const BodyContent = () => {
               isCreating ||
               (isNewRoleModalOpen
                 ? !newRoleName.trim() ||
-                  getSelectedModules(draftModules).length === 0
+                getSelectedModules(draftModules).length === 0
                 : !selectedRole || !hasUnsavedChanges)
             }
           >
