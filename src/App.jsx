@@ -34,35 +34,37 @@ function App() {
   const iconsRef = useRef(null);
   const descsRef = useRef(null);
 
-  useEffect(() => {
-    // Permissions Access
-    if (!user?.role?.role_name) return;
 
-    const fetchRolePermissions = async () => {
-      try {
-        const resp = await fetch(
-          `http://127.0.0.1:8000/roles/${encodeURIComponent(
-            user.role.role_name,
-          )}/permissions/`,
-          { credentials: "include" },
-        );
+  // DEV ONLY: Disabled until backend role-permission endpoint is fixed
+  // useEffect(() => {
+  //   // Permissions Access
+  //   if (!user?.role?.role_name) return;
 
-        if (!resp.ok) {
-          console.warn("roles permissions fetch failed", resp.status);
-          return;
-        }
+  //   const fetchRolePermissions = async () => {
+  //     try {
+  //       const resp = await fetch(
+  //         `http://127.0.0.1:8000/roles/${encodeURIComponent(
+  //           user.role.role_name,
+  //         )}/permissions/`,
+  //         { credentials: "include" },
+  //       );
 
-        const payload = await resp.json();
-        const data = payload?.data ?? payload ?? {};
-        const perms = Array.isArray(data) ? data : (data?.modules ?? []);
-        setRolePermissions(perms);
-      } catch (err) {
-        console.error("fetchRolePermissions error:", err);
-      }
-    };
+  //       if (!resp.ok) {
+  //         console.warn("roles permissions fetch failed", resp.status);
+  //         return;
+  //       }
 
-    fetchRolePermissions();
-  }, [user]);
+  //       const payload = await resp.json();
+  //       const data = payload?.data ?? payload ?? {};
+  //       const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+  //       setRolePermissions(perms);
+  //     } catch (err) {
+  //       console.error("fetchRolePermissions error:", err);
+  //     }
+  //   };
+
+  //   fetchRolePermissions();
+  // }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -331,64 +333,68 @@ function App() {
     },
   };
 
-  const allowedModules = Array.isArray(rolePermissions)
-    ? rolePermissions
-        .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
-        .map((m) => m.trim())
-        .filter(Boolean)
-    : [];
+  // DEV ONLY: Show all modules while backend permissions are not yet ready
+  const filteredModuleFileNames = moduleSubmoduleFileNames;   // delete this and uncomment below once perms are ready
 
-  const normalizeName = (s) =>
-    String(s ?? "")
-      .replace(/\s+/g, "")
-      .toLowerCase();
-  const normalizedAllowed = new Set(
-    allowedModules.map((a) => normalizeName(a)),
-  );
-  const isAll = normalizedAllowed.has(normalizeName("All"));
+  // DEV ONLY: UNCOMMENT THIS!! once permissions are ready, filter modules based on perms
+  // const allowedModules = Array.isArray(rolePermissions)
+  //   ? rolePermissions
+  //       .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
+  //       .map((m) => m.trim())
+  //       .filter(Boolean)
+  //   : [];
 
-  let filteredModuleFileNames = {};
+  // const normalizeName = (s) =>
+  //   String(s ?? "")
+  //     .replace(/\s+/g, "")
+  //     .toLowerCase();
+  // const normalizedAllowed = new Set(
+  //   allowedModules.map((a) => normalizeName(a)),
+  // );
+  // const isAll = normalizedAllowed.has(normalizeName("All"));
 
-  if (isAll) {
-    // allow everything (all modules + all submodules)
-    filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
-  } else {
-    // First, include any whole-main-module permissions that match (case/space-insensitive)
-    Object.keys(moduleFileNames).forEach((mainKey) => {
-      if (normalizedAllowed.has(normalizeName(mainKey))) {
-        filteredModuleFileNames[mainKey] = {
-          ...moduleSubmoduleFileNames[mainKey],
-        };
-      }
-    });
+  // let filteredModuleFileNames = {};
 
-    // Then, process explicit perms that may include submodules like "Policies/PolicySections"
-    allowedModules.forEach((permission) => {
-      const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
-      const mainKey = Object.keys(moduleSubmoduleFileNames).find(
-        (k) => normalizeName(k) === normalizeName(mainRaw),
-      );
-      if (!mainKey) return; // ignore unknown perms safely
+  // if (isAll) {
+  //   // allow everything (all modules + all submodules)
+  //   filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
+  // } else {
+  //   // First, include any whole-main-module permissions that match (case/space-insensitive)
+  //   Object.keys(moduleFileNames).forEach((mainKey) => {
+  //     if (normalizedAllowed.has(normalizeName(mainKey))) {
+  //       filteredModuleFileNames[mainKey] = {
+  //         ...moduleSubmoduleFileNames[mainKey],
+  //       };
+  //     }
+  //   });
 
-      if (!filteredModuleFileNames[mainKey])
-        filteredModuleFileNames[mainKey] = {};
+  // Then, process explicit perms that may include submodules like "Policies/PolicySections"
+  //   allowedModules.forEach((permission) => {
+  //     const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
+  //     const mainKey = Object.keys(moduleSubmoduleFileNames).find(
+  //       (k) => normalizeName(k) === normalizeName(mainRaw),
+  //     );
+  //     if (!mainKey) return; // ignore unknown perms safely
 
-      if (!subRaw) {
-        // allow all submodules under this main module
-        filteredModuleFileNames[mainKey] = {
-          ...moduleSubmoduleFileNames[mainKey],
-        };
-      } else {
-        const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
-          (sk) => normalizeName(sk) === normalizeName(subRaw),
-        );
-        if (subKey) {
-          filteredModuleFileNames[mainKey][subKey] =
-            moduleSubmoduleFileNames[mainKey][subKey];
-        }
-      }
-    });
-  }
+  //     if (!filteredModuleFileNames[mainKey])
+  //       filteredModuleFileNames[mainKey] = {};
+
+  //     if (!subRaw) {
+  //       // allow all submodules under this main module
+  //       filteredModuleFileNames[mainKey] = {
+  //         ...moduleSubmoduleFileNames[mainKey],
+  //       };
+  //     } else {
+  //       const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
+  //         (sk) => normalizeName(sk) === normalizeName(subRaw),
+  //       );
+  //       if (subKey) {
+  //         filteredModuleFileNames[mainKey][subKey] =
+  //           moduleSubmoduleFileNames[mainKey][subKey];
+  //       }
+  //     }
+  //   });
+  // }
 
   const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
     id: module,
@@ -472,13 +478,12 @@ function App() {
                 </div>
 
                 <div
-                  className={`sidebar-submodule-empty-container ${
-                    isMainModuleCollapsed &&
+                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
                     isSidebarOpen &&
                     activeModule === module.id
-                      ? "opened"
-                      : ""
-                  }`}
+                    ? "opened"
+                    : ""
+                    }`}
                 >
                   {/* submodules - only show if this module is active */}
                   {filteredModuleFileNames[module.id] &&
@@ -556,13 +561,12 @@ function App() {
                 </div>
 
                 <div
-                  className={`sidebar-submodule-empty-container ${
-                    isMainModuleCollapsed &&
+                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
                     isSidebarOpen &&
                     activeModule === module.id
-                      ? "opened"
-                      : ""
-                  }`}
+                    ? "opened"
+                    : ""
+                    }`}
                 >
                   {/* Submodules - only show if the main module is active */}
                   {filteredModuleFileNames[module.id] &&
@@ -598,9 +602,8 @@ function App() {
         <div className="header-body-container">
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
-              className={`header-tabs-container ${
-                !showUserProfile && activeModule ? "visible" : "hidden"
-              }`}
+              className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
+                }`}
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
@@ -629,9 +632,8 @@ function App() {
               {/*<SearchBar />*/}
               <img
                 className="notif-icon"
-                src={`/icons/Notification-${
-                  hasNotification ? "active-" : ""
-                }logo.png`}
+                src={`/icons/Notification-${hasNotification ? "active-" : ""
+                  }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
                   setNotifOpen(!notifOpen);
@@ -686,11 +688,11 @@ function App() {
                               <p>
                                 {
                                   new Intl.DateTimeFormat("en-US", {
-                                      // month: "short",
-                                      // day: "numeric",
-                                      hour: "numeric",
-                                      minute: "2-digit",
-                                      hour12: true,
+                                    // month: "short",
+                                    // day: "numeric",
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
                                   }).format(new Date(notif.created_at))
                                 }
                               </p>
@@ -705,7 +707,7 @@ function App() {
                           </div>
                         </div>
                         <div className="notif-msg">
-                          <p>{notif.actor==JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.document_title}</p>
+                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.document_title}</p>
                         </div>
                       </div>
                     ))
