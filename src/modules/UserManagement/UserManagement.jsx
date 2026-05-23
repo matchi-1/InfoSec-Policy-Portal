@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import styles from "./styles/UserManagement.module.css";
 import Button from "../../shared/components/Button";
 import Dropdown from "../../shared/components/Dropdown";
+import SearchBar from "../../shared/components/SearchBar";
 import { useConfirmationModal } from "../../shared/components/ConfirmationModal";
 
 const AVATAR_COLORS = [
@@ -267,18 +268,7 @@ const BodyContent = () => {
             <h2>User Management</h2>
           </div>
 
-          <label
-            className={styles.searchShell}
-            aria-label="Search users or emails"
-          >
-            <img src="/icons/search-icon.png" alt="" aria-hidden="true" />
-            <input
-              type="search"
-              placeholder="Search users or emails..."
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
-          </label>
+          <SearchBar value={searchTerm} onChange={setSearchTerm} />
         </header>
 
         <section
