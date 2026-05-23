@@ -36,35 +36,35 @@ function App() {
 
 
   // DEV ONLY: Disabled until backend role-permission endpoint is fixed
-  // useEffect(() => {
-  //   // Permissions Access
-  //   if (!user?.role?.role_name) return;
+   useEffect(() => {
+     // Permissions Access
+     if (!user?.role?.role_name) return;
 
-  //   const fetchRolePermissions = async () => {
-  //     try {
-  //       const resp = await fetch(
-  //         `http://127.0.0.1:8000/roles/${encodeURIComponent(
-  //           user.role.role_name,
-  //         )}/permissions/`,
-  //         { credentials: "include" },
-  //       );
+     const fetchRolePermissions = async () => {
+       try {
+         const resp = await fetch(
+           `http://127.0.0.1:8000/roles/${encodeURIComponent(
+             user.role.role_name,
+           )}/permissions/`,
+           { credentials: "include" },
+         );
 
-  //       if (!resp.ok) {
-  //         console.warn("roles permissions fetch failed", resp.status);
-  //         return;
-  //       }
+         if (!resp.ok) {
+           console.warn("roles permissions fetch failed", resp.status);
+           return;
+         }
 
-  //       const payload = await resp.json();
-  //       const data = payload?.data ?? payload ?? {};
-  //       const perms = Array.isArray(data) ? data : (data?.modules ?? []);
-  //       setRolePermissions(perms);
-  //     } catch (err) {
-  //       console.error("fetchRolePermissions error:", err);
-  //     }
-  //   };
+         const payload = await resp.json();
+         const data = payload?.data ?? payload ?? {};
+         const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+         setRolePermissions(perms);
+       } catch (err) {
+         console.error("fetchRolePermissions error:", err);
+       }
+     };
 
-  //   fetchRolePermissions();
-  // }, [user]);
+     fetchRolePermissions();
+   }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -765,9 +765,9 @@ function App() {
                     <div className="profile-name">
                       {user?.first_name} {user?.last_name}
                     </div>
-                    <div className="profile-details">
+                    {/* <div className="profile-details">
                       ID: {user?.employee_id}
-                    </div>
+                    </div> */}
                     <div className="profile-details">
                       {user?.role?.role_name}
                     </div>
