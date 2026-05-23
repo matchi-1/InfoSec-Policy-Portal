@@ -11,6 +11,7 @@ import '@mdxeditor/editor/style.css'
 
 // TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
 import { controlTags } from "../data/controlTags.js";
+import { set } from "lodash";
 
 
 function BodyContent({ doc, onBack }) {
@@ -30,9 +31,11 @@ function BodyContent({ doc, onBack }) {
 
     const [editingTitle, setEditingTitle] = useState(false);
     const [currTitle, setCurrTitle] = useState(doc.title);
+    const [currTitleTemp, setCurrTitleTemp] = useState(null);
 
     const [editingDesc, setEditingDesc] = useState(false);
     const [currDesc, setCurrDesc] = useState(doc.details);
+    const [currDescTemp, setCurrDescTemp] = useState(null);
 
     const [viewingPDF, setViewingPDF] = useState(false);
 
@@ -297,12 +300,15 @@ function BodyContent({ doc, onBack }) {
                             {
                                 (!editingTitle) ? (
                                     <div className={styles.titleText}>
-                                        <h1 onClick={() => setEditingTitle(true)}>{currTitle}</h1>
+                                        <h1 onDoubleClick={() => setEditingTitle(true)}>{currTitle}</h1>
                                         <button
                                             className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
-                                            onClick={() => setEditingTitle(true)}
-                                            aria-label="Edit title"
-                                            title="Edit title"
+                                            onClick={() => {
+                                                setEditingTitle(true);
+                                                setCurrTitleTemp(currTitle);
+                                            }}
+                                            aria-label="Rename title"
+                                            title="Rename title"
                                         >
                                             <img src="/icons/rename-blue.png" alt="" className={styles.actionIcon} />
                                         </button>
@@ -310,15 +316,28 @@ function BodyContent({ doc, onBack }) {
                                 ) : (
                                     <div className={styles.titleEditor}>
                                         <input
-                                            type="text"
-                                            value={currTitle}
-                                            onChange={(e) => setCurrTitle(e.target.value)}
+                                            type="text" autoFocus
+                                            value={currTitleTemp}
+                                            onChange={(e) => setCurrTitleTemp(e.target.value)}
                                         />
-                                        <button onClick={() => {
-                                            setEditingTitle(false);
-                                        }}>
-                                            <img src="/icons/check-blue.png"></img>
-                                            <p>Save</p>
+                                        <button
+                                            onClick={() => {
+                                                setEditingTitle(false);
+                                                setCurrTitle(currTitleTemp);
+                                            }}
+                                            aria-label="Save"
+                                            title="Save"
+                                        >
+                                            <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                setEditingTitle(false);
+                                            }}
+                                            aria-label="Cancel"
+                                            title="Cancel"
+                                        >
+                                            <img src="/icons/close-blue.png" alt="" className={styles.actionIcon} />
                                         </button>
                                     </div>
 
@@ -328,80 +347,109 @@ function BodyContent({ doc, onBack }) {
                         <div className={styles.descContainer}>
                             {!editingDesc ? (
                                 <div className={styles.descText}>
-                                    <p>{currDesc}</p>
+                                    <p
+                                        onDoubleClick={() => setEditingDesc(true)}
+                                    >{currDesc}</p>
                                     <button
                                         className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
-                                        onClick={() => { setEditingDesc(true) }}
+                                        onClick={() => {
+                                            setEditingDesc(true)
+                                            setCurrDescTemp(currDesc)
+                                        }}
                                         aria-label="Edit description"
                                         title="Edit description"
                                     >
-                                        <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                        <img src="/icons/rename-blue.png" alt="" className={styles.actionIcon} />
                                     </button>
                                 </div>
                             ) : (
-                                <div className={styles.descEdit}>
+                                <div className={styles.descText}>
                                     <textarea
-                                        value={currDesc}
-                                        onChange={(e) => { setCurrDesc(e.target.value) }}
+                                        autoFocus
+                                        value={currDescTemp}
+                                        onChange={(e) => {
+                                            setCurrDescTemp(e.target.value);
+
+                                            e.target.style.height = "auto";
+                                            e.target.style.height = `${e.target.scrollHeight}px`;
+                                        }}
                                         rows={5}
-                                        cols={30}
                                     />
-                                    <button onClick={() => { setEditingDesc(false) }}>
-                                        <img src="/icons/check-blue.png"></img>
-                                        <p>Save</p>
+                                    <button
+                                        onClick={() => {
+                                            setEditingDesc(false);
+                                            setCurrDesc(currDescTemp);
+                                        }}
+                                        aria-label="Save"
+                                        title="Save"
+                                    >
+                                        <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
+                                    </button>
+                                    <button
+                                        onClick={() => {
+                                            setEditingDesc(false);
+                                        }}
+                                        aria-label="Cancel"
+                                        title="Cancel"
+                                    >
+                                        <img src="/icons/close-blue.png" alt="" className={styles.actionIcon} />
                                     </button>
                                 </div>
                             )}
                         </div>
                         <div className={styles.tagsContainer}>
-                            <button>
+                            <button onClick={() => setShowTagsDropdown(!showTagsDropdown)}>
                                 <div className={styles.chipsContainer}>
-                                {currTags.length > 0 ?
-                                    currTags.map((tag) => {
-                                        return (
-                                            <div className={styles.tagChips}>
-                                                <p>{tag}</p>
-                                                <img
-                                                    onClick={() => {
-                                                        setCurrTags((prev) => prev.filter((item) => item !== tag));
-                                                    }}
-                                                    src="/icons/close.png" alt="Remove tag" />
-                                            </div>
-                                        )
-                                    }) : <h3 onClick={() => setShowTagsDropdown(!showTagsDropdown)} >Add ISO / NIST Tags</h3>
-                                }
+                                    {currTags.length > 0 ?
+                                        currTags.map((tag) => {
+                                            return (
+                                                <div className={styles.tagChips}>
+                                                    <p>{tag}</p>
+                                                    <img
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            setCurrTags((prev) => prev.filter((item) => item !== tag));
+                                                        }}
+                                                        src="/icons/close.png" alt="Remove tag" />
+                                                </div>
+                                            )
+                                        }) : <h3>Add ISO / NIST Tags</h3>
+                                    }
                                 </div>
-                                <div style={{display: 'flex', flexDirection: 'row', alignItems: 'center'}} >
-                                    <img 
-                                        style={{width: '1.4rem', height: '1.4rem'}} 
-                                        src="/icons/close-gray.png" alt="remove all tags" 
-                                        onClick={() => setCurrTags([])}
-                                        />
-                                    <img 
-                                        style={{width: '1.2rem', height: '1.2rem'}}
-                                        src="/icons/down-gray.png" alt="collapse tag" 
+                                <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
+                                    <img
+                                        style={{ width: '1.4rem', height: '1.4rem' }}
+                                        src="/icons/close-gray.png" alt="remove all tags"
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setCurrTags([]);
+                                        }}
+                                    />
+                                    <img
+                                        style={{ width: '1.2rem', height: '1.2rem' }}
+                                        src="/icons/down-gray.png" alt="collapse tag"
                                         onClick={() => setShowTagsDropdown(!showTagsDropdown)}
-                                        />
+                                    />
                                 </div>
                             </button>
                             {
                                 showTagsDropdown && <div className={styles.tagsDropdown}>
                                     <div className={styles.tagsDropdownSearch}>
-                                        <img src="/icons/search-icon.png"/>
-                                        <input type="text" placeholder="Search for tags..." onChange={(e) => {setTagQuery(e.target.value) }} />
+                                        <img src="/icons/search-icon.png" />
+                                        <input type="text" placeholder="Search for tags..." onChange={(e) => { setTagQuery(e.target.value) }} />
                                     </div>
                                     <div className={styles.tagsDropdownList}>
                                         {
-                                            filteredTags.length == 0 ? <p style={{fontSize: '0.75rem', padding: '0.5rem', opacity: 0.7}}>No tags found</p> :
-                                            filteredTags.map((tag) => {
-                                                if (!currTags.includes(tag)) {
-                                                    return (
-                                                        <p onClick={() => {
-                                                            setCurrTags((prev) => [...prev, tag])
-                                                        }}>{tag}</p>
-                                                    )
-                                                }
-                                            })
+                                            filteredTags.length == 0 ? <p style={{ fontSize: '0.75rem', padding: '0.5rem', opacity: 0.7 }}>No tags found</p> :
+                                                filteredTags.map((tag) => {
+                                                    if (!currTags.includes(tag)) {
+                                                        return (
+                                                            <p onClick={() => {
+                                                                setCurrTags((prev) => [...prev, tag])
+                                                            }}>{tag}</p>
+                                                        )
+                                                    }
+                                                })
                                         }
                                     </div>
                                 </div>
@@ -537,14 +585,14 @@ function BodyContent({ doc, onBack }) {
                 ) : (
                     <div className={styles.policyAccordion}>
                         {filteredSections.map((section) => {
-                            const isOpen = section.id === openSectionId;
-
+                            const isOpen = section.id === openSectionId && section.id != sectionTitleEditID;
                             return (
                                 <div key={section.id} className={styles.policySection}>
                                     <button
                                         type="button"
                                         className={`${styles.policySectionHeader} ${isOpen ? styles.policySectionHeaderOpen : ""
                                             }`}
+                                        onKeyDown={(e) => { e.stopPropagation(); }}
                                         onClick={() => toggleSection(section.id)}
                                     >
                                         <span
@@ -557,43 +605,64 @@ function BodyContent({ doc, onBack }) {
                                             {
                                                 section.id === sectionTitleEditID ? (
                                                     <div>
-                                                        <input type="text" value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()} onMouseDown={(e) => { stopPropagation(); }} />
-                                                        <button onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            const newSections = sections.map((sect) => {
-                                                                if (sect.id === sectionTitleEditID) {
-                                                                    return {
-                                                                        ...sect,
-                                                                        title: sectionTitleTemp
-                                                                    }
-                                                                } else {
-                                                                    return sect;
-                                                                }
-                                                            });
-                                                            setSections(newSections);
-                                                            console.log("(debug) new sections: ", sections)
-                                                            setSectionTitleEditID(null);
-                                                            setSectionTitleTemp(null);
-                                                        }}>ok</button>
-                                                        <button onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null); }}>cancel</button>
+                                                        <input type="text" autoFocus value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()}
+                                                            onKeyDown={(e) => { e.stopPropagation(); }}
+                                                            onMouseDown={(e) => { stopPropagation(); }}
+                                                        />
+                                                        <div>
+                                                            <button
+                                                                className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                                                onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const newSections = sections.map((sect) => {
+                                                                        if (sect.id === sectionTitleEditID) {
+                                                                            return {
+                                                                                ...sect,
+                                                                                title: sectionTitleTemp
+                                                                            }
+                                                                        } else {
+                                                                            return sect;
+                                                                        }
+                                                                    });
+                                                                    setSections(newSections);
+                                                                    console.log("(debug) new sections: ", sections)
+                                                                    setSectionTitleEditID(null);
+                                                                    setSectionTitleTemp(null);
+                                                                }}
+                                                                aria-label="Save"
+                                                                title="Save"
+                                                            >
+                                                                <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
+                                                            </button>
+                                                            <button
+                                                                className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
+                                                                onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null); }}
+                                                                aria-label="Cancel"
+                                                                title="Cancel"
+                                                            >
+                                                                <img src="/icons/close-blue.png" alt="" className={styles.actionIcon} />
+                                                            </button>
+                                                        </div>
                                                     </div>
                                                 ) : (
                                                     <div>
                                                         {highlightText(section.title, query, styles.highlight)}
-                                                        <button
-                                                            className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setSectionTitleEditID(section.id);
-                                                                setSectionTitleTemp(section.title);
-                                                            }}
-                                                            aria-label="Edit section"
-                                                            title="Edit section"
-                                                        >
-                                                            <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
-                                                        </button>
+                                                        <div>
+                                                            <button
+                                                                className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    setSectionTitleEditID(section.id);
+                                                                    setSectionTitleTemp(section.title);
+                                                                }}
+                                                                aria-label="Rename section"
+                                                                title="Rename section"
+                                                            >
+                                                                <img src="/icons/rename-blue.png" alt="" className={styles.actionIcon} />
+                                                            </button>
 
-                                                        <span>
                                                             <button
                                                                 className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
                                                                 onClick={(e) => {
@@ -605,9 +674,9 @@ function BodyContent({ doc, onBack }) {
                                                                 aria-label="Delete section"
                                                                 title="Delete section"
                                                             >
-                                                                <img src="/icons/trash-icon.png" alt="" className={styles.actionIcon} />
+                                                                <img src="/icons/delete.png" alt="" className={styles.actionIcon} />
                                                             </button>
-                                                        </span>
+                                                        </div>
                                                     </div>
                                                 )
                                             }
@@ -643,7 +712,7 @@ function BodyContent({ doc, onBack }) {
                                                                     sub.id === subTitleEditID ?
                                                                         (
                                                                             <div>
-                                                                                <input type="text" value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} />
+                                                                                <input type="text" autoFocus value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} />
                                                                                 <button onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSections(prevSections =>
@@ -669,12 +738,22 @@ function BodyContent({ doc, onBack }) {
                                                                                     )
                                                                                     setSubTitleEditID(null);
                                                                                     setSubTitleTemp(null);
-                                                                                }}>ok</button>
+                                                                                }}
+                                                                                    aria-label="Save"
+                                                                                    title="Save"
+                                                                                >
+                                                                                    <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
+                                                                                </button>
                                                                                 <button onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSubTitleEditID(null);
                                                                                     setSubTitleTemp(null);
-                                                                                }}>cancel</button>
+                                                                                }}
+                                                                                    aria-label="Cancel"
+                                                                                    title="Cancel"
+                                                                                >
+                                                                                    <img src="/icons/close-blue.png" alt="" className={styles.actionIcon} />
+                                                                                </button>
                                                                             </div>
                                                                         ) : (
                                                                             <div>
@@ -692,7 +771,7 @@ function BodyContent({ doc, onBack }) {
                                                                                         aria-label="Edit subsection"
                                                                                         title="Edit subsection"
                                                                                     >
-                                                                                        <img src="/icons/edit-icon.png" alt="" className={styles.actionIcon} />
+                                                                                        <img src="/icons/rename-blue.png" alt="" className={styles.actionIcon} />
                                                                                     </button>
                                                                                 </span>
 
@@ -719,7 +798,7 @@ function BodyContent({ doc, onBack }) {
                                                                                         aria-label="Delete subsection"
                                                                                         title="Delete subsection"
                                                                                     >
-                                                                                        <img src="/icons/trash-icon.png" alt="" className={styles.actionIcon} />
+                                                                                        <img src="/icons/delete.png" alt="" className={styles.actionIcon} />
                                                                                     </button>
                                                                                 </span>
                                                                             </div>
@@ -728,26 +807,31 @@ function BodyContent({ doc, onBack }) {
                                                             </button>
                                                         );
                                                     })}
-                                                    <button onClick={() => {
-                                                        setSections(prevSections =>
-                                                            prevSections.map((section) => {
-                                                                if (section.id === openSectionId) {
-                                                                    return {
-                                                                        ...section,
-                                                                        subsections: [...section.subsections,
-                                                                        {
-                                                                            id: "new" + crypto.randomUUID(),
-                                                                            title: "New subsection",
-                                                                            content: "New subsection content"
+                                                    <div className={styles.SubsectionCreateButton}>
+                                                        <button onClick={() => {
+                                                            setSections(prevSections =>
+                                                                prevSections.map((section) => {
+                                                                    if (section.id === openSectionId) {
+                                                                        return {
+                                                                            ...section,
+                                                                            subsections: [...section.subsections,
+                                                                            {
+                                                                                id: "new" + crypto.randomUUID(),
+                                                                                title: "New subsection",
+                                                                                content: "New subsection content"
+                                                                            }
+                                                                            ]
                                                                         }
-                                                                        ]
+                                                                    } else {
+                                                                        return section;
                                                                     }
-                                                                } else {
-                                                                    return section;
-                                                                }
-                                                            })
-                                                        )
-                                                    }}>create new subssection</button>
+                                                                })
+                                                            )
+                                                        }}>
+                                                            <img src="icons/add-green.png" />
+                                                            <p>Add Subsection</p>
+                                                        </button>
+                                                    </div>
                                                 </div>
 
                                                 <div className={styles.policyContent}>
