@@ -4,8 +4,10 @@ import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
 import { MDXEditor, headingsPlugin, quotePlugin, thematicBreakPlugin, toolbarPlugin, listsPlugin, linkPlugin, imagePlugin, tablePlugin, markdownShortcutPlugin } from '@mdxeditor/editor';
 import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable } from "@mdxeditor/editor";
-import DatePicker from "react-datepicker";
-import "react-datepicker/dist/react-datepicker.css";
+// import DatePicker from "react-datepicker";
+// import "react-datepicker/dist/react-datepicker.css";
+import dayjs from "dayjs";
+import CustomDatePicker from "../../../shared/components/CustomDatePicker.jsx";
 import '@mdxeditor/editor/style.css'
 
 
@@ -58,7 +60,8 @@ function BodyContent({ doc, onBack }) {
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
 
-    const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
+    // const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
+    const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : dayjs());
 
     const [showConfModal, setShowConfModal] = useState(false);
 
@@ -259,12 +262,6 @@ function BodyContent({ doc, onBack }) {
                 <div className={styles.headerRegion}>
                     <div className={styles.headerDock}>
                         <button
-                            className={styles.saveBtn}
-                            onClick={() => { setShowConfModal(true) }}>
-                            <img src="/icons/save-green.png" />
-                            <p>Save</p>
-                        </button>
-                        <button
                             type="button"
                             className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
                                 }`}
@@ -284,6 +281,12 @@ function BodyContent({ doc, onBack }) {
                             <span className={styles.headerDetailsState}>
                                 {isHeaderCollapsed ? "Hidden" : "Shown"}
                             </span>
+                        </button>
+                        <button
+                            className={styles.saveBtn}
+                            onClick={() => { setShowConfModal(true) }}>
+                            <img src="/icons/save-green.png" />
+                            <p>Save</p>
                         </button>
                     </div>
                 </div>
@@ -535,23 +538,34 @@ function BodyContent({ doc, onBack }) {
 
                             <div className={styles.dropdownContainer}>
                                 <p>last reviewed:</p>
-                                <div className={styles.dropDownSectionSelected} onClick={() => {
-                                    setShowDateDropdown(!showDateDropdown);
+                                <div onClick={() => {
+                                    // setShowDateDropdown(!showDateDropdown);
                                     setShowAuthoredDropdown(false);
                                     setShowReviewedDropdown(false);
                                 }}>
-                                    <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+                                    <CustomDatePicker
+                                        value={selectDate}
+                                        onChange={(date) => setSelectDate(date)}
+                                        slotProps={{ 
+                                            field: {
+                                                size: "small",
+                                                fontSize: "0.5rem",
+                                                fullWidth: true,
+                                            }
+                                         }}
+                                    />
+                                    {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                     <img
                                         src={"/icons/down-white.png"}
                                         alt="Down Icon"
-                                    />
+                                    /> */}
                                 </div>
-                                {showDateDropdown && (
+                                {/* {showDateDropdown && (
                                     <div className={styles.dropdownList}>
                                         <DatePicker showIcon popperPlacement="bottom" selected={selectDate} onChange={(date) => setSelectDate(date)} />
                                         <button onClick={() => { setShowDateDropdown(false) }}>ok</button>
                                     </div>
-                                )}
+                                )} */}
                             </div>
                         </div>
                         <div className={styles.buttonsContainer}>
