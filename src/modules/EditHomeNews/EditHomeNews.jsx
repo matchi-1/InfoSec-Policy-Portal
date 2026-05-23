@@ -30,33 +30,36 @@ const DEFAULT_PORTAL_CONTENT = {
     },
 };
 
+const normalizePortalContent = (content) => {
+    return {
+        home: {
+            ...DEFAULT_PORTAL_CONTENT.home,
+            ...(content?.home ?? {}),
+            coreValues:
+                Array.isArray(content?.home?.coreValues) &&
+                    content.home.coreValues.length > 0
+                    ? content.home.coreValues
+                    : DEFAULT_PORTAL_CONTENT.home.coreValues,
+        },
+        recentNews: {
+            pinnedNotice: {
+                ...DEFAULT_PORTAL_CONTENT.recentNews.pinnedNotice,
+                ...(content?.recentNews?.pinnedNotice ?? {}),
+            },
+        },
+    };
+};
+
 const loadPortalContent = () => {
     // BACKEND TODO:
     // Replace this localStorage logic with a GET request later.
     //
-    // Example future logic:
-    // const response = await fetch(`${backendUrl}/api/portal-content/`);
+    // Example:
+    // const response = await fetch(`${backendUrl}/api/portal-content/`, {
+    //   credentials: "include",
+    // });
     // const data = await response.json();
-    // return data;
-    //
-    // Expected backend response shape:
-    // {
-    //   home: {
-    //     appDescription: string,
-    //     mission: string,
-    //     vision: string,
-    //     coreValues: string[]
-    //   },
-    //   recentNews: {
-    //     pinnedNotice: {
-    //       category: string,
-    //       title: string,
-    //       message: string,
-    //       updatedAt: string,
-    //       updatedBy: string
-    //     }
-    //   }
-    // }
+    // return normalizePortalContent(data);
 
     try {
         const savedContent = localStorage.getItem(PORTAL_CONTENT_STORAGE_KEY);
@@ -65,10 +68,7 @@ const loadPortalContent = () => {
             return DEFAULT_PORTAL_CONTENT;
         }
 
-        return {
-            ...DEFAULT_PORTAL_CONTENT,
-            ...JSON.parse(savedContent),
-        };
+        return normalizePortalContent(JSON.parse(savedContent));
     } catch (error) {
         console.error("Failed to load portal content:", error);
         return DEFAULT_PORTAL_CONTENT;
@@ -79,7 +79,7 @@ const savePortalContent = (content) => {
     // BACKEND TODO:
     // Replace this localStorage logic with a PUT/PATCH request later.
     //
-    // Example future logic:
+    // Example:
     // await fetch(`${backendUrl}/api/portal-content/`, {
     //   method: "PUT",
     //   headers: { "Content-Type": "application/json" },
@@ -87,18 +87,17 @@ const savePortalContent = (content) => {
     //   body: JSON.stringify(content),
     // });
     //
-    // Logical backend behavior:
+    // Backend logic needed:
     // 1. Validate that the user is an admin.
     // 2. Save app description, mission, vision, core values, and pinned notice.
-    // 3. Update updated_by and updated_at.
+    // 3. Set updated_at and updated_by in the backend.
     // 4. Return the updated portal content object.
     //
     // Optional later:
-    // If pinned notice is changed, backend can also create a notification record.
+    // If pinned notice changes, backend can create a notification record.
 
     localStorage.setItem(PORTAL_CONTENT_STORAGE_KEY, JSON.stringify(content));
 
-    // This lets Home and Recent News update immediately if they are listening for this event.
     window.dispatchEvent(
         new CustomEvent("portal-content-updated", {
             detail: content,
@@ -107,16 +106,71 @@ const savePortalContent = (content) => {
 };
 
 const BodyContent = () => {
-    const [portalContent, setPortalContent] = useState(DEFAULT_PORTAL_CONTENT);
+    const [savedContent, setSavedContent] = useState(DEFAULT_PORTAL_CONTENT);
+    const [draftContent, setDraftContent] = useState(DEFAULT_PORTAL_CONTENT);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [saveStatus, setSaveStatus] = useState("");
 
     useEffect(() => {
         const content = loadPortalContent();
-        setPortalContent(content);
+        setSavedContent(content);
+        setDraftContent(content);
     }, []);
 
+    const showStatus = (message) => {
+        setSaveStatus(message);
+
+        setTimeout(() => {
+            setSaveStatus("");
+        }, 3000);
+    };
+
+    const handleEnterEditMode = () => {
+        setDraftContent(savedContent);
+        setIsEditMode(true);
+        setSaveStatus("");
+    };
+
+    const handleCancel = () => {
+        setDraftContent(savedContent);
+        setIsEditMode(false);
+        showStatus("Editing cancelled. No changes were saved.");
+    };
+
+    const handleResetToLastSaved = () => {
+        setDraftContent(savedContent);
+        showStatus("Draft restored to the last saved content.");
+    };
+
+    const handleSave = () => {
+        const contentToSave = normalizePortalContent({
+            ...draftContent,
+            recentNews: {
+                ...draftContent.recentNews,
+                pinnedNotice: {
+                    ...draftContent.recentNews.pinnedNotice,
+
+                    // BACKEND TODO:
+                    // Later, updatedAt and updatedBy should come from the backend response.
+                    updatedAt: new Date().toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                    }),
+                    updatedBy: "Current Admin User",
+                },
+            },
+        });
+
+        savePortalContent(contentToSave);
+        setSavedContent(contentToSave);
+        setDraftContent(contentToSave);
+        setIsEditMode(false);
+        showStatus("Changes saved successfully.");
+    };
+
     const handleHomeChange = (field, value) => {
-        setPortalContent((prev) => ({
+        setDraftContent((prev) => ({
             ...prev,
             home: {
                 ...prev.home,
@@ -126,7 +180,7 @@ const BodyContent = () => {
     };
 
     const handlePinnedNoticeChange = (field, value) => {
-        setPortalContent((prev) => ({
+        setDraftContent((prev) => ({
             ...prev,
             recentNews: {
                 ...prev.recentNews,
@@ -139,7 +193,7 @@ const BodyContent = () => {
     };
 
     const handleCoreValueChange = (index, value) => {
-        setPortalContent((prev) => {
+        setDraftContent((prev) => {
             const updatedValues = [...prev.home.coreValues];
             updatedValues[index] = value;
 
@@ -154,7 +208,7 @@ const BodyContent = () => {
     };
 
     const handleAddCoreValue = () => {
-        setPortalContent((prev) => ({
+        setDraftContent((prev) => ({
             ...prev,
             home: {
                 ...prev.home,
@@ -164,52 +218,13 @@ const BodyContent = () => {
     };
 
     const handleRemoveCoreValue = (index) => {
-        setPortalContent((prev) => ({
+        setDraftContent((prev) => ({
             ...prev,
             home: {
                 ...prev.home,
                 coreValues: prev.home.coreValues.filter((_, i) => i !== index),
             },
         }));
-    };
-
-    const handleSave = () => {
-        const contentToSave = {
-            ...portalContent,
-            recentNews: {
-                ...portalContent.recentNews,
-                pinnedNotice: {
-                    ...portalContent.recentNews.pinnedNotice,
-
-                    // BACKEND TODO:
-                    // Later, updatedAt and updatedBy should come from the backend.
-                    updatedAt: new Date().toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                    }),
-                    updatedBy: "Current Admin User",
-                },
-            },
-        };
-
-        savePortalContent(contentToSave);
-        setPortalContent(contentToSave);
-        setSaveStatus("Changes saved locally. Backend save can be added later.");
-
-        setTimeout(() => {
-            setSaveStatus("");
-        }, 3000);
-    };
-
-    const handleReset = () => {
-        setPortalContent(DEFAULT_PORTAL_CONTENT);
-        savePortalContent(DEFAULT_PORTAL_CONTENT);
-        setSaveStatus("Placeholder content restored.");
-
-        setTimeout(() => {
-            setSaveStatus("");
-        }, 3000);
     };
 
     return (
@@ -219,177 +234,202 @@ const BodyContent = () => {
                     <p className={styles.pageLabel}>Admin Module</p>
                     <h1>Edit Home / News</h1>
                     <p className={styles.pageDescription}>
-                        Manage the placeholder content displayed on the Home and Recent News
-                        modules. This currently saves locally and can later be connected to
-                        the backend.
+                        Manage the content displayed on the Home and Recent News modules.
                     </p>
                 </div>
 
-                <div className={styles.actionBar}>
-                    <div>
-                        <p className={styles.actionTitle}>Portal Content Editor</p>
-                        <p className={styles.actionSubtitle}>
-                            Updates here should map directly to the client-facing modules.
+                <div className={styles.editorPanel}>
+                    <div className={styles.editorPanelTop}>
+                        <p className={styles.modeNotice}>
+                            {isEditMode
+                                ? "Editing. Save changes, cancel, or reset to last saved."
+                                : "Read only. Click Edit Content to make changes."}
                         </p>
-                    </div>
 
-                    <div className={styles.actionButtons}>
-                        <button
-                            type="button"
-                            className={styles.secondaryButton}
-                            onClick={handleReset}
-                        >
-                            Reset Placeholders
-                        </button>
-
-                        <button
-                            type="button"
-                            className={styles.primaryButton}
-                            onClick={handleSave}
-                        >
-                            Save Changes
-                        </button>
-                    </div>
-                </div>
-
-                {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
-
-                <div className={styles.contentGrid}>
-                    <section className={styles.editorCard}>
-                        <div className={styles.cardHeader}>
-                            <p>Home Content</p>
-                        </div>
-
-                        <div className={styles.cardBody}>
-                            <label className={styles.fieldGroup}>
-                                <span>App Description</span>
-                                <textarea
-                                    value={portalContent.home.appDescription}
-                                    onChange={(e) =>
-                                        handleHomeChange("appDescription", e.target.value)
-                                    }
-                                    rows={3}
-                                />
-                            </label>
-
-                            <label className={styles.fieldGroup}>
-                                <span>Company Mission</span>
-                                <textarea
-                                    value={portalContent.home.mission}
-                                    onChange={(e) => handleHomeChange("mission", e.target.value)}
-                                    rows={3}
-                                />
-                            </label>
-
-                            <label className={styles.fieldGroup}>
-                                <span>Company Vision</span>
-                                <textarea
-                                    value={portalContent.home.vision}
-                                    onChange={(e) => handleHomeChange("vision", e.target.value)}
-                                    rows={3}
-                                />
-                            </label>
-
-                            <div className={styles.fieldGroup}>
-                                <div className={styles.inlineFieldHeader}>
-                                    <span>Core Values</span>
+                        <div className={styles.actionButtons}>
+                            {!isEditMode ? (
+                                <button
+                                    type="button"
+                                    className={styles.primaryButton}
+                                    onClick={handleEnterEditMode}
+                                >
+                                    Edit Content
+                                </button>
+                            ) : (
+                                <>
+                                    <button
+                                        type="button"
+                                        className={styles.secondaryButton}
+                                        onClick={handleResetToLastSaved}
+                                    >
+                                        Reset to Last Saved
+                                    </button>
 
                                     <button
                                         type="button"
-                                        className={styles.smallButton}
-                                        onClick={handleAddCoreValue}
+                                        className={styles.secondaryButton}
+                                        onClick={handleCancel}
                                     >
-                                        Add Value
+                                        Cancel
                                     </button>
-                                </div>
 
-                                <div className={styles.coreValueList}>
-                                    {portalContent.home.coreValues.map((value, index) => (
-                                        <div key={index} className={styles.coreValueInputRow}>
-                                            <input
-                                                value={value}
-                                                onChange={(e) =>
-                                                    handleCoreValueChange(index, e.target.value)
-                                                }
-                                            />
+                                    <button
+                                        type="button"
+                                        className={styles.primaryButton}
+                                        onClick={handleSave}
+                                    >
+                                        Save Changes
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    </div>
 
+                    {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
+
+                    <div className={styles.contentGrid}>
+                        <section className={styles.editorCard}>
+                            <div className={styles.cardHeader}>
+                                <p>Home Content</p>
+                            </div>
+
+                            <div className={styles.cardBody}>
+                                <label className={styles.fieldGroup}>
+                                    <span>App Description</span>
+                                    <textarea
+                                        value={draftContent.home.appDescription}
+                                        onChange={(e) =>
+                                            handleHomeChange("appDescription", e.target.value)
+                                        }
+                                        rows={3}
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
+
+                                <label className={styles.fieldGroup}>
+                                    <span>Company Mission</span>
+                                    <textarea
+                                        value={draftContent.home.mission}
+                                        onChange={(e) =>
+                                            handleHomeChange("mission", e.target.value)
+                                        }
+                                        rows={3}
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
+
+                                <label className={styles.fieldGroup}>
+                                    <span>Company Vision</span>
+                                    <textarea
+                                        value={draftContent.home.vision}
+                                        onChange={(e) =>
+                                            handleHomeChange("vision", e.target.value)
+                                        }
+                                        rows={3}
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
+
+                                <div className={styles.fieldGroup}>
+                                    <div className={styles.inlineFieldHeader}>
+                                        <span>Core Values</span>
+
+                                        {isEditMode && (
                                             <button
                                                 type="button"
-                                                className={styles.removeButton}
-                                                onClick={() => handleRemoveCoreValue(index)}
-                                                disabled={portalContent.home.coreValues.length <= 1}
+                                                className={styles.smallButton}
+                                                onClick={handleAddCoreValue}
                                             >
-                                                Remove
+                                                Add Value
                                             </button>
-                                        </div>
-                                    ))}
+                                        )}
+                                    </div>
+
+                                    <div className={styles.coreValueList}>
+                                        {draftContent.home.coreValues.map((value, index) => (
+                                            <div key={index} className={styles.coreValueInputRow}>
+                                                <input
+                                                    value={value}
+                                                    onChange={(e) =>
+                                                        handleCoreValueChange(index, e.target.value)
+                                                    }
+                                                    disabled={!isEditMode}
+                                                />
+
+                                                {isEditMode && (
+                                                    <button
+                                                        type="button"
+                                                        className={styles.removeButton}
+                                                        onClick={() => handleRemoveCoreValue(index)}
+                                                        disabled={draftContent.home.coreValues.length <= 1}
+                                                    >
+                                                        Remove
+                                                    </button>
+                                                )}
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
 
-                    <section className={styles.editorCard}>
-                        <div className={styles.cardHeader}>
-                            <p>Recent News Content</p>
-                        </div>
+                        <section className={styles.editorCard}>
+                            <div className={styles.cardHeader}>
+                                <p>Recent News Content</p>
+                            </div>
 
-                        <div className={styles.cardBody}>
-                            <label className={styles.fieldGroup}>
-                                <span>Pinned Notice Category</span>
-                                <input
-                                    value={portalContent.recentNews.pinnedNotice.category}
-                                    onChange={(e) =>
-                                        handlePinnedNoticeChange("category", e.target.value)
-                                    }
-                                />
-                            </label>
+                            <div className={styles.cardBody}>
+                                <label className={styles.fieldGroup}>
+                                    <span>Pinned Notice Category</span>
+                                    <input
+                                        value={draftContent.recentNews.pinnedNotice.category}
+                                        onChange={(e) =>
+                                            handlePinnedNoticeChange("category", e.target.value)
+                                        }
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
 
-                            <label className={styles.fieldGroup}>
-                                <span>Pinned Notice Title</span>
-                                <input
-                                    value={portalContent.recentNews.pinnedNotice.title}
-                                    onChange={(e) =>
-                                        handlePinnedNoticeChange("title", e.target.value)
-                                    }
-                                />
-                            </label>
+                                <label className={styles.fieldGroup}>
+                                    <span>Pinned Notice Title</span>
+                                    <input
+                                        value={draftContent.recentNews.pinnedNotice.title}
+                                        onChange={(e) =>
+                                            handlePinnedNoticeChange("title", e.target.value)
+                                        }
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
 
-                            <label className={styles.fieldGroup}>
-                                <span>Pinned Notice Message</span>
-                                <textarea
-                                    value={portalContent.recentNews.pinnedNotice.message}
-                                    onChange={(e) =>
-                                        handlePinnedNoticeChange("message", e.target.value)
-                                    }
-                                    rows={6}
-                                />
-                            </label>
+                                <label className={styles.fieldGroup}>
+                                    <span>Pinned Notice Message</span>
+                                    <textarea
+                                        value={draftContent.recentNews.pinnedNotice.message}
+                                        onChange={(e) =>
+                                            handlePinnedNoticeChange("message", e.target.value)
+                                        }
+                                        rows={6}
+                                        disabled={!isEditMode}
+                                    />
+                                </label>
 
-                            <div className={styles.previewBox}>
-                                <p className={styles.previewLabel}>Pinned Notice Preview</p>
+                                <div className={styles.previewBox}>
+                                    <p className={styles.previewLabel}>Pinned Notice Preview</p>
 
-                                <div className={styles.noticePreview}>
-                                    <p className={styles.noticeMeta}>
-                                        {portalContent.recentNews.pinnedNotice.category} •{" "}
-                                        {portalContent.recentNews.pinnedNotice.updatedAt}
-                                    </p>
+                                    <div className={styles.noticePreview}>
+                                        <p className={styles.noticeMeta}>
+                                            {draftContent.recentNews.pinnedNotice.category} •{" "}
+                                            {draftContent.recentNews.pinnedNotice.updatedAt}
+                                        </p>
 
-                                    <h2>{portalContent.recentNews.pinnedNotice.title}</h2>
+                                        <h2>{draftContent.recentNews.pinnedNotice.title}</h2>
 
-                                    <p>{portalContent.recentNews.pinnedNotice.message}</p>
+                                        <p>{draftContent.recentNews.pinnedNotice.message}</p>
+                                    </div>
                                 </div>
                             </div>
-
-                            <div className={styles.mappingNote}>
-                                <p>Backend mapping later:</p>
-                                <span>
-                                    Home reads <strong>home</strong>. Recent News reads{" "}
-                                    <strong>recentNews.pinnedNotice</strong>. Latest Updates reads
-                                    your existing <strong>notifications</strong> table.
-                                </span>
-                            </div>
-                        </div>
-                    </section>
+                        </section>
+                    </div>
                 </div>
             </div>
         </div>

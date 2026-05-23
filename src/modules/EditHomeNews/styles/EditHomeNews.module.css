@@ -82,12 +82,22 @@
   line-height: 1.45;
 }
 
-/* Actions */
+/* Main editor container */
 
-.actionBar {
+.editorPanel {
   border: 1px solid var(--light-grey-lines);
   border-radius: 0.5rem;
-  padding: 0.85rem 1rem;
+  background-color: white;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  flex: 1;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.editorPanelTop {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -95,17 +105,11 @@
   flex-shrink: 0;
 }
 
-.actionTitle {
-  color: #1f2937;
-  font-size: 0.95rem;
-  font-weight: 700;
+.modeNotice {
+  color: #3f4a5f;
+  font-size: 0.9rem;
+  font-weight: 500;
   margin: 0;
-}
-
-.actionSubtitle {
-  color: var(--light-grey-text);
-  font-size: 0.78rem;
-  margin-top: 0.25rem;
 }
 
 .actionButtons {
@@ -114,6 +118,19 @@
   flex-wrap: wrap;
   justify-content: flex-end;
 }
+
+.saveStatus {
+  border: 1px solid var(--primary-blue);
+  border-radius: 0.45rem;
+  background-color: white;
+  color: var(--primary-blue);
+  padding: 0.6rem 0.8rem;
+  font-size: 0.82rem;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* Buttons */
 
 .primaryButton,
 .secondaryButton,
@@ -148,15 +165,32 @@
   color: var(--primary-blue);
 }
 
-.saveStatus {
+.smallButton {
   border: 1px solid var(--primary-blue);
-  border-radius: 0.45rem;
   background-color: white;
   color: var(--primary-blue);
-  padding: 0.65rem 0.85rem;
-  font-size: 0.82rem;
-  font-weight: 600;
-  flex-shrink: 0;
+  padding: 0.35rem 0.65rem;
+}
+
+.smallButton:hover {
+  background-color: var(--primary-blue);
+  color: white;
+}
+
+.removeButton {
+  border: 1px solid var(--light-grey-lines);
+  background-color: white;
+  color: #9b1c1c;
+  padding: 0.45rem 0.65rem;
+}
+
+.removeButton:hover:not(:disabled) {
+  border-color: #9b1c1c;
+}
+
+.removeButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 /* Layout */
@@ -246,23 +280,32 @@
   border-color: var(--primary-blue);
 }
 
+.fieldGroup input:disabled,
+.fieldGroup textarea:disabled,
+.coreValueInputRow input:disabled {
+  background-color: #f8f8f8;
+  color: #4b5563;
+  cursor: default;
+  opacity: 1;
+}
+
+.fieldGroup input:disabled:focus,
+.fieldGroup textarea:disabled:focus,
+.coreValueInputRow input:disabled:focus {
+  border-color: var(--light-grey-lines);
+}
+
+.fieldGroup input:not(:disabled),
+.fieldGroup textarea:not(:disabled),
+.coreValueInputRow input:not(:disabled) {
+  background-color: white;
+}
+
 .inlineFieldHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-}
-
-.smallButton {
-  border: 1px solid var(--primary-blue);
-  background-color: white;
-  color: var(--primary-blue);
-  padding: 0.35rem 0.65rem;
-}
-
-.smallButton:hover {
-  background-color: var(--primary-blue);
-  color: white;
 }
 
 .coreValueList {
@@ -276,22 +319,6 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 0.5rem;
   align-items: center;
-}
-
-.removeButton {
-  border: 1px solid var(--light-grey-lines);
-  background-color: white;
-  color: #9b1c1c;
-  padding: 0.45rem 0.65rem;
-}
-
-.removeButton:hover:not(:disabled) {
-  border-color: #9b1c1c;
-}
-
-.removeButton:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
 }
 
 /* Preview */
@@ -336,33 +363,26 @@
   line-height: 1.45;
 }
 
-.mappingNote {
-  border: 1px dashed var(--light-grey-lines);
-  border-radius: 0.5rem;
-  padding: 0.85rem;
-  background-color: white;
-}
-
-.mappingNote p {
-  color: var(--primary-blue);
-  font-size: 0.8rem;
-  font-weight: 700;
-  margin-bottom: 0.35rem;
-}
-
-.mappingNote span {
-  color: var(--light-grey-text);
-  font-size: 0.78rem;
-  line-height: 1.45;
-}
-
-.mappingNote strong {
-  color: #1f2937;
-}
-
 /* Responsive */
 
 @media (max-width: 1050px) {
+  .bodyContentContainer {
+    padding: 1rem;
+  }
+
+  .editorPanel {
+    flex: 0 0 auto;
+  }
+
+  .editorPanelTop {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .actionButtons {
+    justify-content: flex-start;
+  }
+
   .contentGrid {
     flex: 0 0 auto;
     grid-template-columns: 1fr;
@@ -378,10 +398,6 @@
 }
 
 @media (max-width: 700px) {
-  .bodyContentContainer {
-    padding: 1rem;
-  }
-
   .headerSection {
     padding: 0.9rem 1rem;
   }
@@ -392,16 +408,6 @@
 
   .pageDescription {
     font-size: 0.78rem;
-  }
-
-  .actionBar {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .actionButtons {
-    width: 100%;
-    justify-content: flex-start;
   }
 
   .coreValueInputRow {
