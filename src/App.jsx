@@ -314,7 +314,6 @@ function App() {
     Documents: "Documents",
     Policies: "Policies",
     "Recent News": "RecentNews",
-    Others: "Others",
     "User Management": "UserManagement",
   };
 
@@ -324,9 +323,6 @@ function App() {
     Policies: {},
     "Recent News": {
       "Recent News Dashboard": "RecentNews-dsh",
-    },
-    Others: {
-      "Others Dashboard": "Others-dsh",
     },
     "User Management": {
       "Role Management": "RoleManagement",
@@ -338,7 +334,6 @@ function App() {
     Documents: "Create/Edit Documents",
     Policies: "View Documents",
     "Recent News": "Recent News",
-    Others: "Others",
     "User Management": "User Management",
   };
 
@@ -409,10 +404,23 @@ function App() {
   //   });
   // }
 
-  const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
-    id: module,
-    file: `${moduleFileNames[module]}.png`,
-  }));
+
+  // DEV ONLY: Uncomment this if you want that all modules are just shown, and there is no distinction between admin and clients
+  // const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
+  //   id: module,
+  //   file: `${moduleFileNames[module]}.png`,
+  // }));
+
+  const modulesIcons = [
+    { type: "divider", id: "client-divider", label: "Client Modules" },
+    { type: "module", id: "Home", file: `${moduleFileNames.Home}.png` },
+    { type: "module", id: "Policies", file: `${moduleFileNames.Policies}.png` },
+    { type: "module", id: "Recent News", file: `${moduleFileNames["Recent News"]}.png` },
+
+    { type: "divider", id: "admin-divider", label: "Admin Modules" },
+    { type: "module", id: "Documents", file: `${moduleFileNames.Documents}.png` },
+    { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
+  ];
 
   return (
     <div className="shell">
@@ -441,78 +449,88 @@ function App() {
             ref={iconsRef}
             onScroll={() => handleScroll("icons")}
           >
-            {modulesIcons.map((module) => (
-              <div key={module.id}>
-                {/* Main Module Icons */}
-                <div
-                  className={`sidebar-module-icons-item 
+            {modulesIcons.map((module) => {
+              if (module.type === "divider") {
+                return (
+                  <div key={module.id} className="sidebar-divider-icon">
+                    <span>{module.label}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={module.id}>
+                  {/* Main Module Icons */}
+                  <div
+                    className={`sidebar-module-icons-item 
                       ${isSidebarOpen ? "opened" : ""} 
                       ${activeModule === module.id ? "active" : ""} 
                       ${hoveredModule === module.id ? "hovered" : ""}`}
-                  onClick={() => {
-                    setIsSidebarOpen(true);
+                    onClick={() => {
+                      setIsSidebarOpen(true);
 
-                    if (activeModule === module.id) {
-                      // if the main module is active, and is clicked when a submodule is open, go back to main module
-                      if (activeSubModule) {
+                      if (activeModule === module.id) {
+                        // if the main module is active, and is clicked when a submodule is open, go back to main module
+                        if (activeSubModule) {
+                          setActiveSubModule(null);
+                          loadMainModule(module.id);
+                          setIsMainModuleCollapsed(true);
+                        } else {
+                          // if it's already active and is the opened module, toggle off
+                          isMainModuleCollapsed
+                            ? setIsMainModuleCollapsed(false)
+                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                          //setActiveModule(null);
+                          setActiveSubModule(null);
+                        }
+                      } else {
+                        // otherwise, activate it
+                        setIsMainModuleCollapsed(true);
+                        setActiveModule(module.id);
                         setActiveSubModule(null);
                         loadMainModule(module.id);
-                        setIsMainModuleCollapsed(true);
-                      } else {
-                        // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed
-                          ? setIsMainModuleCollapsed(false)
-                          : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                        //setActiveModule(null);
-                        setActiveSubModule(null);
                       }
-                    } else {
-                      // otherwise, activate it
-                      setIsMainModuleCollapsed(true);
-                      setActiveModule(module.id);
-                      setActiveSubModule(null);
-                      loadMainModule(module.id);
-                    }
 
-                    /*setActiveModule(module.id);
-                    setActiveSubModule(null); // Reset submodule when a main module is clicked*/
-                  }}
-                  onMouseEnter={() => setHoveredModule(module.id)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                >
-                  <img
-                    src={
+                      /*setActiveModule(module.id);
+                      setActiveSubModule(null); // Reset submodule when a main module is clicked*/
+                    }}
+                    onMouseEnter={() => setHoveredModule(module.id)}
+                    onMouseLeave={() => setHoveredModule(null)}
+                  >
+                    <img
+                      src={
+                        activeModule === module.id
+                          ? `/icons/module-icons-selected/${module.file}`
+                          : `/icons/module-icons/${module.file}`
+                      }
+                      alt={module.id}
+                    />
+                  </div>
+
+                  <div
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                      isSidebarOpen &&
                       activeModule === module.id
-                        ? `/icons/module-icons-selected/${module.file}`
-                        : `/icons/module-icons/${module.file}`
-                    }
-                    alt={module.id}
-                  />
+                      ? "opened"
+                      : ""
+                      }`}
+                  >
+                    {/* submodules - only show if this module is active */}
+                    {filteredModuleFileNames[module.id] &&
+                      Object.keys(filteredModuleFileNames[module.id]).map(
+                        (submodule, index) => (
+                          <div
+                            key={index}
+                            className="sidebar-submodule-item-empty"
+                          >
+                            <p></p>
+                          </div>
+                        ),
+                      )}
+                  </div>
                 </div>
-
-                <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
-                    isSidebarOpen &&
-                    activeModule === module.id
-                    ? "opened"
-                    : ""
-                    }`}
-                >
-                  {/* submodules - only show if this module is active */}
-                  {filteredModuleFileNames[module.id] &&
-                    Object.keys(filteredModuleFileNames[module.id]).map(
-                      (submodule, index) => (
-                        <div
-                          key={index}
-                          className="sidebar-submodule-item-empty"
-                        >
-                          <p></p>
-                        </div>
-                      ),
-                    )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="sidebar-kinetiq-footer">
@@ -535,75 +553,85 @@ function App() {
             ref={descsRef}
             onScroll={() => handleScroll("descs")}
           >
-            {modulesIcons.map((module) => (
-              <div key={module.id}>
-                {/* Main Module Items */}
-                <div
-                  className={`sidebar-module-desc-item 
+            {modulesIcons.map((module) => {
+              if (module.type === "divider") {
+                return (
+                  <div key={module.id} className="sidebar-divider-desc">
+                    <span>{module.label}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={module.id}>
+                  {/* Main Module Items */}
+                  <div
+                    className={`sidebar-module-desc-item 
                             ${activeModule === module.id ? "active" : ""} 
                             ${hoveredModule === module.id ? "hovered" : ""}`}
-                  onClick={() => {
-                    setIsSidebarOpen(true);
-                    if (activeModule === module.id) {
-                      // if the main module is active, and is clicked when a submodule is open, go back to main module
-                      if (activeSubModule) {
+                    onClick={() => {
+                      setIsSidebarOpen(true);
+                      if (activeModule === module.id) {
+                        // if the main module is active, and is clicked when a submodule is open, go back to main module
+                        if (activeSubModule) {
+                          setActiveModule(module.id);
+                          setActiveSubModule(null);
+                          loadMainModule(module.id);
+                          setIsMainModuleCollapsed(true);
+                        } else {
+                          // if it's already active and is the opened module, toggle off
+                          isMainModuleCollapsed
+                            ? setIsMainModuleCollapsed(false)
+                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                          //setActiveModule(null);
+                          setActiveSubModule(null);
+                        }
+                      } else {
+                        // otherwise, activate it
+                        setIsMainModuleCollapsed(true);
                         setActiveModule(module.id);
                         setActiveSubModule(null);
                         loadMainModule(module.id);
-                        setIsMainModuleCollapsed(true);
-                      } else {
-                        // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed
-                          ? setIsMainModuleCollapsed(false)
-                          : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                        //setActiveModule(null);
-                        setActiveSubModule(null);
                       }
-                    } else {
-                      // otherwise, activate it
-                      setIsMainModuleCollapsed(true);
-                      setActiveModule(module.id);
-                      setActiveSubModule(null);
-                      loadMainModule(module.id);
-                    }
-                  }}
-                  onMouseEnter={() => setHoveredModule(module.id)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                >
-                  <p>{getModuleDisplayName(module.id)}</p>
-                </div>
+                    }}
+                    onMouseEnter={() => setHoveredModule(module.id)}
+                    onMouseLeave={() => setHoveredModule(null)}
+                  >
+                    <p>{getModuleDisplayName(module.id)}</p>
+                  </div>
 
-                <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
-                    isSidebarOpen &&
-                    activeModule === module.id
-                    ? "opened"
-                    : ""
-                    }`}
-                >
-                  {/* Submodules - only show if the main module is active */}
-                  {filteredModuleFileNames[module.id] &&
-                    Object.keys(filteredModuleFileNames[module.id]).map(
-                      (sub, index) => (
-                        <div
-                          key={index}
-                          className={`sidebar-submodule-item
+                  <div
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                      isSidebarOpen &&
+                      activeModule === module.id
+                      ? "opened"
+                      : ""
+                      }`}
+                  >
+                    {/* Submodules - only show if the main module is active */}
+                    {filteredModuleFileNames[module.id] &&
+                      Object.keys(filteredModuleFileNames[module.id]).map(
+                        (sub, index) => (
+                          <div
+                            key={index}
+                            className={`sidebar-submodule-item
                             ${activeSubModule === sub ? "active" : ""} 
                             ${hoveredSubModule === sub ? "hovered" : ""}`}
-                          onClick={() => {
-                            setActiveSubModule(sub);
-                            //loadSubModule(sub);
-                          }}
-                          onMouseEnter={() => setHoveredSubModule(sub)}
-                          onMouseLeave={() => setHoveredSubModule(null)}
-                        >
-                          <p>{sub}</p>
-                        </div>
-                      ),
-                    )}
+                            onClick={() => {
+                              setActiveSubModule(sub);
+                              //loadSubModule(sub);
+                            }}
+                            onMouseEnter={() => setHoveredSubModule(sub)}
+                            onMouseLeave={() => setHoveredSubModule(null)}
+                          >
+                            <p>{sub}</p>
+                          </div>
+                        ),
+                      )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="sidebar-kinetiq-footer-desc">
