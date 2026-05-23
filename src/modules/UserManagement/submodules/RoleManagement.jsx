@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "../styles/RoleManagement.module.css";
 import Button from "../../../shared/components/Button";
 import Dropdown from "../../../shared/components/Dropdown";
+import { useConfirmationModal } from "../../../shared/components/ConfirmationModal";
 
 const APP_MODULES = [
   "Home",
@@ -11,6 +12,18 @@ const APP_MODULES = [
   "Others",
   "UserManagement",
 ];
+
+const createDefaultModuleState = () =>
+  Object.fromEntries(APP_MODULES.map((name) => [name, name === "Home"]));
+
+const withFixedModules = (
+  moduleState,
+  { lockUserManagement = false } = {},
+) => ({
+  ...moduleState,
+  Home: true,
+  ...(lockUserManagement ? { UserManagement: true } : {}),
+});
 
 const normalizeRoleList = (payload) => {
   const roles = Array.isArray(payload) ? payload : (payload?.data ?? []);
@@ -43,8 +56,12 @@ const BodyContent = () => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
-  const [draftModules, setDraftModules] = useState(() => toModuleState([]));
-  const [savedModules, setSavedModules] = useState(() => toModuleState([]));
+  const [draftModules, setDraftModules] = useState(() =>
+    createDefaultModuleState(),
+  );
+  const [savedModules, setSavedModules] = useState(() =>
+    createDefaultModuleState(),
+  );
   const [isNewRoleModalOpen, setIsNewRoleModalOpen] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -52,6 +69,7 @@ const BodyContent = () => {
   const [isCreating, setIsCreating] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+  const { askForConfirmation, confirmationModal } = useConfirmationModal();
 
   const roleNames = useMemo(() => roles.map((role) => role.roleName), [roles]);
 
@@ -81,8 +99,8 @@ const BodyContent = () => {
 
         if (!normalizedRoles.length) {
           setSelectedRole("");
-          setSavedModules(toModuleState([]));
-          setDraftModules(toModuleState([]));
+          setSavedModules(createDefaultModuleState());
+          setDraftModules(createDefaultModuleState());
           return;
         }
 
@@ -117,11 +135,13 @@ const BodyContent = () => {
 
         const payload = await resp.json();
         const roleDetail = payload?.data ?? payload;
-        const nextModules = toModuleState(roleDetail?.modules ?? []);
-
-        if ((roleDetail?.role_name ?? selectedRole) === "Admin") {
-          nextModules.UserManagement = true;
-        }
+        const nextModules = withFixedModules(
+          toModuleState(roleDetail?.modules ?? []),
+          {
+            lockUserManagement:
+              (roleDetail?.role_name ?? selectedRole) === "Admin",
+          },
+        );
 
         setSavedModules(nextModules);
         setDraftModules(nextModules);
@@ -139,6 +159,8 @@ const BodyContent = () => {
     );
   }, [draftModules, moduleNames, savedModules]);
 
+  const isUserManagementLocked = isAdminRole && !isNewRoleModalOpen;
+
   const handleRoleChange = (nextRole) => {
     setStatusMessage("");
     setSelectedRole(nextRole);
@@ -147,6 +169,9 @@ const BodyContent = () => {
   const handleStartCreateRole = () => {
     setStatusMessage("");
     setErrorMessage("");
+    const createRoleModules = createDefaultModuleState();
+    setDraftModules(createRoleModules);
+    setSavedModules(createRoleModules);
     setNewRoleName("");
     setIsNewRoleModalOpen(true);
   };
@@ -154,13 +179,9 @@ const BodyContent = () => {
   const handleCancelCreateRole = () => {
     setIsNewRoleModalOpen(false);
     setNewRoleName("");
-  };
-
-  const toggleModule = (moduleName) => {
-    setDraftModules((current) => ({
-      ...current,
-      [moduleName]: !current[moduleName],
-    }));
+    setStatusMessage("");
+    setErrorMessage("");
+    setDraftModules(savedModules);
   };
 
   // Precompute stable toggle handlers so we don't create a new lambda per render
@@ -174,6 +195,11 @@ const BodyContent = () => {
   }, [moduleNames, setDraftModules]);
 
   const handleDiscard = () => {
+    if (isNewRoleModalOpen) {
+      handleCancelCreateRole();
+      return;
+    }
+
     setDraftModules(savedModules);
   };
 
@@ -183,7 +209,9 @@ const BodyContent = () => {
     }
 
     const modules = getSelectedModules(
-      isAdminRole ? { ...draftModules, UserManagement: true } : draftModules,
+      withFixedModules(draftModules, {
+        lockUserManagement: isUserManagementLocked,
+      }),
     );
     if (!modules.length) {
       setErrorMessage("Select at least one module.");
@@ -210,7 +238,12 @@ const BodyContent = () => {
         throw new Error(`Failed to update role modules (${resp.status})`);
       }
 
-      setSavedModules(draftModules);
+      const nextModules = withFixedModules(draftModules, {
+        lockUserManagement: isUserManagementLocked,
+      });
+
+      setSavedModules(nextModules);
+      setDraftModules(nextModules);
       setStatusMessage("Role modules saved.");
 
       setRoles((currentRoles) =>
@@ -233,7 +266,9 @@ const BodyContent = () => {
     }
 
     const modules = getSelectedModules(
-      isAdminRole ? { ...draftModules, UserManagement: true } : draftModules,
+      withFixedModules(draftModules, {
+        lockUserManagement: isUserManagementLocked,
+      }),
     );
     if (!modules.length) {
       setErrorMessage("Select at least one module for the new role.");
@@ -368,7 +403,7 @@ const BodyContent = () => {
                 moduleNames.map((moduleName) => {
                   const isHome = moduleName === "Home";
                   const isForcedAdminUM =
-                    isAdminRole && moduleName === "UserManagement";
+                    isUserManagementLocked && moduleName === "UserManagement";
                   const checked =
                     isHome ||
                     isForcedAdminUM ||
@@ -424,7 +459,14 @@ const BodyContent = () => {
             variant="primary"
             size="md"
             className={styles.saveButton}
-            onClick={isNewRoleModalOpen ? handleCreateRole : handleSave}
+            onClick={() =>
+              askForConfirmation(
+                isNewRoleModalOpen ? handleCreateRole : handleSave,
+                isNewRoleModalOpen
+                  ? "Create this role with selected module access?"
+                  : "Save role module changes?",
+              )
+            }
             disabled={
               isSaving ||
               isCreating ||
@@ -443,9 +485,11 @@ const BodyContent = () => {
                 : "Save Role"}
           </Button>
         </footer>
+
+        {confirmationModal}
       </div>
     </div>
   );
-};;
+};
 
 export default BodyContent;
