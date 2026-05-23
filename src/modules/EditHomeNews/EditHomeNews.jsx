@@ -238,7 +238,9 @@ const BodyContent = () => {
                     </p>
                 </div>
 
-                <div className={styles.editorPanel}>
+                <div
+                    className={`${styles.editorPanel} ${isEditMode ? styles.editorPanelEditing : ""}`}
+                >
                     <div className={styles.editorPanelTop}>
                         <div className={styles.modeNotice}>
                             <span

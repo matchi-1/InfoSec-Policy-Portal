@@ -9,6 +9,7 @@ import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalic
 import dayjs from "dayjs";
 import CustomDatePicker from "../../../shared/components/CustomDatePicker.jsx";
 import '@mdxeditor/editor/style.css'
+import { useNavigate } from "react-router-dom";
 
 
 // TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
@@ -43,6 +44,7 @@ function BodyContent({ doc, onBack }) {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
+    const [fileName, setFileName] = useState(doc.pdf_filename)
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
@@ -252,16 +254,37 @@ function BodyContent({ doc, onBack }) {
     //     );
     // }
 
+    const isSaveValid =
+        doc?.id &&
+        currTitle?.trim() &&
+        currDesc?.trim() &&
+        selectDate &&
+        currTags?.length > 0 &&
+        sections?.length > 0 &&
+        authoredBy &&
+        reviewedBy &&
+        JSON.parse(localStorage.getItem("user"))?.user_id;
+
+    const [showNoPdfAlert, setShowNoPdfAlert] = useState(false);
+
     return (
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
                 <p className={styles.backDocuBtn} onClick={onBack}>
                     <img src="/icons/to-left.png" />
-                    Back to Documents
+                    <p>Back</p>
                 </p>
                 <div className={styles.headerRegion}>
                     <div className={styles.headerDock}>
                         <button
+                            type="button"
+                            className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
+                                }`}
+                            onClick={() => setIsHeaderCollapsed((prev) => !prev)}
+                        >
+                            {isHeaderCollapsed ? "↓" : "↑"}
+                        </button>
+                        {/* <button
                             type="button"
                             className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
                                 }`}
@@ -281,13 +304,31 @@ function BodyContent({ doc, onBack }) {
                             <span className={styles.headerDetailsState}>
                                 {isHeaderCollapsed ? "Hidden" : "Shown"}
                             </span>
-                        </button>
-                        <button
+                        </button> */}
+                        {isSaveValid ? (
+                            <button
+                                className={styles.saveBtn}
+                                onClick={() => { setShowConfModal(true) }}>
+                                <img src="/icons/save-green.png" />
+                                <p>Save</p>
+                            </button>
+                        ) : (
+                            <button
+                                className={styles.saveBtnDisabled}
+                            // onClick={() => { setShowConfModal(true) }}
+                            >
+                                <img src="/icons/save-green.png" />
+                                <p>Save</p>
+                            </button>
+                        )
+
+                        }
+                        {/* <button
                             className={styles.saveBtn}
                             onClick={() => { setShowConfModal(true) }}>
                             <img src="/icons/save-green.png" />
                             <p>Save</p>
-                        </button>
+                        </button> */}
                     </div>
                 </div>
             </div>
@@ -322,6 +363,10 @@ function BodyContent({ doc, onBack }) {
                                             type="text" autoFocus
                                             value={currTitleTemp}
                                             onChange={(e) => setCurrTitleTemp(e.target.value)}
+                                            onBlur={() => {
+                                                setEditingTitle(false)
+                                                setCurrTitle(currTitleTemp)
+                                            }}
                                         />
                                         <button
                                             onClick={() => {
@@ -343,7 +388,6 @@ function BodyContent({ doc, onBack }) {
                                             <img src="/icons/close-blue.png" alt="" className={styles.actionIcon} />
                                         </button>
                                     </div>
-
                                 )
                             }
                         </div>
@@ -366,7 +410,14 @@ function BodyContent({ doc, onBack }) {
                                     </button>
                                 </div>
                             ) : (
-                                <div className={styles.descText}>
+                                <div className={styles.descText}
+                                    onBlur={(e) => {
+                                        if (!e.currentTarget.contains(e.relatedTarget)) {
+                                            setEditingDesc(false);
+                                            setCurrDesc(currDescTemp);
+                                        }
+                                    }}
+                                >
                                     <textarea
                                         autoFocus
                                         value={currDescTemp}
@@ -376,7 +427,7 @@ function BodyContent({ doc, onBack }) {
                                             e.target.style.height = "auto";
                                             e.target.style.height = `${e.target.scrollHeight}px`;
                                         }}
-                                        rows={5}
+                                        rows={2}
                                     />
                                     <button
                                         onClick={() => {
@@ -420,17 +471,27 @@ function BodyContent({ doc, onBack }) {
                                     }
                                 </div>
                                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
-                                    <img
-                                        style={{ width: '1.4rem', height: '1.4rem' }}
-                                        src="/icons/close-gray.png" alt="remove all tags"
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            setCurrTags([]);
-                                        }}
-                                    />
-                                    <img
-                                        style={{ width: '1.2rem', height: '1.2rem' }}
+                                    {currTags.length > 0 ? (
+                                        <img
+                                            style={{ width: '1.4rem', height: '1.4rem' }}
+                                            src="/icons/close-gray.png" alt="remove all tags"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                setCurrTags([]);
+                                            }}
+                                        />
+                                    ) : ""
+                                    }
+                                    {/* <img
                                         src="/icons/down-gray.png" alt="collapse tag"
+                                        onClick={() => setShowTagsDropdown(!showTagsDropdown)}
+                                    /> */}
+                                    <img
+                                        className={`${styles.dropdownArrow} ${showTagsDropdown ? styles.dropdownArrowOpen : ""
+                                            }`}
+                                        style={{ width: '1.2rem', height: '1.2rem' }}
+                                        src="/icons/down-gray.png"
+                                        alt="collapse tag"
                                         onClick={() => setShowTagsDropdown(!showTagsDropdown)}
                                     />
                                 </div>
@@ -463,123 +524,184 @@ function BodyContent({ doc, onBack }) {
                         <div className={styles.dropdowns}>
                             <div className={styles.dropdownContainer}>
                                 <p>authored by:</p>
-                                <div className={
-                                    doc.authoredBy
-                                        ? styles.dropDownSectionSelected
-                                        : styles.dropDownSection}
+                                <div className={styles.dropdownWrapper}>
+                                    <div className={
+                                        doc.authoredBy
+                                            ? styles.dropDownSectionSelected
+                                            : styles.dropDownSection}
 
-                                    onClick={() => {
-                                        setShowAuthoredDropdown(!showAuthoredDropdown);
-                                        setShowReviewedDropdown(false);
-                                        setShowDateDropdown(false);
-                                    }}>
-                                    <p>{authoredBy ? currAuthorName : "Select Author"}</p>
-                                    <img
-                                        src={
-                                            doc.authoredBy === ""
-                                                ? "/icons/down.png"
-                                                : "/icons/down-white.png"
-                                        }
-                                        alt="Down Icon"
-                                    />
+                                        onClick={() => {
+                                            setShowAuthoredDropdown(!showAuthoredDropdown);
+                                            setShowReviewedDropdown(false);
+                                            setShowDateDropdown(false);
+                                        }}>
+                                        <p>{authoredBy ? currAuthorName : "Select Author"}</p>
+                                        {/* <img
+                                            src={
+                                                doc.authoredBy === ""
+                                                    ? "/icons/down.png"
+                                                    : "/icons/down-white.png"
+                                            }
+                                            alt="Down Icon"
+                                        /> */}
+                                        <img
+                                            className={`${styles.dropdownArrow} ${showAuthoredDropdown ? styles.dropdownArrowOpen : ""
+                                                }`}
+                                            src={
+                                                doc.authoredBy === ""
+                                                    ? "/icons/down.png"
+                                                    : "/icons/down-white.png"
+                                            }
+                                            alt="Down Icon"
+                                        />
+                                    </div>
+                                    {showAuthoredDropdown && (
+                                        <div className={styles.dropdownList}>
+                                            {userList.map((user) => {
+                                                return (
+                                                    <p onClick={() => {
+                                                        setAuthoredBy(user.id)
+                                                        setShowAuthoredDropdown(false)
+                                                        setCurrAuthorName(`${user.first_name} ${user.last_name}`)
+                                                    }}>{user.first_name} {user.last_name}</p>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
                                 </div>
 
-                                {showAuthoredDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        {userList.map((user) => {
-                                            return (
-                                                <p onClick={() => {
-                                                    setAuthoredBy(user.id)
-                                                    setShowAuthoredDropdown(false)
-                                                    setCurrAuthorName(`${user.first_name} ${user.last_name}`)
-                                                }}>{user.first_name} {user.last_name}</p>
-                                            )
-                                        })}
-                                    </div>
-                                )}
                             </div>
 
                             <div className={styles.dropdownContainer}>
                                 <p>reviewed by:</p>
-                                <div className={
-                                    doc.reviewedBy
-                                        ? styles.dropDownSectionSelected
-                                        : styles.dropDownSection}
+                                <div className={styles.dropdownWrapper}>
+                                    <div className={
+                                        doc.reviewedBy
+                                            ? styles.dropDownSectionSelected
+                                            : styles.dropDownSection}
 
-                                    onClick={() => {
-                                        setShowReviewedDropdown(!showReviewedDropdown);
-                                        setShowAuthoredDropdown(false);
-                                        setShowDateDropdown(false);
-                                    }}>
-                                    <p>{reviewedBy ? currReviewerName : "Select Reviewer"}</p>
-                                    <img
-                                        src={
-                                            doc.reviewedBy === ""
-                                                ? "/icons/down.png"
-                                                : "/icons/down-white.png"
-                                        }
-                                        alt="Down Icon"
-                                    />
-                                </div>
-                                {showReviewedDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        {userList.map((user) => {
-                                            return (
-                                                <p onClick={() => {
-                                                    setReviewedBy(user.id)
-                                                    setShowReviewedDropdown(false)
-                                                    setCurrReviewerName(`${user.first_name} ${user.last_name}`)
-                                                }}>{user.first_name} {user.last_name}</p>
-                                            )
-                                        })}
+                                        onClick={() => {
+                                            setShowReviewedDropdown(!showReviewedDropdown);
+                                            setShowAuthoredDropdown(false);
+                                            setShowDateDropdown(false);
+                                        }}>
+                                        <p>{reviewedBy ? currReviewerName : "Select Reviewer"}</p>
+                                        <img
+                                            className={`${styles.dropdownArrow} ${showReviewedDropdown ? styles.dropdownArrowOpen : ""
+                                                }`}
+                                            src={
+                                                doc.reviewedBy === ""
+                                                    ? "/icons/down.png"
+                                                    : "/icons/down-white.png"
+                                            }
+                                            alt="Down Icon"
+                                        />
                                     </div>
-                                )}
+                                    {showReviewedDropdown && (
+                                        <div className={styles.dropdownList}>
+                                            {userList.map((user) => {
+                                                return (
+                                                    <p onClick={() => {
+                                                        setReviewedBy(user.id)
+                                                        setShowReviewedDropdown(false)
+                                                        setCurrReviewerName(`${user.first_name} ${user.last_name}`)
+                                                    }}>{user.first_name} {user.last_name}</p>
+                                                )
+                                            })}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
 
                             <div className={styles.dropdownContainer}>
                                 <p>last reviewed:</p>
-                                <div onClick={() => {
-                                    // setShowDateDropdown(!showDateDropdown);
-                                    setShowAuthoredDropdown(false);
-                                    setShowReviewedDropdown(false);
-                                }}>
-                                    {/* <CustomDatePicker
-                                        value={selectDate}
-                                        onChange={(date) => setSelectDate(date)}
-                                        slotProps={{
-                                            field: {
-                                                size: "small",
-                                                fontSize: "0.5rem",
-                                                fullWidth: true,
-                                            }
-                                        }}
-                                    /> */}
-                                    {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+                                <div className={styles.dropdownWrapper}>
+                                    <div className={styles.dropDownSectionSelected} onClick={() => {
+                                        // setShowDateDropdown(!showDateDropdown);
+                                        setShowAuthoredDropdown(false);
+                                        setShowReviewedDropdown(false);
+                                    }}>
+                                        <CustomDatePicker
+                                            format="MM / DD / YYYY"
+                                            value={selectDate}
+                                            onChange={(date) => setSelectDate(date)}
+                                            slotProps={{
+                                                popper: {
+                                                    placement: "bottom-start",
+                                                },
+                                                textField: {
+                                                    size: "small",
+                                                    fullWidth: true,
+                                                }
+                                            }}
+                                        />
+                                        {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                     <img
                                         src={"/icons/down-white.png"}
                                         alt="Down Icon"
                                     /> */}
-                                </div>
-                                {/* {showDateDropdown && (
+                                    </div>
+                                    {/* {showDateDropdown && (
                                     <div className={styles.dropdownList}>
                                         <DatePicker showIcon popperPlacement="bottom" selected={selectDate} onChange={(date) => setSelectDate(date)} />
                                         <button onClick={() => { setShowDateDropdown(false) }}>ok</button>
                                     </div>
                                 )} */}
+                                </div>
                             </div>
                         </div>
                         <div className={styles.buttonsContainer}>
                             {
                                 (!viewingPDF) ? (
-                                    <button onClick={() => {
-                                        doc.pdf_filename == "null" ? alert("no pdfs?") : setViewingPDF(true)
-                                    }}>View PDF</button>
+                                    // <button onClick={() => {
+                                    //     fileName == "null" ? alert("no pdfs?") : setViewingPDF(true)
+                                    // }}>View PDF</button>
+                                    <button
+                                        onClick={() => {
+                                            if (fileName === "null") {
+                                                setShowNoPdfAlert(true);
+
+                                                setTimeout(() => {
+                                                    setShowNoPdfAlert(false);
+                                                }, 2500);
+
+                                                return;
+                                            }
+
+                                            setViewingPDF(true);
+                                        }}
+                                    >
+                                        View PDF
+                                    </button>
                                 ) : (
                                     <button onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
                             <button onClick={() => { setShowUploadModal(true) }}>Upload PDF</button>
-                            {fileToUpload != null ? <p>*not saved</p> : null}
+                            {fileName != "null" ? (
+                                <p
+                                    onClick={() => {
+                                        setFileName("null")
+                                        setFileToUpload(null)
+                                    }}
+                                >{fileName}<span>  x</span></p> //the 'x' in the span could be a button prob -harley
+                            ) : (
+                                null
+                            )}
+                            {showNoPdfAlert && (
+                                <div className={styles.toastAlert}>
+                                    <div className={styles.toastAlertContent}>
+                                        <p className={styles.toastAlertTitle}>
+                                            No PDF Available
+                                        </p>
+
+                                        <p className={styles.toastAlertText}>
+                                            Upload a PDF document before viewing.
+                                        </p>
+                                    </div>
+                                </div>
+                            )
+                            }
                         </div>
                     </div>
                     {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
@@ -622,11 +744,28 @@ function BodyContent({ doc, onBack }) {
                                                         <input type="text" autoFocus value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()}
                                                             onKeyDown={(e) => { e.stopPropagation(); }}
                                                             onMouseDown={(e) => { stopPropagation(); }}
+                                                            onBlur={() => {
+                                                                const newSections = sections.map((sect) => {
+                                                                    if (sect.id === sectionTitleEditID) {
+                                                                        return {
+                                                                            ...sect,
+                                                                            title: sectionTitleTemp
+                                                                        }
+                                                                    } else {
+                                                                        return sect;
+                                                                    }
+                                                                });
+                                                                setSections(newSections);
+                                                                console.log("(debug) new sections: ", sections)
+                                                                setSectionTitleEditID(null);
+                                                                setSectionTitleTemp(null);
+                                                            }}
                                                         />
                                                         <div>
                                                             <button
                                                                 className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
                                                                 onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onMouseDown={(e) => { e.preventDefault() }}
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     const newSections = sections.map((sect) => {
@@ -652,6 +791,7 @@ function BodyContent({ doc, onBack }) {
                                                             <button
                                                                 className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
                                                                 onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onMouseDown={(e) => { e.preventDefault() }}
                                                                 onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null); }}
                                                                 aria-label="Cancel"
                                                                 title="Cancel"
@@ -726,8 +866,32 @@ function BodyContent({ doc, onBack }) {
                                                                     sub.id === subTitleEditID ?
                                                                         (
                                                                             <div>
-                                                                                <input type="text" autoFocus value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} />
-                                                                                <button onClick={(e) => {
+                                                                                <input type="text" autoFocus value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} onBlur={() => {
+                                                                                    setSections(prevSections =>
+                                                                                        prevSections.map((sect) => {
+                                                                                            if (sect.id === openSectionId) {
+                                                                                                return ({
+                                                                                                    ...sect,
+                                                                                                    subsections: sect.subsections.map((sub) => {
+                                                                                                        if (sub.id === subTitleEditID) {
+                                                                                                            return {
+                                                                                                                ...sub,
+                                                                                                                title: subTitleTemp
+                                                                                                            }
+                                                                                                        } else {
+                                                                                                            return sub;
+                                                                                                        }
+                                                                                                    })
+                                                                                                })
+                                                                                            } else {
+                                                                                                return sect;
+                                                                                            }
+                                                                                        })
+                                                                                    )
+                                                                                    setSubTitleEditID(null);
+                                                                                    setSubTitleTemp(null);
+                                                                                }} />
+                                                                                <button onMouseDown={(e) => { e.preventDefault() }} onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSections(prevSections =>
                                                                                         prevSections.map((sect) => {
@@ -758,7 +922,7 @@ function BodyContent({ doc, onBack }) {
                                                                                 >
                                                                                     <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
                                                                                 </button>
-                                                                                <button onClick={(e) => {
+                                                                                <button onMouseDown={(e) => { e.preventDefault() }} onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSubTitleEditID(null);
                                                                                     setSubTitleTemp(null);
@@ -944,8 +1108,8 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
-            {showUploadModal && 
-                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />
+            {showUploadModal &&
+                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} setFileName={setFileName} />
             }
             {showConfModal &&
                 <div className={styles.confModalOverlay}>
@@ -994,6 +1158,7 @@ function BodyContent({ doc, onBack }) {
                                         method: 'POST',
                                         body: data
                                     })
+                                    onBack();
                                 }}
                             >
                                 Save Document

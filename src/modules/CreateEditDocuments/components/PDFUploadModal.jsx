@@ -1,6 +1,6 @@
 import styles from "../styles/PDFModal.module.css";
 import { useState } from "react";
-const BodyContent = ({ setShowUploadModal, setFile }) => {
+const BodyContent = ({ setShowUploadModal, setFile, setFileName }) => {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [tempFile, setTempFile] = useState(null)
     return (
@@ -53,8 +53,9 @@ const BodyContent = ({ setShowUploadModal, setFile }) => {
                         disabled={!tempFile}
                         onClick={(e) => {
                             e.preventDefault()
-
+                            console.log(tempFile)
                             setFile(tempFile)
+                            setFileName(tempFile.name)
                             setShowUploadModal(false)
                         }}
                     >

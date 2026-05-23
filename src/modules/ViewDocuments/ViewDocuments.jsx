@@ -138,9 +138,41 @@ const BodyContent = () => {
         return dbDocs.find((d) => d.id === selectedDocId) ?? null;
     }, [dbDocs, selectedDocId]);
 
-    const selectedPdfUrl = selectedDoc?.pdf_filename
+    const selectedPdfPreviewUrl = selectedDoc?.pdf_filename
         ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}#view=FitH&toolbar=1&navpanes=0`
         : "#";
+
+    const selectedPdfDownloadUrl = selectedDoc?.pdf_filename
+        ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}`
+        : "#";
+
+    const handleDownloadPdf = async () => {
+        if (!selectedDoc?.pdf_filename) return;
+
+        try {
+            const response = await fetch(selectedPdfDownloadUrl);
+
+            if (!response.ok) {
+                throw new Error("Failed to download PDF.");
+            }
+
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = selectedDoc.pdf_filename;
+
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error("Download failed:", error);
+            alert("Failed to download the PDF. Please try again.");
+        }
+    };
 
     const handleNextPage = () => {
         setCurrentPage((p) => Math.min(p + 1, totalPages));
@@ -151,11 +183,11 @@ const BodyContent = () => {
     };
 
     return (
-        <div className={styles.policies}>
+        <div className={`${styles.policies} ${isPdfViewActive ? styles.pdfActive : ""}`}>
             <div className={styles.bodyContentContainer}>
                 {/* LEFT */}
                 <div className={styles.sideDocumentContainer}>
-                    <h2>Documents</h2>
+                    <h2>View Documents</h2>
 
                     <div className={styles.searchBarContainer}>
                         <SearchBar
@@ -318,47 +350,44 @@ const BodyContent = () => {
                         )}
 
                         <div className={styles.documentButtonsContainer}>
-                            <button
-                                className={`${styles.documentButton} ${isPdfViewActive ? styles.documentButtonSelected : ""}`}
-                                onClick={() => setIsPdfViewActive(true)}
-                                disabled={!selectedDocId || isPdfViewActive}
-                                type="button"
-                            >
-                                {isPdfViewActive ? "View Mode" : "View PDF"}
-                            </button>
+                            {!isPdfViewActive && (
+                                <button
+                                    className={styles.documentButton}
+                                    onClick={() => setIsPdfViewActive(true)}
+                                    disabled={!selectedDocId}
+                                    type="button"
+                                >
+                                    View PDF
+                                </button>
+                            )}
 
                             {isPdfViewActive && selectedDoc && (
                                 <a
                                     className={styles.documentButton}
-                                    href={selectedPdfUrl}
+                                    href={selectedPdfPreviewUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                 >
-                                    Open PDF in New Tab
+                                    Open in New Tab
                                 </a>
                             )}
 
-                            <a
+                            <button
                                 className={styles.documentButton}
-                                href={selectedPdfUrl}
-                                download
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                onClick={(e) => {
-                                    if (!selectedDoc?.pdf_filename) e.preventDefault();
-                                }}
-                                aria-disabled={!selectedDocId}
+                                onClick={handleDownloadPdf}
+                                disabled={!selectedDocId}
+                                type="button"
                                 style={{
-                                    pointerEvents: selectedDocId ? "auto" : "none",
                                     opacity: selectedDocId ? 1 : 0.5,
+                                    cursor: selectedDocId ? "pointer" : "not-allowed",
                                 }}
                             >
                                 Download PDF
-                            </a>
+                            </button>
 
                             {isPdfViewActive && (
                                 <button
-                                    className={styles.documentButton}
+                                    className={`${styles.documentButton} ${styles.backPdfButton}`}
                                     onClick={() => {
                                         setIsPdfViewActive(false);
                                         setIsHeaderCollapsed(false);
@@ -368,12 +397,13 @@ const BodyContent = () => {
                                     Back
                                 </button>
                             )}
-
                             {isPdfViewActive && selectedDoc && (
                                 <button
                                     type="button"
-                                    className={styles.documentButton}
-                                    onClick={() => setIsHeaderCollapsed(!isHeaderCollapsed)}
+                                    className={`${styles.documentButton} ${styles.headerToggleButton}`}
+                                    onClick={() => setIsHeaderCollapsed((prev) => !prev)}
+                                    title={isHeaderCollapsed ? "Show document header" : "Hide document header"}
+                                    aria-label={isHeaderCollapsed ? "Show document header" : "Hide document header"}
                                 >
                                     {isHeaderCollapsed ? "↓" : "↑"}
                                 </button>
@@ -387,7 +417,7 @@ const BodyContent = () => {
                                 <div className={styles.pdfViewerContainer}>
                                     <iframe
                                         className={styles.pdfIframe}
-                                        src={selectedPdfUrl}
+                                        src={selectedPdfPreviewUrl}
                                         title={selectedDoc.title}
                                     />
                                 </div>

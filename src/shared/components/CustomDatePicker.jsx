@@ -28,22 +28,29 @@ export default function CustomDatePicker({
               /* ── Input text color ── */
               "& .MuiInputBase-input": {
                 color: "#ffffff",
-                fontSize: "1rem !important",
+                fontSize: "0.85rem",
                 padding: "0",
-                margin: "0",
+                // margin: "0",
               },
 
               /* Calendar icon color */
               "& .MuiSvgIcon-root": {
-                color: "#1f4f95",
+                color: "#ffffff",
                 width: "1.2rem",
-                height: "auto"
+                height: "auto",
+                padding: 0,
+                margin: 0
+              },
+
+              "& .MuiOutlinedInput-root": {
+                paddingRight: "0.1rem",
               },
 
               /* Outlined variant */
               "& .MuiOutlinedInput-notchedOutline": {
-                borderWidth: "3px",
-                borderRadius: "0.3rem"
+                border: "none",
+                // width: "100%",
+                // borderRadius: "0.3rem"
               },
               "& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline":
               {
@@ -73,27 +80,3 @@ export default function CustomDatePicker({
     </LocalizationProvider>
   );
 }
-
-
-/* ─────────────────────────────────────────────
-   USAGE EXAMPLE  (delete before shipping)
-   ─────────────────────────────────────────────
-import dayjs from "dayjs";
-import CustomDatePicker from "./CustomDatePicker";
-
-function App() {
-  const [date, setDate] = useState(dayjs());
-
-  return (
-    <div style={{ background: "#1a1a2e", padding: 40 }}>
-      <CustomDatePicker
-        label="Select date"
-        value={date}
-        onChange={setDate}
-        // Override padding for this instance:
-        sx={{ "& input": { padding: "6px 10px" } }}
-      />
-    </div>
-  );
-}
-*/
