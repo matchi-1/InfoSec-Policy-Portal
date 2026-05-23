@@ -36,6 +36,30 @@
   overflow: hidden;
 }
 
+/* Body container scrollbar */
+.bodyContentContainer {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary-blue) transparent;
+}
+
+.bodyContentContainer::-webkit-scrollbar {
+  width: 0.35rem;
+  height: 0.35rem;
+}
+
+.bodyContentContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bodyContentContainer::-webkit-scrollbar-thumb {
+  background-color: var(--primary-blue);
+  border-radius: 999px;
+}
+
+.bodyContentContainer::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in srgb, var(--primary-blue) 85%, black);
+}
+
 /* =========================
    LEFT: DOCUMENT LIST
    ========================= */
