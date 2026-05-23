@@ -77,7 +77,7 @@ const BodyContent = () => {
                             </div>
 
                             <div className={styles.noticeFooter}>
-                                <span>Last updated by</span>
+                                <span>Posted by</span>
                                 <p>{pinnedNotice.updatedBy}</p>
                             </div>
                         </div>

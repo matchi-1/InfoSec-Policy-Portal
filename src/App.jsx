@@ -315,6 +315,7 @@ function App() {
     Policies: "Policies",
     "Recent News": "RecentNews",
     "User Management": "UserManagement",
+    "Edit Home/News": "EditHomeNews",
   };
 
   const moduleSubmoduleFileNames = {
@@ -322,6 +323,7 @@ function App() {
     Documents: {},
     Policies: {},
     "Recent News": {},
+    "Edit Home/News": {},
     "User Management": {
       "Role Management": "RoleManagement",
     },
@@ -332,6 +334,7 @@ function App() {
     Documents: "Create/Edit Documents",
     Policies: "View Documents",
     "Recent News": "Recent News",
+    "Edit Home/News": "Edit Home/News",
     "User Management": "User Management",
   };
 
@@ -417,6 +420,7 @@ function App() {
 
     { type: "divider", id: "admin-divider", label: "Admin Modules" },
     { type: "module", id: "Documents", file: `${moduleFileNames.Documents}.png` },
+    { type: "module", id: "Edit Home/News", file: `${moduleFileNames["Edit Home/News"]}.png` },
     { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
   ];
 
