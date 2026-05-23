@@ -5,63 +5,71 @@ const BodyContent = () => {
     return (
         <div className={styles.home}>
             <div className={styles.bodyContentContainer}>
-                <div className={styles.homeHeader}>
-                    <p className={styles.homeEyebrow}>InfoSec Department Portal</p>
-                    <h1>Welcome to the Information Security Portal</h1>
+                <div className={styles.headerSection}>
+                    <p className={styles.pageLabel}>Home</p>
+                    <h1>Information Security Portal</h1>
 
                     {/* EDIT THIS: Replace this placeholder description with the real purpose/description of the app. */}
-                    <p className={styles.homeDescription}>
-                        This portal serves as a centralized space for viewing, managing, and
-                        maintaining information security policies, documents, updates, and
-                        department-related resources.
+                    <p className={styles.pageDescription}>
+                        This portal provides a centralized space for viewing information
+                        security documents, managing policy-related content, and accessing
+                        department updates based on assigned user permissions.
                     </p>
                 </div>
 
-                <div className={styles.homeInfoGrid}>
-                    <div className={`${styles.homeCard} ${styles.homeCardWide}`}>
-                        <p className={styles.homeCardLabel}>Company Mission</p>
+                <div className={styles.contentGrid}>
+                    <section className={styles.infoCard}>
+                        <div className={styles.cardHeader}>
+                            <p>Company Mission</p>
+                        </div>
 
                         {/* EDIT THIS: Replace this with the real company mission statement. */}
-                        <p className={styles.homeCardText}>
-                            To provide secure, reliable, and accessible information systems
-                            that support the organization&apos;s goals while protecting its
-                            people, data, and digital assets.
+                        <p className={styles.cardText}>
+                            To protect organizational information assets by promoting secure,
+                            reliable, and responsible use of technology across all departments.
                         </p>
-                    </div>
+                    </section>
 
-                    <div className={`${styles.homeCard} ${styles.homeCardWide}`}>
-                        <p className={styles.homeCardLabel}>Company Vision</p>
+                    <section className={styles.infoCard}>
+                        <div className={styles.cardHeader}>
+                            <p>Company Vision</p>
+                        </div>
 
                         {/* EDIT THIS: Replace this with the real company vision statement. */}
-                        <p className={styles.homeCardText}>
-                            To become a trusted and security-conscious organization where
-                            information protection is embedded in every process, system, and
-                            decision.
+                        <p className={styles.cardText}>
+                            To build a security-conscious organization where information
+                            protection is embedded in every system, process, and decision.
                         </p>
-                    </div>
+                    </section>
 
-                    <div className={styles.homeCard}>
-                        <p className={styles.homeCardLabel}>Core Values</p>
+                    <section className={`${styles.infoCard} ${styles.valuesCard}`}>
+                        <div className={styles.cardHeader}>
+                            <p>Core Values</p>
+                        </div>
 
                         {/* EDIT THIS: Replace these placeholder values with the real company core values. */}
-                        <div className={styles.homeValuesList}>
-                            <span>Integrity</span>
-                            <span>Accountability</span>
-                            <span>Confidentiality</span>
-                            <span>Security Awareness</span>
+                        <div className={styles.valuesList}>
+                            <div className={styles.valueItem}>
+                                <span>01</span>
+                                <p>Integrity</p>
+                            </div>
+
+                            <div className={styles.valueItem}>
+                                <span>02</span>
+                                <p>Accountability</p>
+                            </div>
+
+                            <div className={styles.valueItem}>
+                                <span>03</span>
+                                <p>Confidentiality</p>
+                            </div>
+
+                            <div className={styles.valueItem}>
+                                <span>04</span>
+                                <p>Security Awareness</p>
+                            </div>
                         </div>
-                    </div>
-
-                    <div className={styles.homeCard}>
-                        <p className={styles.homeCardLabel}>About This App</p>
-
-                        {/* EDIT THIS: Replace this with a more specific description of the portal once finalized. */}
-                        <p className={styles.homeCardText}>
-                            Users can access approved InfoSec documents, review recent
-                            department announcements, and manage policy-related content based
-                            on their assigned permissions.
-                        </p>
-                    </div>
+                    </section>
                 </div>
             </div>
         </div>
