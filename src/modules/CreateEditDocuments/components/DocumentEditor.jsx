@@ -43,6 +43,7 @@ function BodyContent({ doc, onBack }) {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
+    const [fileName, setFileName] = useState(doc.pdf_filename)
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
@@ -322,6 +323,10 @@ function BodyContent({ doc, onBack }) {
                                             type="text" autoFocus
                                             value={currTitleTemp}
                                             onChange={(e) => setCurrTitleTemp(e.target.value)}
+                                            onBlur={() =>{
+                                                setEditingTitle(false);
+                                                setCurrTitle(currTitleTemp);
+                                            }}
                                         />
                                         <button
                                             onClick={() => {
@@ -376,6 +381,10 @@ function BodyContent({ doc, onBack }) {
                                             e.target.style.height = "auto";
                                             e.target.style.height = `${e.target.scrollHeight}px`;
                                         }}
+                                        onBlur={() =>{
+                                                setEditingDesc(false);
+                                                setCurrDesc(currDescTemp);
+                                            }}
                                         rows={5}
                                     />
                                     <button
@@ -572,14 +581,23 @@ function BodyContent({ doc, onBack }) {
                             {
                                 (!viewingPDF) ? (
                                     <button onClick={() => {
-                                        doc.pdf_filename == "null" ? alert("no pdfs?") : setViewingPDF(true)
+                                        fileName == "null" ? alert("no pdfs?") : setViewingPDF(true)
                                     }}>View PDF</button>
                                 ) : (
                                     <button onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
                             <button onClick={() => { setShowUploadModal(true) }}>Upload PDF</button>
-                            {fileToUpload != null ? <p>*not saved</p> : null}
+                            {fileName != "null" ? (
+                                <p
+                                    onClick={() => {
+                                        setFileName("null")
+                                        setFileToUpload(null)
+                                    }}
+                                >{fileName}<span>  x</span></p> //the 'x' in the span could be a button prob -harley
+                            ):(
+                                null
+                            )}
                         </div>
                     </div>
                     {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
@@ -622,11 +640,28 @@ function BodyContent({ doc, onBack }) {
                                                         <input type="text" autoFocus value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()}
                                                             onKeyDown={(e) => { e.stopPropagation(); }}
                                                             onMouseDown={(e) => { stopPropagation(); }}
+                                                            onBlur={() => {
+                                                                const newSections = sections.map((sect) => {
+                                                                        if (sect.id === sectionTitleEditID) {
+                                                                            return {
+                                                                                ...sect,
+                                                                                title: sectionTitleTemp
+                                                                            }
+                                                                        } else {
+                                                                            return sect;
+                                                                        }
+                                                                    });
+                                                                    setSections(newSections);
+                                                                    console.log("(debug) new sections: ", sections)
+                                                                    setSectionTitleEditID(null);
+                                                                    setSectionTitleTemp(null);
+                                                            }}
                                                         />
                                                         <div>
                                                             <button
                                                                 className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
                                                                 onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onMouseDown={(e) => {e.preventDefault()}}
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     const newSections = sections.map((sect) => {
@@ -652,6 +687,7 @@ function BodyContent({ doc, onBack }) {
                                                             <button
                                                                 className={`${styles.iconActionBtn} ${styles.trashActionBtn}`}
                                                                 onKeyDown={(e) => { e.stopPropagation(); }}
+                                                                onMouseDown={(e) => {e.preventDefault()}}
                                                                 onClick={(e) => { e.stopPropagation(); setSectionTitleEditID(null); setSectionTitleTemp(null); }}
                                                                 aria-label="Cancel"
                                                                 title="Cancel"
@@ -726,8 +762,32 @@ function BodyContent({ doc, onBack }) {
                                                                     sub.id === subTitleEditID ?
                                                                         (
                                                                             <div>
-                                                                                <input type="text" autoFocus value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() }} />
-                                                                                <button onClick={(e) => {
+                                                                                <input type="text" autoFocus value={subTitleTemp} onChange={(e) => { setSubTitleTemp(e.target.value) }} onClick={(e) => { e.stopPropagation() }} onMouseDown={(e) => { e.stopPropagation() } } onBlur={() => {
+                                                                                    setSections(prevSections =>
+                                                                                        prevSections.map((sect) => {
+                                                                                            if (sect.id === openSectionId) {
+                                                                                                return ({
+                                                                                                    ...sect,
+                                                                                                    subsections: sect.subsections.map((sub) => {
+                                                                                                        if (sub.id === subTitleEditID) {
+                                                                                                            return {
+                                                                                                                ...sub,
+                                                                                                                title: subTitleTemp
+                                                                                                            }
+                                                                                                        } else {
+                                                                                                            return sub;
+                                                                                                        }
+                                                                                                    })
+                                                                                                })
+                                                                                            } else {
+                                                                                                return sect;
+                                                                                            }
+                                                                                        })
+                                                                                    )
+                                                                                    setSubTitleEditID(null);
+                                                                                    setSubTitleTemp(null);
+                                                                                }} />
+                                                                                <button onMouseDown={(e)=>{e.preventDefault()}} onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSections(prevSections =>
                                                                                         prevSections.map((sect) => {
@@ -758,7 +818,7 @@ function BodyContent({ doc, onBack }) {
                                                                                 >
                                                                                     <img src="/icons/check-blue.png" alt="" className={styles.actionIcon} />
                                                                                 </button>
-                                                                                <button onClick={(e) => {
+                                                                                <button onMouseDown={(e)=>{e.preventDefault()}} onClick={(e) => {
                                                                                     e.stopPropagation();
                                                                                     setSubTitleEditID(null);
                                                                                     setSubTitleTemp(null);
@@ -945,7 +1005,7 @@ function BodyContent({ doc, onBack }) {
                 )
             }
             {showUploadModal && 
-                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />
+                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} setFileName={setFileName} />
             }
             {showConfModal &&
                 <div className={styles.confModalOverlay}>
@@ -994,6 +1054,7 @@ function BodyContent({ doc, onBack }) {
                                         method: 'POST',
                                         body: data
                                     })
+                                    onBack();
                                 }}
                             >
                                 Save Document

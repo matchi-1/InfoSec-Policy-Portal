@@ -32,7 +32,7 @@ const BodyContent = ({ setActiveSubModule }) => {
             setDbDocs(docs)
         }
         fetchDocuments();
-    }, [])
+    }, [selectedDocId])
 
     const getDocCategories = (doc) => {
         if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
@@ -145,7 +145,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                     doc={selectedDoc}
                     onBack={() => {
                         setSelectedDocId(null);
-                        if (setActiveSubModule) setActiveSubModule(null);
                     }}
                 />
             ) : (

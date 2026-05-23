@@ -417,8 +417,21 @@
 .buttonsContainer > p {
   margin: 0;
   font-size: 0.8rem;
-  color: #c35d4c;
+  color: #3d3d3d;
   font-weight: 600;
+}
+
+.buttonsContainer > p:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.buttonsContainer > p > span {
+  visibility: hidden;
+}
+
+.buttonsContainer > p:hover > span {
+  visibility: visible;
 }
 
 /* =========================
