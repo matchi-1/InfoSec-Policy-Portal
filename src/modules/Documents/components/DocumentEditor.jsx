@@ -546,13 +546,13 @@ function BodyContent({ doc, onBack }) {
                                     <CustomDatePicker
                                         value={selectDate}
                                         onChange={(date) => setSelectDate(date)}
-                                        slotProps={{ 
+                                        slotProps={{
                                             field: {
                                                 size: "small",
                                                 fontSize: "0.5rem",
                                                 fullWidth: true,
                                             }
-                                         }}
+                                        }}
                                     />
                                     {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                                     <img
@@ -946,29 +946,55 @@ function BodyContent({ doc, onBack }) {
             }
             {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />}
             {showConfModal &&
-                <div className={styles.confModal}>
-                    <p>are u sure</p>
-                    <button onClick={async () => {
-                        setShowConfModal(false)
-                        const data = new FormData()
-                        data.append('id', doc.id)
-                        data.append('title', currTitle)
-                        data.append('details', currDesc)
-                        // author and review stuff
-                        data.append('lastReviewed', selectDate.toISOString())
-                        data.append('tags', JSON.stringify(currTags))
-                        data.append('sections', JSON.stringify(sections))
-                        data.append('authoredBy', authoredBy)
-                        data.append('reviewedBy', reviewedBy)
-                        if (fileToUpload) {
-                            data.append('pdf_file', fileToUpload)
-                        }
-                        const resp = await fetch(`${backend_base_url}/documents/create-update-doc/`, {
-                            method: 'POST',
-                            body: data
-                        })
-                    }}>yes</button>
-                    <button onClick={() => { setShowConfModal(false) }}>no</button>
+                <div className={styles.confModalOverlay}>
+                    <div className={styles.confModal}>
+                        <div className={styles.confModalHeader}>
+                            <h3>Save Changes?</h3>
+                            <p>
+                                This will update the document and overwrite the current version.
+                            </p>
+                        </div>
+
+                        <div className={styles.confModalButtons}>
+                            <button
+                                className={styles.cancelBtn}
+                                onClick={() => {
+                                    setShowConfModal(false)
+                                }}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                className={styles.confirmBtn}
+                                onClick={async () => {
+                                    setShowConfModal(false)
+
+                                    const data = new FormData()
+
+                                    data.append('id', doc.id)
+                                    data.append('title', currTitle)
+                                    data.append('details', currDesc)
+                                    data.append('lastReviewed', selectDate.toISOString())
+                                    data.append('tags', JSON.stringify(currTags))
+                                    data.append('sections', JSON.stringify(sections))
+                                    data.append('authoredBy', authoredBy)
+                                    data.append('reviewedBy', reviewedBy)
+
+                                    if (fileToUpload) {
+                                        data.append('pdf_file', fileToUpload)
+                                    }
+
+                                    await fetch(`${backend_base_url}/documents/create-update-doc/`, {
+                                        method: 'POST',
+                                        body: data
+                                    })
+                                }}
+                            >
+                                Save Document
+                            </button>
+                        </div>
+                    </div>
                 </div>
             }
         </div>

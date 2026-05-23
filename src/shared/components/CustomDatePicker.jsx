@@ -26,7 +26,7 @@ export default function CustomDatePicker({
 
             sx: {
               /* ── Input text color ── */
-              "& .field": {
+              "& .MuiInputBase-input": {
                 color: "#ffffff",
                 fontSize: "1rem !important",
                 padding: "0",
