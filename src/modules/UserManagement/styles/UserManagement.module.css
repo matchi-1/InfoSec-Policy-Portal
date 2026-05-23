@@ -17,7 +17,7 @@
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
-  overflow: visible;
+  overflow: scroll;
 }
 
 .topGlow {
@@ -126,7 +126,7 @@
 .tableHeader,
 .tableRow {
   display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(12rem, 0.95fr);
+  grid-template-columns: minmax(0, 1.4fr) minmax(16rem, 1fr);
   align-items: center;
 }
 
@@ -207,10 +207,11 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
+  width: 100%;
 }
 
 .roleDropdown {
-  width: min(100%, 11.2rem);
+  width: 100%;
 }
 
 .footerBar {
@@ -323,7 +324,7 @@
 
   .tableHeader,
   .tableRow {
-    grid-template-columns: minmax(0, 1.6fr) minmax(10rem, 0.9fr);
+    grid-template-columns: minmax(0, 1.3fr) minmax(12rem, 1fr);
   }
 }
 

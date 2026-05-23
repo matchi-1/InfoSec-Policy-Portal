@@ -2,6 +2,7 @@ import React, { useMemo, useState, useEffect } from "react";
 import styles from "./styles/UserManagement.module.css";
 import Button from "../../shared/components/Button";
 import Dropdown from "../../shared/components/Dropdown";
+import { useConfirmationModal } from "../../shared/components/ConfirmationModal";
 
 const AVATAR_COLORS = [
   "#d7e2ff",
@@ -12,7 +13,8 @@ const AVATAR_COLORS = [
   "#f2dfd7",
 ];
 
-const formatUserCount = (count, total) => `Showing ${count} of ${total.toLocaleString()} total users`;
+const formatUserCount = (count, total) =>
+  `Showing ${count} of ${total.toLocaleString()} total users`;
 
 const getInitials = (firstName, lastName, email) => {
   const firstInitial = firstName?.trim()?.[0] ?? "";
@@ -100,6 +102,7 @@ const BodyContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [draftRoles, setDraftRoles] = useState({});
   const [committedRoles, setCommittedRoles] = useState({});
+  const { askForConfirmation, confirmationModal } = useConfirmationModal();
 
   useEffect(() => {
     const fetchAllRoles = async () => {
@@ -404,13 +407,20 @@ const BodyContent = () => {
               className={styles.saveButton}
               variant="primary"
               size="lg"
-              onClick={handleSaveChanges}
+              onClick={() =>
+                askForConfirmation(
+                  handleSaveChanges,
+                  "Save user role updates for selected user/s?",
+                )
+              }
               disabled={!hasUnsavedChanges || isSavingChanges}
             >
               {isSavingChanges ? "Saving..." : "Save Changes"}
             </Button>
           </div>
         </div>
+
+        {confirmationModal}
       </div>
     </div>
   );
