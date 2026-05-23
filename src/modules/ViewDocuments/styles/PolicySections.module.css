@@ -403,3 +403,75 @@
     font-size: 0.75rem;
   }
 }
+
+/* =====================================================
+   POLICY SECTIONS RESPONSIVE FIX
+   ===================================================== */
+
+@media (max-width: 1024px) {
+  .policyAccordion {
+    height: auto;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .policyPanel {
+    flex-direction: column;
+  }
+
+  .policySubnav {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    max-height: none;
+
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    border-right: none;
+    border-bottom: 1px solid #94A9C6;
+  }
+
+  .policySubnavItem {
+    width: auto;
+    min-width: 11rem;
+    max-width: 14rem;
+
+    flex: 0 0 auto;
+
+    border-bottom: none;
+    border-right: 1px solid #bdc8d6;
+
+    font-size: 0.78rem;
+    line-height: 1.05rem;
+    padding: 0.75rem;
+
+    white-space: normal;
+  }
+
+  .policySubnavItemActive {
+    border-left: none;
+    border-top: 0.2rem solid var(--primary-blue);
+  }
+
+  .policyContent {
+    width: 100%;
+    min-height: 18rem;
+    max-height: 24rem;
+  }
+
+  .policyContentInner {
+    padding: 0.85rem;
+  }
+
+  .policyContentTitle {
+    font-size: 0.95rem;
+    line-height: 1.25rem;
+  }
+
+  .policyContentText {
+    font-size: 0.8rem;
+    line-height: 1.3rem;
+  }
+}

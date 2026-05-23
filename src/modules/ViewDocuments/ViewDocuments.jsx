@@ -159,7 +159,7 @@ const BodyContent = () => {
             <div className={styles.bodyContentContainer}>
                 {/* LEFT */}
                 <div className={styles.sideDocumentContainer}>
-                    <h2>Documents</h2>
+                    <h2>View Documents</h2>
 
                     <div className={styles.searchBarContainer}>
                         <SearchBar
