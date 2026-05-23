@@ -240,11 +240,20 @@ const BodyContent = () => {
 
                 <div className={styles.editorPanel}>
                     <div className={styles.editorPanelTop}>
-                        <p className={styles.modeNotice}>
-                            {isEditMode
-                                ? "Editing. Save changes, cancel, or reset to last saved."
-                                : "Read only. Click Edit Content to make changes."}
-                        </p>
+                        <div className={styles.modeNotice}>
+                            <span
+                                className={`${styles.modeBadge} ${isEditMode ? styles.modeBadgeEditing : styles.modeBadgeReadonly
+                                    }`}
+                            >
+                                {isEditMode ? "Editing" : "Read Only"}
+                            </span>
+
+                            <span className={styles.modeDescription}>
+                                {isEditMode
+                                    ? "Save changes, cancel, or reset to last saved."
+                                    : "Click Edit Content to make changes."}
+                            </span>
+                        </div>
 
                         <div className={styles.actionButtons}>
                             {!isEditMode ? (
