@@ -384,7 +384,7 @@ const BodyContent = () => {
 
                         <section className={styles.editorCard}>
                             <div className={styles.cardHeader}>
-                                <p>Recent News Content</p>
+                                <p>Recent News Content (Pinned notice)</p>
                             </div>
 
                             <div className={styles.cardBody}>

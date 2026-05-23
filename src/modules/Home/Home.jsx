@@ -6,8 +6,10 @@ const BodyContent = () => {
         <div className={styles.home}>
             <div className={styles.bodyContentContainer}>
                 <div className={styles.headerSection}>
-                    <p className={styles.pageLabel}>Home</p>
-                    <h1>Information Security Portal</h1>
+                    <div className={styles.headerTitleBlock}>
+                        <p className={styles.pageLabel}>Home</p>
+                        <h1>Information Security Portal</h1>
+                    </div>
 
                     {/* EDIT THIS: Replace this placeholder description with the real purpose/description of the app. */}
                     <p className={styles.pageDescription}>

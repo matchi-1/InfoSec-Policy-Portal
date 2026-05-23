@@ -23,7 +23,7 @@ const BodyContent = ({ setActiveSubModule }) => {
     // local state so delete works in UI for dummy data
     // const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
     const [dbDocs, setDbDocs] = useState([]);
-    useEffect(() => { 
+    useEffect(() => {
         const fetchDocuments = async () => {
             console.log("(debug) fetching docs from backend...")
             const resp = await fetch(backend_base_url + "/documents/get-documents/")
@@ -149,8 +149,14 @@ const BodyContent = ({ setActiveSubModule }) => {
                     }}
                 />
             ) : (
-                <div className={styles.bodyContentContainer}>
-                    <h1>Documents</h1>
+                <div className={styles.documentsListView}>
+                    <header className={styles.headerSection}>
+                        <p className={styles.pageLabel}>Document Administration</p>
+                        <h1>Create/Edit Documents</h1>
+                        <p className={styles.pageDescription}>
+                            Search, filter, create, edit, and manage information security documents.
+                        </p>
+                    </header>
 
                     <div className={styles.searchFilterCreate}>
                         <div className={styles.searchBarContainer}>
@@ -380,7 +386,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                                                 <td>{categories.length ? categories.join(", ") : "—"}</td>
                                                 <td>{doc.authorName || "—"}</td>
                                                 <td>{doc.reviewerName || "—"}</td>
-                                                <td>{doc.lastUpdated?new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "—"}</td>
+                                                <td>{doc.lastUpdated ? new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "—"}</td>
 
                                                 <td>
                                                     <button
