@@ -931,3 +931,15 @@
     min-height: calc(100dvh - 7rem);
   }
 }
+
+/* Small phones: return document cards to 1 per row */
+@media (max-width: 560px) {
+  .documentsContainer {
+    grid-template-columns: 1fr;
+    max-height: 22rem;
+  }
+
+  .documentItem {
+    min-height: 5.5rem;
+  }
+}
