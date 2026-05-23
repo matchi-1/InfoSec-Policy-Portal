@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import styles from "./styles/Policies.module.css";
+import styles from "./styles/ViewDocuments.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import PolicySections from "./components/PolicySections";
 import { highlightText } from "../../utils/highlightText";

@@ -313,8 +313,8 @@ function App() {
 
   const moduleFileNames = {
     Home: "Home",
-    Documents: "Documents",
-    Policies: "Policies",
+    "Create Edit Documents": "CreateEditDocuments",
+    "View Documents": "ViewDocuments",
     "Recent News": "RecentNews",
     "User Management": "UserManagement",
     "Edit Home/News": "EditHomeNews",
@@ -322,8 +322,8 @@ function App() {
 
   const moduleSubmoduleFileNames = {
     Home: {},
-    Documents: {},
-    Policies: {},
+    "Create Edit Documents": {},
+    "View Documents": {},
     "Recent News": {},
     "Edit Home/News": {},
     "User Management": {
@@ -333,8 +333,8 @@ function App() {
 
   const moduleDisplayNames = {
     Home: "Home",
-    Documents: "Create/Edit Documents",
-    Policies: "View Documents",
+    "Create Edit Documents": "Create/Edit Documents",
+    "View Documents": "View Documents",
     "Recent News": "Recent News",
     "Edit Home/News": "Edit Home/News",
     "User Management": "User Management",
@@ -417,11 +417,11 @@ function App() {
   const modulesIcons = [
     { type: "divider", id: "client-divider", label: "Client Modules" },
     { type: "module", id: "Home", file: `${moduleFileNames.Home}.png` },
-    { type: "module", id: "Policies", file: `${moduleFileNames.Policies}.png` },
+    { type: "module", id: "View Documents", file: `${moduleFileNames["View Documents"]}.png` },
     { type: "module", id: "Recent News", file: `${moduleFileNames["Recent News"]}.png` },
 
     { type: "divider", id: "admin-divider", label: "Admin Modules" },
-    { type: "module", id: "Documents", file: `${moduleFileNames.Documents}.png` },
+    { type: "module", id: "Create Edit Documents", file: `${moduleFileNames["Create Edit Documents"]}.png` },
     { type: "module", id: "Edit Home/News", file: `${moduleFileNames["Edit Home/News"]}.png` },
     { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
   ];

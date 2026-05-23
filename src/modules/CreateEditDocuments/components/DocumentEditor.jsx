@@ -944,7 +944,9 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
-            {showUploadModal && <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />}
+            {showUploadModal && 
+                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} />
+            }
             {showConfModal &&
                 <div className={styles.confModalOverlay}>
                     <div className={styles.confModal}>

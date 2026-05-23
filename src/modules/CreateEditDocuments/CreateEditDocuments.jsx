@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from "react";
-import styles from "./styles/Documents.module.css";
+import styles from "./styles/CreateEditDocuments.module.css";
 import SearchBar from "../../shared/components/SearchBar";
 import DocumentEditor from "./components/DocumentEditor";
 import { highlightText } from "../../utils/highlightText";
