@@ -146,6 +146,34 @@ const BodyContent = () => {
         ? `${backend_base_url}/documents/get-pdf/${encodeURIComponent(selectedDoc.pdf_filename)}`
         : "#";
 
+    const handleDownloadPdf = async () => {
+        if (!selectedDoc?.pdf_filename) return;
+
+        try {
+            const response = await fetch(selectedPdfDownloadUrl);
+
+            if (!response.ok) {
+                throw new Error("Failed to download PDF.");
+            }
+
+            const blob = await response.blob();
+            const blobUrl = window.URL.createObjectURL(blob);
+
+            const link = document.createElement("a");
+            link.href = blobUrl;
+            link.download = selectedDoc.pdf_filename;
+
+            document.body.appendChild(link);
+            link.click();
+
+            link.remove();
+            window.URL.revokeObjectURL(blobUrl);
+        } catch (error) {
+            console.error("Download failed:", error);
+            alert("Failed to download the PDF. Please try again.");
+        }
+    };
+
     const handleNextPage = () => {
         setCurrentPage((p) => Math.min(p + 1, totalPages));
     };
@@ -344,21 +372,18 @@ const BodyContent = () => {
                                 </a>
                             )}
 
-                            <a
+                            <button
                                 className={styles.documentButton}
-                                href={selectedPdfDownloadUrl}
-                                download={selectedDoc?.pdf_filename}
-                                onClick={(e) => {
-                                    if (!selectedDoc?.pdf_filename) e.preventDefault();
-                                }}
-                                aria-disabled={!selectedDocId}
+                                onClick={handleDownloadPdf}
+                                disabled={!selectedDocId}
+                                type="button"
                                 style={{
-                                    pointerEvents: selectedDocId ? "auto" : "none",
                                     opacity: selectedDocId ? 1 : 0.5,
+                                    cursor: selectedDocId ? "pointer" : "not-allowed",
                                 }}
                             >
                                 Download PDF
-                            </a>
+                            </button>
 
                             {isPdfViewActive && (
                                 <button
