@@ -4,17 +4,8 @@ import Button from "../../../shared/components/Button";
 import Dropdown from "../../../shared/components/Dropdown";
 import { useConfirmationModal } from "../../../shared/components/ConfirmationModal";
 
-const APP_MODULES = [
-  "Home",
-  "Documents",
-  "Policies",
-  "RecentNews",
-  "Others",
-  "UserManagement",
-];
-
-const createDefaultModuleState = () =>
-  Object.fromEntries(APP_MODULES.map((name) => [name, name === "Home"]));
+const createDefaultModuleState = (moduleNames = []) =>
+  Object.fromEntries(moduleNames.map((name) => [name, name === "Home"]));
 
 const withFixedModules = (
   moduleState,
@@ -22,7 +13,7 @@ const withFixedModules = (
 ) => ({
   ...moduleState,
   Home: true,
-  ...(lockUserManagement ? { UserManagement: true } : {}),
+  ...(lockUserManagement ? { "User Management": true } : {}),
 });
 
 const normalizeRoleList = (payload) => {
@@ -35,15 +26,15 @@ const normalizeRoleList = (payload) => {
   }));
 };
 
-const toModuleState = (modules) => {
+const toModuleState = (modules, moduleNames = []) => {
   const fromApi = new Set(Array.isArray(modules) ? modules : []);
 
   if (fromApi.has("All")) {
-    return Object.fromEntries(APP_MODULES.map((name) => [name, true]));
+    return Object.fromEntries(moduleNames.map((name) => [name, true]));
   }
 
   return Object.fromEntries(
-    APP_MODULES.map((name) => [name, fromApi.has(name)]),
+    moduleNames.map((name) => [name, fromApi.has(name)]),
   );
 };
 
@@ -52,7 +43,7 @@ const getSelectedModules = (moduleState) =>
     .filter(([, enabled]) => Boolean(enabled))
     .map(([name]) => name);
 
-const BodyContent = () => {
+const BodyContent = ({ moduleFileNames }) => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
@@ -78,9 +69,24 @@ const BodyContent = () => {
     [roles, selectedRole],
   );
 
+  const moduleNames = useMemo(
+    () => Object.keys(moduleFileNames ?? {}),
+    [moduleFileNames],
+  );
+
+  const moduleLabelsByName = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.keys(moduleFileNames ?? {}).map((displayName) => [
+          displayName,
+          displayName,
+        ]),
+      ),
+    [moduleFileNames],
+  );
+
   const isAdminRole = selectedRoleMeta?.roleName === "Admin";
   const impactedUsers = selectedRoleMeta?.userCount ?? 0;
-  const moduleNames = APP_MODULES;
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -99,8 +105,8 @@ const BodyContent = () => {
 
         if (!normalizedRoles.length) {
           setSelectedRole("");
-          setSavedModules(createDefaultModuleState());
-          setDraftModules(createDefaultModuleState());
+          setSavedModules(createDefaultModuleState(moduleNames));
+          setDraftModules(createDefaultModuleState(moduleNames));
           return;
         }
 
@@ -114,7 +120,7 @@ const BodyContent = () => {
     };
 
     fetchRoles();
-  }, [backend_base_url]);
+  }, [backend_base_url, moduleNames]);
 
   useEffect(() => {
     if (!selectedRole) {
@@ -136,7 +142,7 @@ const BodyContent = () => {
         const payload = await resp.json();
         const roleDetail = payload?.data ?? payload;
         const nextModules = withFixedModules(
-          toModuleState(roleDetail?.modules ?? []),
+          toModuleState(roleDetail?.modules ?? [], moduleNames),
           {
             lockUserManagement:
               (roleDetail?.role_name ?? selectedRole) === "Admin",
@@ -151,7 +157,7 @@ const BodyContent = () => {
     };
 
     fetchRoleByName();
-  }, [backend_base_url, selectedRole]);
+  }, [backend_base_url, moduleNames, selectedRole]);
 
   const hasUnsavedChanges = useMemo(() => {
     return moduleNames.some(
@@ -169,7 +175,7 @@ const BodyContent = () => {
   const handleStartCreateRole = () => {
     setStatusMessage("");
     setErrorMessage("");
-    const createRoleModules = createDefaultModuleState();
+    const createRoleModules = createDefaultModuleState(moduleNames);
     setDraftModules(createRoleModules);
     setSavedModules(createRoleModules);
     setNewRoleName("");
@@ -318,7 +324,8 @@ const BodyContent = () => {
           <p className={styles.pageLabel}>System Administration</p>
           <h1>Role Management</h1>
           <p className={styles.pageDescription}>
-            Configure role-based module access and manage permissions assigned to user roles.
+            Configure role-based module access and manage permissions assigned
+            to user roles.
           </p>
         </header>
 
@@ -406,7 +413,7 @@ const BodyContent = () => {
                 moduleNames.map((moduleName) => {
                   const isHome = moduleName === "Home";
                   const isForcedAdminUM =
-                    isUserManagementLocked && moduleName === "UserManagement";
+                    isUserManagementLocked && moduleName === "User Management";
                   const checked =
                     isHome ||
                     isForcedAdminUM ||
@@ -418,7 +425,9 @@ const BodyContent = () => {
 
                   return (
                     <div key={moduleName} className={styles.permissionsRow}>
-                      <div className={styles.moduleName}>{moduleName}</div>
+                      <div className={styles.moduleName}>
+                        {moduleLabelsByName[moduleName] ?? moduleName}
+                      </div>
 
                       <label className={styles.checkboxCell}>
                         <input
@@ -475,7 +484,7 @@ const BodyContent = () => {
               isCreating ||
               (isNewRoleModalOpen
                 ? !newRoleName.trim() ||
-                getSelectedModules(draftModules).length === 0
+                  getSelectedModules(draftModules).length === 0
                 : !selectedRole || !hasUnsavedChanges)
             }
           >
