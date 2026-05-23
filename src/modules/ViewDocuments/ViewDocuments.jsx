@@ -372,6 +372,17 @@ const BodyContent = () => {
                                     Back
                                 </button>
                             )}
+                            {isPdfViewActive && selectedDoc && (
+                                <button
+                                    type="button"
+                                    className={`${styles.documentButton} ${styles.headerToggleButton}`}
+                                    onClick={() => setIsHeaderCollapsed((prev) => !prev)}
+                                    title={isHeaderCollapsed ? "Show document header" : "Hide document header"}
+                                    aria-label={isHeaderCollapsed ? "Show document header" : "Hide document header"}
+                                >
+                                    {isHeaderCollapsed ? "↓" : "↑"}
+                                </button>
+                            )}
                         </div>
                     </div>
 

@@ -658,6 +658,10 @@
     font-size: 1.15rem;
   }
 
+  .headerToggleButton {
+    display: none;
+  }
+
   .searchBarContainer {
     padding-right: 0;
   }
@@ -858,6 +862,11 @@
 
   .pdfActive .backPdfButton {
     min-width: 6rem;
+  }
+
+  .headerToggleButton {
+    min-width: 2.5rem;
+    padding: 0 0.65rem;
   }
 
   .pdfActive .documentContentContainer {
