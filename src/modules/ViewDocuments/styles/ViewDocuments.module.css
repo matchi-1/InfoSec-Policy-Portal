@@ -895,3 +895,33 @@ h2 {
     min-height: 5.5rem;
   }
 }
+
+/* Give the selected document area a document-like height on tablet/mobile */
+@media (max-width: 1024px) {
+  .rightContentContainer {
+    min-height: 34rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .documentContentContainer {
+    flex: 1;
+    min-height: 18rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .documentContentContainer > * {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .rightContentContainer {
+    min-height: 32rem;
+  }
+
+  .documentContentContainer {
+    min-height: 16rem;
+  }
+}

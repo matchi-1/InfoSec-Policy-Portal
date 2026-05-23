@@ -475,3 +475,9 @@
     line-height: 1.3rem;
   }
 }
+
+@media (max-width: 1024px) {
+  .policyAccordion {
+    min-height: 100%;
+  }
+}
