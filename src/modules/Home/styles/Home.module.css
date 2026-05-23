@@ -1,4 +1,4 @@
-.recentnews {
+.home {
   display: flex;
   width: 100%;
   height: 100%;
@@ -23,29 +23,25 @@
 }
 
 /* Thin blue scrollbar */
-.bodyContentContainer::-webkit-scrollbar,
-.updatesList::-webkit-scrollbar {
+.bodyContentContainer::-webkit-scrollbar {
   width: 0.35rem;
 }
 
-.bodyContentContainer::-webkit-scrollbar-track,
-.updatesList::-webkit-scrollbar-track {
+.bodyContentContainer::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.bodyContentContainer::-webkit-scrollbar-thumb,
-.updatesList::-webkit-scrollbar-thumb {
+.bodyContentContainer::-webkit-scrollbar-thumb {
   background-color: var(--primary-blue);
   border-radius: 999px;
 }
 
-.bodyContentContainer,
-.updatesList {
+.bodyContentContainer {
   scrollbar-width: thin;
   scrollbar-color: var(--primary-blue) transparent;
 }
 
-/* Header */
+/* HEADER */
 
 .headerSection {
   width: 100%;
@@ -82,20 +78,23 @@
   line-height: 1.45;
 }
 
-/* Layout */
+/* MAIN LAYOUT */
 
 .contentGrid {
   flex: 1;
   min-height: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  grid-template-rows: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-areas:
+    "mission values"
+    "vision values";
   gap: 1rem;
   box-sizing: border-box;
 }
 
-.pinnedNoticeCard,
-.updatesCard {
+.infoCard {
   border: 1px solid var(--light-grey-lines);
   border-radius: 0.5rem;
   background-color: white;
@@ -107,9 +106,24 @@
   box-sizing: border-box;
 }
 
+.infoCard:nth-child(1) {
+  grid-area: mission;
+}
+
+.infoCard:nth-child(2) {
+  grid-area: vision;
+}
+
+.valuesCard {
+  grid-area: values;
+}
+
+/* CARD HEADERS */
+
 .cardHeader {
   padding: 0.45rem 0.85rem;
   background-color: var(--primary-blue);
+  border-bottom: none;
   flex-shrink: 0;
 }
 
@@ -120,140 +134,113 @@
   margin: 0;
 }
 
-/* Pinned Notice */
+/* Mission and Vision text centered inside the remaining card space */
 
-.pinnedNoticeContent {
+.cardText {
   flex: 1;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 1.25rem;
-}
-
-.noticeMeta {
-  color: var(--primary-blue);
-  font-size: 0.75rem;
-  font-weight: 700;
-  margin-bottom: 0.75rem;
-}
-
-.pinnedNoticeContent h2 {
-  margin: 0;
-  color: #1f2937;
-  font-size: 1.15rem;
-  font-weight: 600;
-  line-height: 1.35;
-}
-
-.pinnedNoticeContent p {
-  margin-top: 0.75rem;
   color: #3f4a5f;
   font-size: 0.9rem;
-  line-height: 1.55;
-}
-
-.noticeFooter {
-  border-top: 1px solid var(--light-grey-lines);
-  padding-top: 0.85rem;
-}
-
-.noticeFooter span {
-  display: block;
-  color: var(--light-grey-text);
-  font-size: 0.72rem;
-  margin-bottom: 0.25rem;
-}
-
-.noticeFooter p {
+  line-height: 1.5;
   margin: 0;
-  color: var(--primary-blue);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-/* Latest Updates */
-
-.updatesList {
-  flex: 1;
-  padding: 0.85rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  min-height: 0;
-  overflow-y: auto;
-}
-
-.updateItem {
-  border: 1px solid var(--light-grey-lines);
-  border-radius: 0.5rem;
-  padding: 0.85rem;
-  background-color: white;
-}
-
-.updateItemTop {
+  padding: 0.85rem 1rem;
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  margin-bottom: 0.55rem;
 }
 
-.updateItemTop span {
+/* CORE VALUES */
+
+.valuesList {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding: 0.85rem;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+.valueItem {
+  min-width: 0;
+  min-height: 0;
+  border: 1px solid var(--light-grey-lines);
+  border-radius: 0.5rem;
+  background-color: white;
+  padding: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  box-sizing: border-box;
+}
+
+.valueItem span {
+  flex: 0 0 2.1rem;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 0.45rem;
   background-color: var(--primary-blue);
   color: white;
-  border-radius: 0.3rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.updateItemTop p {
-  color: var(--light-grey-text);
   font-size: 0.75rem;
-  margin: 0;
-  white-space: nowrap;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.updateItem h3 {
+.valueItem p {
   margin: 0;
   color: #1f2937;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
-  line-height: 1.35;
+  line-height: 1.25;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
-.updateItem > p {
-  margin-top: 0.45rem;
-  color: #3f4a5f;
-  font-size: 0.85rem;
-  line-height: 1.45;
-}
+/* RESPONSIVE: stack sections and allow the whole card to scroll */
 
-/* Responsive */
-
-@media (max-width: 1000px) {
+@media (max-width: 1100px) {
   .contentGrid {
     flex: 0 0 auto;
+    min-height: auto;
     grid-template-columns: 1fr;
+    grid-template-rows: auto;
+    grid-template-areas:
+      "mission"
+      "vision"
+      "values";
   }
 
-  .pinnedNoticeCard,
-  .updatesCard {
+  .infoCard {
     min-height: auto;
   }
 
-  .pinnedNoticeContent {
-    min-height: 12rem;
+  .cardText {
+    min-height: 5rem;
   }
 
-  .updatesList {
-    overflow-y: visible;
+  .valuesCard {
+    min-height: 24rem;
+  }
+
+  .valuesList {
+    flex: 1;
+    grid-template-columns: minmax(0, 20rem);
+    grid-template-rows: repeat(4, auto);
+    justify-content: center;
+    align-content: center;
+  }
+
+  .valueItem {
+    width: 100%;
+    min-height: 4.2rem;
+    align-items: center;
   }
 }
 
-@media (max-width: 650px) {
+@media (max-width: 700px) {
   .bodyContentContainer {
     padding: 1rem;
   }
@@ -270,9 +257,28 @@
     font-size: 0.78rem;
   }
 
-  .updateItemTop {
+  .cardText {
     align-items: flex-start;
+  }
+
+  .valueItem {
+    align-items: center;
+  }
+}
+
+@media (max-width: 420px) {
+  .bodyContentContainer {
+    padding: 0.85rem;
+  }
+
+  .valueItem {
     flex-direction: column;
-    gap: 0.35rem;
+    align-items: flex-start;
+  }
+
+  .valueItem span {
+    width: 1.9rem;
+    height: 1.9rem;
+    flex-basis: 1.9rem;
   }
 }

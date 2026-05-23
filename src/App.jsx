@@ -10,6 +10,7 @@ import { User } from "lucide-react";
 import LandingPage from "./pages/LandingPage";
 
 function App() {
+  const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [hasNotification, setHasNotification] = useState(false);
   const [activeModule, setActiveModule] = useState(null);
@@ -21,16 +22,49 @@ function App() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMainModuleCollapsed, setIsMainModuleCollapsed] = useState(true);
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  // const [loading, setLoading] = useState(true);
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [notifs, setNotifs] = useState([]);
+  const [rolePermissions, setRolePermissions] = useState([]);
 
   const displayName = user
     ? `${user.first_name} ${user.last_name?.charAt(0)}.`
-    : '';
+    : "";
 
   const iconsRef = useRef(null);
   const descsRef = useRef(null);
+
+
+  // DEV ONLY: Disabled until backend role-permission endpoint is fixed
+  // useEffect(() => {
+  //   // Permissions Access
+  //   if (!user?.role?.role_name) return;
+
+  //   const fetchRolePermissions = async () => {
+  //     try {
+  //       const resp = await fetch(
+  //         `http://127.0.0.1:8000/roles/${encodeURIComponent(
+  //           user.role.role_name,
+  //         )}/permissions/`,
+  //         { credentials: "include" },
+  //       );
+
+  //       if (!resp.ok) {
+  //         console.warn("roles permissions fetch failed", resp.status);
+  //         return;
+  //       }
+
+  //       const payload = await resp.json();
+  //       const data = payload?.data ?? payload ?? {};
+  //       const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+  //       setRolePermissions(perms);
+  //     } catch (err) {
+  //       console.error("fetchRolePermissions error:", err);
+  //     }
+  //   };
+
+  //   fetchRolePermissions();
+  // }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -41,23 +75,31 @@ function App() {
 
     const resetTimeout = () => {
       if (logoutTimeout) clearTimeout(logoutTimeout);
-      logoutTimeout = setTimeout(() => {
-        console.log("No activity detected for 10 minutes. Logging out.");
-        handleLogout();
-      }, 30 * 60 * 1000); // 30 minutes
+      logoutTimeout = setTimeout(
+        () => {
+          handleLogout();
+        },
+        30 * 60 * 1000,
+      ); // 30 minutes
     };
 
-    const activityEvents = ['mousemove', 'mousedown', 'keypress', 'scroll', 'touchstart'];
-    activityEvents.forEach(event =>
-      window.addEventListener(event, resetTimeout)
+    const activityEvents = [
+      "mousemove",
+      "mousedown",
+      "keypress",
+      "scroll",
+      "touchstart",
+    ];
+    activityEvents.forEach((event) =>
+      window.addEventListener(event, resetTimeout),
     );
 
     resetTimeout();
 
     return () => {
       clearTimeout(logoutTimeout);
-      activityEvents.forEach(event =>
-        window.removeEventListener(event, resetTimeout)
+      activityEvents.forEach((event) =>
+        window.removeEventListener(event, resetTimeout),
       );
     };
   }, []);
@@ -78,8 +120,6 @@ function App() {
 
     if (storedUser) {
       setUser(JSON.parse(storedUser));
-      console.log("User data loaded from localStorage:");
-      console.log(localStorage.getItem("user"));
 
       const storedModule = localStorage.getItem("activeModule");
       const storedSubModule = localStorage.getItem("activeSubModule");
@@ -91,7 +131,8 @@ function App() {
         setActiveSubModule(null);
       } else if (storedModule) {
         setActiveModule(storedModule);
-        if (storedSubModule && storedSubModule !== "null") setActiveSubModule(storedSubModule);
+        if (storedSubModule && storedSubModule !== "null")
+          setActiveSubModule(storedSubModule);
       }
     } else {
       // DEV: allow app without login
@@ -108,15 +149,13 @@ function App() {
     }
   }, []);
 
-
-
   const handleLogout = () => {
-    localStorage.removeItem("user");   // clear saved session
+    localStorage.removeItem("user"); // clear saved session
     localStorage.removeItem("activeModule");
     localStorage.removeItem("activeSubModule");
     localStorage.removeItem("showUserProfile");
-    setUser(null);   // clear local user state 
-    navigate("/login");  // redirect to login
+    setUser(null); // clear local user state
+    navigate("/login"); // redirect to login
   };
 
   const toggleProfileMenu = () => {
@@ -129,8 +168,8 @@ function App() {
 
     const handleClickOutsideProfileDropdown = (e) => {
       if (
-        !e.target.closest('.header-profile-container') &&
-        !e.target.closest('.profile-dropdown')
+        !e.target.closest(".header-profile-container") &&
+        !e.target.closest(".profile-dropdown")
       ) {
         setIsProfileMenuOpen(false);
       }
@@ -147,8 +186,8 @@ function App() {
 
     const handleClickOutsideNotif = (e) => {
       if (
-        !e.target.closest('.notif-icon') &&
-        !e.target.closest('.notif-menu')
+        !e.target.closest(".notif-icon") &&
+        !e.target.closest(".notif-menu")
       ) {
         setNotifOpen(false);
       }
@@ -160,85 +199,55 @@ function App() {
     };
   }, [notifOpen]);
 
-
   //fetch notifs
   const fetchNotifs = async (user) => {
     console.log("Fetching notifs...")
-    //const resp = await fetch(`http://127.0.0.1:8000/api/notifications/?user_id=${user?.user_id}`, { method: 'GET' })
-    // const resp_text = await resp.text()
-    // console.log("resp text")
-    // console.log(resp_text)
-    const resp_data = await resp.json();
-    const notif_items = resp_data.data
+    const resp = await fetch(`${backend_base_url}/api/notifications/`, { method: 'GET' })
+    const notif_items = await resp.json();
     console.log("Notifs fetched:")
     console.log(notif_items)
-    var temp_list = []
-    //populate notifs table
-    notif_items.map((notif_item, i) => {
-      const origin = notif_item.module.split(/\/(.*)/s)
-      const orig_module = origin[0]
-      const orig_submodule = origin.length == 2 ? origin[1] : null
-      const time_formatted = new Date(notif_item.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-      temp_list[i] = {
-        id: notif_item.notifications_id,
-        msg: notif_item.message,
-        orig_module: orig_module,
-        orig_submodule: orig_submodule,
-        read: notif_item.notifications_status == 'Read',
-        time: time_formatted
-      }
-    })
-    setNotifs(temp_list)
+    setNotifs(notif_items)
     console.log('Final notif list:')
-    console.log(temp_list)
+    console.log(notif_items)
 
-    //notif icon toggle (for loop so we can break out)
-    for (var i = 0; i < temp_list.length; ++i) {
-      if (temp_list[i].read == false) {
-        console.log('found notif')
+    //look through notif times
+    // VERY placeholder/temp logic. for actual per-notif reading logic, use UserNotification many-to-many entity
+    notif_items.map((notif) => {
+      const notif_date = new Date(notif.created_at)
+      const latest_notif_open = new Date(localStorage.getItem("last_notif_open"))
+      if (notif_date > latest_notif_open) {
         setHasNotification(true)
-        break
       }
-    }
-  }
 
-  //func for marking notifs as read
-  const readNotif = async (notif_id) => {
-    const resp = await fetch(`http://127.0.0.1:8000/api/notifications/`, {
-      method: 'POST',
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        notifications_id: notif_id
-      })
     })
   }
 
   //get notifs
   useEffect(() => {
-    if (user) {
-      fetchNotifs(user)
-    }
+    if (!user) return;
+    //first fetch on pageload
+    fetchNotifs(user);
+
+    //fetching every 30s
+    const interval = setInterval(() => {
+      fetchNotifs(user);
+    }, 30000);
+    
+    return () => clearInterval(interval);
   }, [user]);
 
   // hooks for loading modules
   useEffect(() => {
-    console.log("(debug) main hook")
     if (activeModule) {
-      console.log("(debug) calling loadmainmodule")
-      loadMainModule(activeModule)
+      loadMainModule(activeModule);
     }
   }, [activeModule]);
 
   useEffect(() => {
-    console.log("(debug) sub hook")
     if (activeSubModule) {
-      console.log("(debug) calling loadsubmodule for ", activeSubModule)
-      loadSubModule(activeSubModule)
+      loadSubModule(activeSubModule);
     } else {
-      console.log("(debug) calling loadmainmodule from sub hook")
-      loadMainModule(activeModule)
+      loadMainModule(activeModule);
     }
   }, [activeSubModule]);
 
@@ -255,8 +264,8 @@ function App() {
     }
   };
 
-  const mainModules = import.meta.glob('./modules/*/*.jsx');
-  const subModules = import.meta.glob('./modules/*/submodules/*.jsx');
+  const mainModules = import.meta.glob("./modules/*/*.jsx");
+  const subModules = import.meta.glob("./modules/*/submodules/*.jsx");
 
   const loadMainModule = (moduleId) => {
     const moduleFile = `./modules/${moduleFileNames[moduleId]}/${moduleFileNames[moduleId]}.jsx`;
@@ -280,7 +289,6 @@ function App() {
     }
   };
 
-
   const loadSubModule = (submoduleId, mainModule = activeModule) => {
     const submoduleFile = `./modules/${moduleFileNames[mainModule]}/submodules/${moduleSubmoduleFileNames[mainModule][submoduleId]}.jsx`;
 
@@ -303,84 +311,120 @@ function App() {
     }
   };
 
-
   const moduleFileNames = {
-    "Home": "Home",
-    "Documents": "Documents",
-    "Policies": "Policies",
+    Home: "Home",
+    Documents: "Documents",
+    Policies: "Policies",
     "Recent News": "RecentNews",
-    "Others": "Others",
+    "User Management": "UserManagement",
+    "Edit Home/News": "EditHomeNews",
   };
 
   const moduleSubmoduleFileNames = {
-    "Home": {},
-    "Documents": {},
-    "Policies": {
+    Home: {},
+    Documents: {},
+    Policies: {},
+    "Recent News": {},
+    "Edit Home/News": {},
+    "User Management": {
+      "Role Management": "RoleManagement",
     },
-    "Recent News": {
-      "Recent News Dashboard": "RecentNews-dsh",
-    },
-    "Others": {
-      "Others Dashboard": "Others-dsh",
-    }
   };
 
+  const moduleDisplayNames = {
+    Home: "Home",
+    Documents: "Create/Edit Documents",
+    Policies: "View Documents",
+    "Recent News": "Recent News",
+    "Edit Home/News": "Edit Home/News",
+    "User Management": "User Management",
+  };
+
+  const getModuleDisplayName = (moduleId) =>
+    moduleDisplayNames[moduleId] ?? moduleId;
 
 
+  // DEV ONLY: Show all modules while backend permissions are not yet ready
+  const filteredModuleFileNames = moduleSubmoduleFileNames;   // delete this and uncomment below once perms are ready
+
+  // DEV ONLY: UNCOMMENT THIS!! once permissions are ready, filter modules based on perms
+  // const allowedModules = Array.isArray(rolePermissions)
+  //   ? rolePermissions
+  //       .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
+  //       .map((m) => m.trim())
+  //       .filter(Boolean)
+  //   : [];
+
+  // const normalizeName = (s) =>
+  //   String(s ?? "")
+  //     .replace(/\s+/g, "")
+  //     .toLowerCase();
+  // const normalizedAllowed = new Set(
+  //   allowedModules.map((a) => normalizeName(a)),
+  // );
+  // const isAll = normalizedAllowed.has(normalizeName("All"));
+
+  // let filteredModuleFileNames = {};
+
+  // if (isAll) {
+  //   // allow everything (all modules + all submodules)
+  //   filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
+  // } else {
+  //   // First, include any whole-main-module permissions that match (case/space-insensitive)
+  //   Object.keys(moduleFileNames).forEach((mainKey) => {
+  //     if (normalizedAllowed.has(normalizeName(mainKey))) {
+  //       filteredModuleFileNames[mainKey] = {
+  //         ...moduleSubmoduleFileNames[mainKey],
+  //       };
+  //     }
+  //   });
+
+  // Then, process explicit perms that may include submodules like "Policies/PolicySections"
+  //   allowedModules.forEach((permission) => {
+  //     const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
+  //     const mainKey = Object.keys(moduleSubmoduleFileNames).find(
+  //       (k) => normalizeName(k) === normalizeName(mainRaw),
+  //     );
+  //     if (!mainKey) return; // ignore unknown perms safely
+
+  //     if (!filteredModuleFileNames[mainKey])
+  //       filteredModuleFileNames[mainKey] = {};
+
+  //     if (!subRaw) {
+  //       // allow all submodules under this main module
+  //       filteredModuleFileNames[mainKey] = {
+  //         ...moduleSubmoduleFileNames[mainKey],
+  //       };
+  //     } else {
+  //       const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
+  //         (sk) => normalizeName(sk) === normalizeName(subRaw),
+  //       );
+  //       if (subKey) {
+  //         filteredModuleFileNames[mainKey][subKey] =
+  //           moduleSubmoduleFileNames[mainKey][subKey];
+  //       }
+  //     }
+  //   });
+  // }
 
 
-  const rawPermissions = user?.role?.permissions || "";
-  const allowedModules = rawPermissions.split(",").map(m => m.trim()).filter(Boolean);
+  // DEV ONLY: Uncomment this if you want that all modules are just shown, and there is no distinction between admin and clients
+  // const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
+  //   id: module,
+  //   file: `${moduleFileNames[module]}.png`,
+  // }));
 
+  const modulesIcons = [
+    { type: "divider", id: "client-divider", label: "Client Modules" },
+    { type: "module", id: "Home", file: `${moduleFileNames.Home}.png` },
+    { type: "module", id: "Policies", file: `${moduleFileNames.Policies}.png` },
+    { type: "module", id: "Recent News", file: `${moduleFileNames["Recent News"]}.png` },
 
-  console.log('raw permissions...')
-  console.log(rawPermissions)
-  console.log("allowed modules...")
-  console.log(allowedModules)
-
-  // COMMENT THIS IF THERE ARE MODULES THAT SHOULDNT BE ACCESSIBLE BY ALL
-
-  let filteredModuleFileNames = allowedModules.includes("All")
-    ? moduleFileNames
-    : Object.fromEntries(
-      Object.entries(moduleFileNames).filter(([key]) =>
-        allowedModules.includes(key)
-      )
-    );
-
-
-  if (allowedModules.includes("All")) {
-    // allow everything (all modules + all submodules)
-    filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
-    // or: filteredModuleFileNames = JSON.parse(JSON.stringify(moduleSubmoduleFileNames));
-  } else {
-    allowedModules.forEach((permission) => {
-      const [main, sub] = permission.split(/\/(.*)/s);
-
-      if (!moduleSubmoduleFileNames[main]) return; // ignore unknown perms safely
-
-      if (!filteredModuleFileNames[main]) filteredModuleFileNames[main] = {};
-
-      if (!sub) {
-        // allow all submodules under this main module
-        filteredModuleFileNames[main] = { ...moduleSubmoduleFileNames[main] };
-      } else if (moduleSubmoduleFileNames[main][sub]) {
-        filteredModuleFileNames[main][sub] = moduleSubmoduleFileNames[main][sub];
-      }
-    });
-  }
-
-  console.log("filtered modules...");
-  console.log(filteredModuleFileNames);
-
-
-  const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
-    id: module,
-    file: `${moduleFileNames[module]}.png`,
-  }));
-
-  console.log('module icons...')
-  console.log(modulesIcons)
+    { type: "divider", id: "admin-divider", label: "Admin Modules" },
+    { type: "module", id: "Documents", file: `${moduleFileNames.Documents}.png` },
+    { type: "module", id: "Edit Home/News", file: `${moduleFileNames["Edit Home/News"]}.png` },
+    { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
+  ];
 
   return (
     <div className="shell">
@@ -409,75 +453,95 @@ function App() {
             ref={iconsRef}
             onScroll={() => handleScroll("icons")}
           >
-            {modulesIcons.map((module) => (
-              <div key={module.id}>
-                {/* Main Module Icons */}
-                <div
-                  className={`sidebar-module-icons-item 
+            {modulesIcons.map((module) => {
+              if (module.type === "divider") {
+                return (
+                  <div key={module.id} className="sidebar-divider-icon">
+                    <span>{module.label}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={module.id}>
+                  {/* Main Module Icons */}
+                  <div
+                    className={`sidebar-module-icons-item 
                       ${isSidebarOpen ? "opened" : ""} 
                       ${activeModule === module.id ? "active" : ""} 
                       ${hoveredModule === module.id ? "hovered" : ""}`}
-                  onClick={() => {
-                    setIsSidebarOpen(true);
+                    onClick={() => {
+                      setIsSidebarOpen(true);
 
-                    if (activeModule === module.id) {
-                      // if the main module is active, and is clicked when a submodule is open, go back to main module
-                      if (activeSubModule) {
+                      if (activeModule === module.id) {
+                        // if the main module is active, and is clicked when a submodule is open, go back to main module
+                        if (activeSubModule) {
+                          setActiveSubModule(null);
+                          loadMainModule(module.id);
+                          setIsMainModuleCollapsed(true);
+                        } else {
+                          // if it's already active and is the opened module, toggle off
+                          isMainModuleCollapsed
+                            ? setIsMainModuleCollapsed(false)
+                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                          //setActiveModule(null);
+                          setActiveSubModule(null);
+                        }
+                      } else {
+                        // otherwise, activate it
+                        setIsMainModuleCollapsed(true);
+                        setActiveModule(module.id);
                         setActiveSubModule(null);
                         loadMainModule(module.id);
-                        setIsMainModuleCollapsed(true);
-                      } else { // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed ? setIsMainModuleCollapsed(false) : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                        //setActiveModule(null);
-                        setActiveSubModule(null);
                       }
-                    } else {
-                      // otherwise, activate it
-                      setIsMainModuleCollapsed(true);
-                      setActiveModule(module.id);
-                      setActiveSubModule(null);
-                      loadMainModule(module.id);
-                    }
 
-                    /*setActiveModule(module.id);
-                    setActiveSubModule(null); // Reset submodule when a main module is clicked*/
-                  }}
-                  onMouseEnter={() => setHoveredModule(module.id)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                >
-                  <img
-                    src={
+                      /*setActiveModule(module.id);
+                      setActiveSubModule(null); // Reset submodule when a main module is clicked*/
+                    }}
+                    onMouseEnter={() => setHoveredModule(module.id)}
+                    onMouseLeave={() => setHoveredModule(null)}
+                  >
+                    <img
+                      src={
+                        activeModule === module.id
+                          ? `/icons/module-icons-selected/${module.file}`
+                          : `/icons/module-icons/${module.file}`
+                      }
+                      alt={module.id}
+                    />
+                  </div>
+
+                  <div
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                      isSidebarOpen &&
                       activeModule === module.id
-                        ? `/icons/module-icons-selected/${module.file}`
-                        : `/icons/module-icons/${module.file}`
-                    }
-                    alt={module.id}
-                  />
+                      ? "opened"
+                      : ""
+                      }`}
+                  >
+                    {/* submodules - only show if this module is active */}
+                    {filteredModuleFileNames[module.id] &&
+                      Object.keys(filteredModuleFileNames[module.id]).map(
+                        (submodule, index) => (
+                          <div
+                            key={index}
+                            className="sidebar-submodule-item-empty"
+                          >
+                            <p></p>
+                          </div>
+                        ),
+                      )}
+                  </div>
                 </div>
-
-                <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed && isSidebarOpen && activeModule === module.id ? "opened" : ""
-                    }`}
-                >
-                  {/* submodules - only show if this module is active */}
-                  {filteredModuleFileNames[module.id] &&
-                    Object.keys(filteredModuleFileNames[module.id]).map(
-                      (submodule, index) => (
-                        <div
-                          key={index}
-                          className="sidebar-submodule-item-empty"
-                        >
-                          <p></p>
-                        </div>
-                      )
-                    )}
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="sidebar-kinetiq-footer">
-            <img src={"public/icons/InfoSecLogo.png"} alt={"InfoSec Logo"}></img>
+            <img
+              src={"public/icons/InfoSecLogo.png"}
+              alt={"InfoSec Logo"}
+            ></img>
           </div>
         </div>
 
@@ -493,70 +557,85 @@ function App() {
             ref={descsRef}
             onScroll={() => handleScroll("descs")}
           >
-            {modulesIcons.map((module) => (
-              <div key={module.id}>
-                {/* Main Module Items */}
-                <div
-                  className={`sidebar-module-desc-item 
+            {modulesIcons.map((module) => {
+              if (module.type === "divider") {
+                return (
+                  <div key={module.id} className="sidebar-divider-desc">
+                    <span>{module.label}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <div key={module.id}>
+                  {/* Main Module Items */}
+                  <div
+                    className={`sidebar-module-desc-item 
                             ${activeModule === module.id ? "active" : ""} 
                             ${hoveredModule === module.id ? "hovered" : ""}`}
-                  onClick={() => {
-                    setIsSidebarOpen(true);
-                    if (activeModule === module.id) {
-                      // if the main module is active, and is clicked when a submodule is open, go back to main module
-                      if (activeSubModule) {
+                    onClick={() => {
+                      setIsSidebarOpen(true);
+                      if (activeModule === module.id) {
+                        // if the main module is active, and is clicked when a submodule is open, go back to main module
+                        if (activeSubModule) {
+                          setActiveModule(module.id);
+                          setActiveSubModule(null);
+                          loadMainModule(module.id);
+                          setIsMainModuleCollapsed(true);
+                        } else {
+                          // if it's already active and is the opened module, toggle off
+                          isMainModuleCollapsed
+                            ? setIsMainModuleCollapsed(false)
+                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
+                          //setActiveModule(null);
+                          setActiveSubModule(null);
+                        }
+                      } else {
+                        // otherwise, activate it
+                        setIsMainModuleCollapsed(true);
                         setActiveModule(module.id);
                         setActiveSubModule(null);
                         loadMainModule(module.id);
-                        setIsMainModuleCollapsed(true);
-                      } else { // if it's already active and is the opened module, toggle off
-                        isMainModuleCollapsed ? setIsMainModuleCollapsed(false) : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                        //setActiveModule(null);
-                        setActiveSubModule(null);
                       }
-                    } else {
-                      // otherwise, activate it
-                      setIsMainModuleCollapsed(true);
-                      setActiveModule(module.id);
-                      setActiveSubModule(null);
-                      loadMainModule(module.id);
-                    }
+                    }}
+                    onMouseEnter={() => setHoveredModule(module.id)}
+                    onMouseLeave={() => setHoveredModule(null)}
+                  >
+                    <p>{getModuleDisplayName(module.id)}</p>
+                  </div>
 
-                  }}
-
-                  onMouseEnter={() => setHoveredModule(module.id)}
-                  onMouseLeave={() => setHoveredModule(null)}
-                >
-                  <p>{module.id}</p>
-                </div>
-
-                <div
-                  className={`sidebar-submodule-empty-container ${isMainModuleCollapsed && isSidebarOpen && activeModule === module.id ? "opened" : ""
-                    }`}
-                >
-                  {/* Submodules - only show if the main module is active */}
-                  {filteredModuleFileNames[module.id] &&
-                    Object.keys(filteredModuleFileNames[module.id]).map(
-                      (sub, index) => (
-                        <div
-                          key={index}
-                          className={`sidebar-submodule-item
+                  <div
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                      isSidebarOpen &&
+                      activeModule === module.id
+                      ? "opened"
+                      : ""
+                      }`}
+                  >
+                    {/* Submodules - only show if the main module is active */}
+                    {filteredModuleFileNames[module.id] &&
+                      Object.keys(filteredModuleFileNames[module.id]).map(
+                        (sub, index) => (
+                          <div
+                            key={index}
+                            className={`sidebar-submodule-item
                             ${activeSubModule === sub ? "active" : ""} 
                             ${hoveredSubModule === sub ? "hovered" : ""}`}
-                          onClick={() => {
-                            setActiveSubModule(sub);
-                            //loadSubModule(sub);
-                          }}
-                          onMouseEnter={() => setHoveredSubModule(sub)}
-                          onMouseLeave={() => setHoveredSubModule(null)}
-                        >
-                          <p>{sub}</p>
-                        </div>
-                      )
-                    )}
+                            onClick={() => {
+                              setActiveSubModule(sub);
+                              //loadSubModule(sub);
+                            }}
+                            onMouseEnter={() => setHoveredSubModule(sub)}
+                            onMouseLeave={() => setHoveredSubModule(null)}
+                          >
+                            <p>{sub}</p>
+                          </div>
+                        ),
+                      )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="sidebar-kinetiq-footer-desc">
@@ -566,7 +645,6 @@ function App() {
 
         {/* adjustable right content */}
         <div className="header-body-container">
-
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
               className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
@@ -574,7 +652,7 @@ function App() {
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
-                alt={activeModule}
+                alt={getModuleDisplayName(activeModule)}
               />
               <div className="header-module-names">
                 <p
@@ -586,7 +664,7 @@ function App() {
                     //loadSubModule(null);
                   }}
                 >
-                  {activeModule}
+                  {getModuleDisplayName(activeModule)}
                 </p>
                 <p className="fade-in">{activeSubModule ? ` > ` : ""}</p>
                 <p id="header-submodule-name" className="fade-in">
@@ -597,70 +675,118 @@ function App() {
 
             <div className="header-right-container">
               {/*<SearchBar />*/}
-              <img className="notif-icon"
+              <img
+                className="notif-icon"
                 src={`/icons/Notification-${hasNotification ? "active-" : ""
                   }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
-                  setNotifOpen(!notifOpen)
+                  setNotifOpen(!notifOpen);
                   setIsProfileMenuOpen(false); //close profile menu if notif menu is opened
-                  setHasNotification(false)
+                  setHasNotification(false);
+                  localStorage.setItem("last_notif_open", new Date().toISOString())
                 }} //to be replaecd by func for setting notifs as read
               ></img>
-              {notifOpen && <div className="notif-menu">
-                <div className="notif-title"><p>Notifications</p></div>
-                {notifs.length === 0 ? (
-                  <div className="notif-empty">
-                    <p className="notif-msg">No notifications to show.</p>
+              {notifOpen && (
+                <div className="notif-menu">
+                  <div className="notif-title">
+                    <p>Notifications</p>
                   </div>
-                ) : (notifs.map((notif, i) =>
-                  <div className={notif.read ? "notif-item" : "notif-item-unread"}
-                    onClick={
-                      notif.orig_submodule ? () => {
-                        notifs[i].read = true
-                        readNotif(notif.id)
-                        setActiveModule(notif.orig_module)
-                        setActiveSubModule(notif.orig_submodule)
-                      }
-                        : () => {
-                          notifs[i].read = true
-                          readNotif(notif.id)
-                          setActiveModule(notif.orig_module)
-                          setActiveSubModule(null)
-                        }
-                    }
-                    key={i}
-                  >
-                    <div className="notif-toprow">
-                      <div className="notif-origin"><p>{notif.orig_submodule ? notif.orig_submodule : notif.orig_module}</p></div>
-                      <div className="notif-time-and-icon">
-                        <div className="notif-time"><p>{notif.time}</p></div>
-                        {!notif.read && <p className="unread-notif-icon"><img src="/icons/unread-notif-icon.png" /></p>/* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */}
-                      </div>
+                  {notifs.length === 0 ? (
+                    <div className="notif-empty">
+                      <p className="notif-msg">No notifications to show.</p>
                     </div>
-                    <div className="notif-msg"><p>{notif.msg}</p></div>
-                  </div>
-                ))}
-              </div>}
+                  ) : (
+                    notifs.map((notif, i) => (
+                      <div
+                        // className={
+                        //   notif.read ? "notif-item" : "notif-item-unread"
+                        // }
+                        className="notif-item"
+                        // onClick={
+                        //   notif.orig_submodule
+                        //     ? () => {
+                        //         notifs[i].read = true;
+                        //         readNotif(notif.id);
+                        //         setActiveModule(notif.orig_module);
+                        //         setActiveSubModule(notif.orig_submodule);
+                        //       }
+                        //     : () => {
+                        //         notifs[i].read = true;
+                        //         readNotif(notif.id);
+                        //         setActiveModule(notif.orig_module);
+                        //         setActiveSubModule(null);
+                        //       }
+                        // }
+                        key={i}
+                      >
+                        <div className="notif-toprow">
+                          <div className="notif-origin">
+                            <p>
+                              {/* {notif.orig_submodule
+                                ? notif.orig_submodule
+                                : notif.orig_module} */}
+                            </p>
+                          </div>
+                          <div className="notif-time-and-icon">
+                            <div className="notif-time">
+                              <p>
+                                {
+                                  new Intl.DateTimeFormat("en-US", {
+                                    // month: "short",
+                                    // day: "numeric",
+                                    hour: "numeric",
+                                    minute: "2-digit",
+                                    hour12: true,
+                                  }).format(new Date(notif.created_at))
+                                }
+                              </p>
+                            </div>
+                            {
+                              // !notif.read && (
+                              //   <p className="unread-notif-icon">
+                              //     <img src="/icons/unread-notif-icon.png" />
+                              //   </p>
+                              // ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
+                            }
+                          </div>
+                        </div>
+                        <div className="notif-msg">
+                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.misc_title?notif.misc_title:notif.document_title}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
               {isProfileMenuOpen && (
                 <div className="profile-dropdown">
                   <div className="profile-dropdown-header">
-                    <div className="profile-name">{user?.first_name} {user?.last_name}</div>
-                    <div className="profile-details">ID: {user?.employee_id}</div>
-                    <div className="profile-details">{user?.role?.role_name}</div>
+                    <div className="profile-name">
+                      {user?.first_name} {user?.last_name}
+                    </div>
+                    <div className="profile-details">
+                      ID: {user?.employee_id}
+                    </div>
+                    <div className="profile-details">
+                      {user?.role?.role_name}
+                    </div>
                   </div>
 
                   <div className="dropdown-divider"></div>
                   <div className="dropdown-menu">
-                    <div className="dropdown-item" onClick={handleLogout}><img src="/icons/logout.png" /> Logout</div>
+                    <div className="dropdown-item" onClick={handleLogout}>
+                      <img src="/icons/logout.png" /> Logout
+                    </div>
                   </div>
-
                 </div>
               )}
 
               <div className="header-profile-container">
-                <div className={`header-profile-icon-wrapper ${isProfileMenuOpen ? "opened" : ""}`}
-                  onClick={toggleProfileMenu}>
+                <div
+                  className={`header-profile-icon-wrapper ${isProfileMenuOpen ? "opened" : ""}`}
+                  onClick={toggleProfileMenu}
+                >
                   <div className="header-profile-icon">
                     {" "}
                     {displayName?.charAt(0)}
@@ -680,7 +806,11 @@ function App() {
                 />
               ) : (
                 ModuleComponent && (
-                  <Suspense fallback={<div className="loading-suspense">Loading...</div>}>
+                  <Suspense
+                    fallback={
+                      <div className="loading-suspense">Loading...</div>
+                    }
+                  >
                     <ModuleComponent
                       setActiveModule={setActiveModule}
                       loadSubModule={loadSubModule}
@@ -695,7 +825,7 @@ function App() {
           </QueryClientProvider>
         </div>
       </div>
-    </div >
+    </div>
   );
 }
 
