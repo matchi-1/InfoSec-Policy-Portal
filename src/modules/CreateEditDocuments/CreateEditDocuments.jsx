@@ -351,19 +351,20 @@ const BodyContent = ({ setActiveSubModule }) => {
                                 )}
                             </div>
 
-                        </div>
 
-                        <div
-                            className={styles.createButton}
-                            onClick={() => handleSelectDoc("new", "New Document")}
-                        >
-                            <div>
-                                <img
-                                    src={"/icons/plus-hover.png"}
-                                    alt={"Plus Icon"}
-                                />
+
+                            <div
+                                className={styles.createButton}
+                                onClick={() => handleSelectDoc("new", "New Document")}
+                            >
+                                <div>
+                                    <img
+                                        src={"/icons/plus-hover.png"}
+                                        alt={"Plus Icon"}
+                                    />
+                                </div>
+                                Create
                             </div>
-                            Create
                         </div>
                     </div>
 
