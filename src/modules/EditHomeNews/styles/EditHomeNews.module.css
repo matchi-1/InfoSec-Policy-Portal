@@ -97,6 +97,13 @@
   box-sizing: border-box;
 }
 
+.editorPanelEditing {
+  border-color: var(--primary-blue);
+  outline: 2px solid var(--primary-blue);
+  outline-offset: 0;
+  box-shadow: 0 0 0.4rem rgba(32, 76, 139, 0.18);
+}
+
 .editorPanelTop {
   display: flex;
   align-items: center;
@@ -248,6 +255,8 @@
   overflow: hidden;
   box-sizing: border-box;
 }
+
+
 
 .cardHeader {
   padding: 0.45rem 0.85rem;

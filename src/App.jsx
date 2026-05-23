@@ -12,6 +12,7 @@ import LandingPage from "./pages/LandingPage";
 function App() {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCompactSidebar, setIsCompactSidebar] = useState(false);
   const [hasNotification, setHasNotification] = useState(false);
   const [activeModule, setActiveModule] = useState(null);
   const [activeSubModule, setActiveSubModule] = useState(null);
@@ -36,35 +37,35 @@ function App() {
 
 
   // DEV ONLY: Disabled until backend role-permission endpoint is fixed
-   useEffect(() => {
-     // Permissions Access
-     if (!user?.role?.role_name) return;
+  useEffect(() => {
+    // Permissions Access
+    if (!user?.role?.role_name) return;
 
-     const fetchRolePermissions = async () => {
-       try {
-         const resp = await fetch(
-           `http://127.0.0.1:8000/roles/${encodeURIComponent(
-             user.role.role_name,
-           )}/permissions/`,
-           { credentials: "include" },
-         );
+    const fetchRolePermissions = async () => {
+      try {
+        const resp = await fetch(
+          `http://127.0.0.1:8000/roles/${encodeURIComponent(
+            user.role.role_name,
+          )}/permissions/`,
+          { credentials: "include" },
+        );
 
-         if (!resp.ok) {
-           console.warn("roles permissions fetch failed", resp.status);
-           return;
-         }
+        if (!resp.ok) {
+          console.warn("roles permissions fetch failed", resp.status);
+          return;
+        }
 
-         const payload = await resp.json();
-         const data = payload?.data ?? payload ?? {};
-         const perms = Array.isArray(data) ? data : (data?.modules ?? []);
-         setRolePermissions(perms);
-       } catch (err) {
-         console.error("fetchRolePermissions error:", err);
-       }
-     };
+        const payload = await resp.json();
+        const data = payload?.data ?? payload ?? {};
+        const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+        setRolePermissions(perms);
+      } catch (err) {
+        console.error("fetchRolePermissions error:", err);
+      }
+    };
 
-     fetchRolePermissions();
-   }, [user]);
+    fetchRolePermissions();
+  }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -198,6 +199,27 @@ function App() {
       document.removeEventListener("click", handleClickOutsideNotif);
     };
   }, [notifOpen]);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+
+    const handleResize = () => {
+      setIsCompactSidebar(mediaQuery.matches);
+
+      // On smaller screens, default to content-only + hamburger
+      if (mediaQuery.matches) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+
+    mediaQuery.addEventListener("change", handleResize);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleResize);
+    };
+  }, []);
 
   //fetch notifs
   const fetchNotifs = async (user) => {
@@ -426,9 +448,43 @@ function App() {
     { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
   ];
 
+  const handleMainModuleClick = (moduleId) => {
+    if (activeModule === moduleId) {
+      if (activeSubModule) {
+        setActiveSubModule(null);
+        loadMainModule(moduleId);
+        setIsMainModuleCollapsed(true);
+      } else {
+        setIsMainModuleCollapsed((prev) => !prev);
+        setActiveSubModule(null);
+      }
+    } else {
+      setIsMainModuleCollapsed(true);
+      setActiveModule(moduleId);
+      setActiveSubModule(null);
+      loadMainModule(moduleId);
+    }
+
+    // On small screens, selecting a module closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  };
+
+  const handleSubModuleClick = (submodule) => {
+    setActiveSubModule(submodule);
+
+    // On small screens, selecting a submodule closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    }
+  };
+
   return (
     <div className="shell">
-      <div className="shell-container">
+      <div className={`shell-container ${isSidebarOpen ? "sidebar-open" : ""}`}>
         {/* collapsible menu */}
 
         {/* static left navi -- icons */}
@@ -467,37 +523,10 @@ function App() {
                   {/* Main Module Icons */}
                   <div
                     className={`sidebar-module-icons-item 
-                      ${isSidebarOpen ? "opened" : ""} 
-                      ${activeModule === module.id ? "active" : ""} 
-                      ${hoveredModule === module.id ? "hovered" : ""}`}
-                    onClick={() => {
-                      setIsSidebarOpen(true);
-
-                      if (activeModule === module.id) {
-                        // if the main module is active, and is clicked when a submodule is open, go back to main module
-                        if (activeSubModule) {
-                          setActiveSubModule(null);
-                          loadMainModule(module.id);
-                          setIsMainModuleCollapsed(true);
-                        } else {
-                          // if it's already active and is the opened module, toggle off
-                          isMainModuleCollapsed
-                            ? setIsMainModuleCollapsed(false)
-                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                          //setActiveModule(null);
-                          setActiveSubModule(null);
-                        }
-                      } else {
-                        // otherwise, activate it
-                        setIsMainModuleCollapsed(true);
-                        setActiveModule(module.id);
-                        setActiveSubModule(null);
-                        loadMainModule(module.id);
-                      }
-
-                      /*setActiveModule(module.id);
-                      setActiveSubModule(null); // Reset submodule when a main module is clicked*/
-                    }}
+    ${isSidebarOpen ? "opened" : ""} 
+    ${activeModule === module.id ? "active" : ""} 
+    ${hoveredModule === module.id ? "hovered" : ""}`}
+                    onClick={() => handleMainModuleClick(module.id)}
                     onMouseEnter={() => setHoveredModule(module.id)}
                     onMouseLeave={() => setHoveredModule(null)}
                   >
@@ -573,31 +602,7 @@ function App() {
                     className={`sidebar-module-desc-item 
                             ${activeModule === module.id ? "active" : ""} 
                             ${hoveredModule === module.id ? "hovered" : ""}`}
-                    onClick={() => {
-                      setIsSidebarOpen(true);
-                      if (activeModule === module.id) {
-                        // if the main module is active, and is clicked when a submodule is open, go back to main module
-                        if (activeSubModule) {
-                          setActiveModule(module.id);
-                          setActiveSubModule(null);
-                          loadMainModule(module.id);
-                          setIsMainModuleCollapsed(true);
-                        } else {
-                          // if it's already active and is the opened module, toggle off
-                          isMainModuleCollapsed
-                            ? setIsMainModuleCollapsed(false)
-                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                          //setActiveModule(null);
-                          setActiveSubModule(null);
-                        }
-                      } else {
-                        // otherwise, activate it
-                        setIsMainModuleCollapsed(true);
-                        setActiveModule(module.id);
-                        setActiveSubModule(null);
-                        loadMainModule(module.id);
-                      }
-                    }}
+                    onClick={() => handleMainModuleClick(module.id)}
                     onMouseEnter={() => setHoveredModule(module.id)}
                     onMouseLeave={() => setHoveredModule(null)}
                   >
@@ -621,10 +626,7 @@ function App() {
                             className={`sidebar-submodule-item
                             ${activeSubModule === sub ? "active" : ""} 
                             ${hoveredSubModule === sub ? "hovered" : ""}`}
-                            onClick={() => {
-                              setActiveSubModule(sub);
-                              //loadSubModule(sub);
-                            }}
+                            onClick={() => handleSubModuleClick(sub)}
                             onMouseEnter={() => setHoveredSubModule(sub)}
                             onMouseLeave={() => setHoveredSubModule(null)}
                           >
