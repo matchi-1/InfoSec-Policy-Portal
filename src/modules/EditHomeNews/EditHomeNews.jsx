@@ -93,7 +93,7 @@ const savePortalContent = async (content) => {
     return normalizedContent;
 };
 
-const BodyContent = () => {
+const BodyContent = ({ setHasUnsavedModuleChanges }) => {
     const [savedContent, setSavedContent] = useState(DEFAULT_PORTAL_CONTENT);
     const [draftContent, setDraftContent] = useState(DEFAULT_PORTAL_CONTENT);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -105,7 +105,6 @@ const BodyContent = () => {
         cancelLabel: "Cancel",
         showCancel: true,
     });
-
 
     const getChangedAreas = () => {
         const changedAreas = [];
@@ -135,7 +134,17 @@ const BodyContent = () => {
         return changedAreas;
     };
 
+
     const hasChanges = getChangedAreas().length > 0;
+
+    useEffect(() => {
+        setHasUnsavedModuleChanges?.(isEditMode && hasChanges);
+
+        return () => {
+            setHasUnsavedModuleChanges?.(false);
+        };
+    }, [isEditMode, hasChanges, setHasUnsavedModuleChanges]);
+
 
     const closeModal = () => {
         setModal({

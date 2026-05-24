@@ -6,6 +6,7 @@ import UserProfile from "./shared/components/UserProfile";
 import { Navigate, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { User } from "lucide-react";
+import ConfirmationModal from "./shared/components/ConfirmationModal";
 import LandingPage from "./pages/LandingPage";
 import {
   moduleFileNames,
@@ -34,6 +35,8 @@ function App() {
   const [rolePermissions, setRolePermissions] = useState([]);
   const [notifToast, setNotifToast] = useState(null);
   const notifToastTimerRef = useRef(null);
+  const [hasUnsavedModuleChanges, setHasUnsavedModuleChanges] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
 
   const displayName = user
     ? `${user.first_name} ${user.last_name?.charAt(0)}.`
@@ -418,10 +421,10 @@ function App() {
   useEffect(() => {
     if (activeSubModule) {
       loadSubModule(activeSubModule);
-    } else {
+    } else if (activeModule) {
       loadMainModule(activeModule);
     }
-  }, [activeSubModule]);
+  }, [activeSubModule, activeModule]);
 
   // sync Scroll
   const queryClient = new QueryClient();
@@ -439,29 +442,6 @@ function App() {
   const mainModules = import.meta.glob("./modules/*/*.jsx");
   const subModules = import.meta.glob("./modules/*/submodules/*.jsx");
 
-  const loadMainModule = (moduleId) => {
-    const moduleFile = `./modules/${moduleFileNames[moduleId]}/${moduleFileNames[moduleId]}.jsx`;
-
-    if (mainModules[moduleFile]) {
-      const LazyComponent = lazy(mainModules[moduleFile]);
-
-      const WrappedComponent = () => (
-        <LazyComponent
-          loadSubModule={loadSubModule}
-          setActiveSubModule={setActiveSubModule}
-          moduleFileNames={moduleFileNames}
-          user_id={user?.user_id}
-          employee_id={user?.employee_id}
-        />
-      );
-
-      setModuleComponent(() => WrappedComponent);
-      setShowUserProfile(false);
-    } else {
-      console.warn(`Module file not found: ${moduleFile}`);
-    }
-  };
-
   const loadSubModule = (submoduleId, mainModule = activeModule) => {
     const submoduleFile = `./modules/${moduleFileNames[mainModule]}/submodules/${moduleSubmoduleFileNames[mainModule][submoduleId]}.jsx`;
 
@@ -475,6 +455,7 @@ function App() {
           moduleFileNames={moduleFileNames}
           user_id={user?.user_id}
           employee_id={user?.employee_id}
+          setHasUnsavedModuleChanges={setHasUnsavedModuleChanges}
         />
       );
 
@@ -485,7 +466,46 @@ function App() {
     }
   };
 
-  const handleMainModuleClick = (moduleId) => {
+  const loadMainModule = (moduleId) => {
+    if (!moduleId || !moduleFileNames[moduleId]) {
+      return;
+    }
+
+    const moduleFile = `./modules/${moduleFileNames[moduleId]}/${moduleFileNames[moduleId]}.jsx`;
+
+    if (mainModules[moduleFile]) {
+      const LazyComponent = lazy(mainModules[moduleFile]);
+
+      const WrappedComponent = () => (
+        <LazyComponent
+          loadSubModule={loadSubModule}
+          setActiveSubModule={setActiveSubModule}
+          moduleFileNames={moduleFileNames}
+          user_id={user?.user_id}
+          employee_id={user?.employee_id}
+          setHasUnsavedModuleChanges={setHasUnsavedModuleChanges}
+        />
+      );
+
+      setModuleComponent(() => WrappedComponent);
+      setShowUserProfile(false);
+    } else {
+      console.warn(`Module file not found: ${moduleFile}`);
+    }
+  };
+
+
+
+  const requestNavigation = (navigation) => {
+    if (hasUnsavedModuleChanges) {
+      setPendingNavigation(navigation);
+      return;
+    }
+
+    navigation.run();
+  };
+
+  const performMainModuleClick = (moduleId) => {
     setIsSidebarOpen(true);
 
     if (activeModule === moduleId) {
@@ -497,6 +517,7 @@ function App() {
         isMainModuleCollapsed
           ? setIsMainModuleCollapsed(false)
           : setIsMainModuleCollapsed(true);
+
         setActiveSubModule(null);
       }
     } else {
@@ -506,7 +527,6 @@ function App() {
       loadMainModule(moduleId);
     }
 
-    // On small screens, selecting a module closes the full-screen menu
     if (isCompactSidebar) {
       setIsSidebarOpen(false);
     } else {
@@ -514,13 +534,55 @@ function App() {
     }
   };
 
-  const handleSubModuleClick = (submodule) => {
+  const handleMainModuleClick = (moduleId) => {
+    const willUnloadCurrentView =
+      moduleId !== activeModule || Boolean(activeSubModule);
+
+    if (!willUnloadCurrentView) {
+      performMainModuleClick(moduleId);
+      return;
+    }
+
+    requestNavigation({
+      type: "main",
+      label: getModuleDisplayName(moduleId),
+      run: () => performMainModuleClick(moduleId),
+    });
+  };
+
+  const performSubModuleClick = (submodule) => {
     setActiveSubModule(submodule);
 
-    // On small screens, selecting a submodule closes the full-screen menu
     if (isCompactSidebar) {
       setIsSidebarOpen(false);
     }
+  };
+
+  const handleSubModuleClick = (submodule) => {
+    if (submodule === activeSubModule) {
+      return;
+    }
+
+    requestNavigation({
+      type: "sub",
+      label: submodule,
+      run: () => performSubModuleClick(submodule),
+    });
+  };
+
+  const handleConfirmNavigation = () => {
+    if (!pendingNavigation) return;
+
+    const navigationToRun = pendingNavigation;
+
+    setPendingNavigation(null);
+    setHasUnsavedModuleChanges(false);
+
+    navigationToRun.run();
+  };
+
+  const handleCancelNavigation = () => {
+    setPendingNavigation(null);
   };
 
   // DEV ONLY: Show all modules while backend permissions are not yet ready
@@ -947,13 +1009,7 @@ function App() {
                       <div className="loading-suspense">Loading...</div>
                     }
                   >
-                    <ModuleComponent
-                      setActiveModule={setActiveModule}
-                      loadSubModule={loadSubModule}
-                      setActiveSubModule={setActiveSubModule}
-                      user_id={user?.user_id}
-                      employee_id={user?.employee_id}
-                    />
+                    <ModuleComponent />
                   </Suspense>
                 )
               )}
@@ -961,6 +1017,19 @@ function App() {
           </QueryClientProvider>
         </div>
       </div>
+      <ConfirmationModal
+        isOpen={Boolean(pendingNavigation)}
+        message={
+          pendingNavigation?.label
+            ? `You have unsaved changes. Are you sure you want to leave this page and open ${pendingNavigation.label}?`
+            : "You have unsaved changes. Are you sure you want to leave this page?"
+        }
+        confirmLabel="Discard and Continue"
+        cancelLabel="Stay"
+        showCancel={true}
+        onConfirm={handleConfirmNavigation}
+        onCancel={handleCancelNavigation}
+      />
     </div>
   );
 }

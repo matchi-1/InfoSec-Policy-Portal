@@ -17,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 import { initial, set } from "lodash";
 
 
-function BodyContent({ doc, onBack }) {
+function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     console.log("(debug) doc: ", doc)
     // const sections = doc.sections ?? [];
@@ -434,7 +434,7 @@ function BodyContent({ doc, onBack }) {
         const fileChanged =
             fileToUpload !== null
 
-        const fileNameChanged = doc.pretty_pdf_filename??"null" !== fileNameTemp??"null"
+        const fileNameChanged = doc.pretty_pdf_filename ?? "null" !== fileNameTemp ?? "null"
 
         const tagsChanged =
             JSON.stringify(currTags) !== initialDocRef.current.tags
@@ -452,6 +452,23 @@ function BodyContent({ doc, onBack }) {
             sectionsChanged
         )
     }
+
+    useEffect(() => {
+        setHasUnsavedModuleChanges?.(hasUnsavedChanges());
+
+        return () => {
+            setHasUnsavedModuleChanges?.(false);
+        };
+    }, [
+        currTitle,
+        currDesc,
+        fileToUpload,
+        currTags,
+        sections,
+        authoredBy,
+        reviewedBy,
+        setHasUnsavedModuleChanges,
+    ]);
 
     const hasSavedPdf =
         doc?.id !== "new" &&
@@ -1420,6 +1437,7 @@ function BodyContent({ doc, onBack }) {
                                         setShowDeleteToast(false);
                                     }, 1000);
 
+                                    setHasUnsavedModuleChanges?.(false);
                                     setTimeout(() => { onBack(); }, 1000);
                                 }}
                             >
@@ -1571,7 +1589,7 @@ function BodyContent({ doc, onBack }) {
                                     className={styles.deleteBtn}
                                     onClick={() => {
                                         // save filename before deleting
-                                        setDeletedFile(fileNameTemp!=="null"? fileNameTemp : fileName);
+                                        setDeletedFile(fileNameTemp !== "null" ? fileNameTemp : fileName);
 
                                         setShowRemoveToast(true);
 

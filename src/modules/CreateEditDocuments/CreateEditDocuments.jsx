@@ -496,7 +496,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                             </p>
 
                             <p className={styles.toastAlertText}>
-                                Document{" "} 
+                                Document{" "}
                                 <strong>
                                     "{deletedDoc}"
                                 </strong>{" "}
