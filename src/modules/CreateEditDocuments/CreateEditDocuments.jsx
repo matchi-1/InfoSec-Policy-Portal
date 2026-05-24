@@ -7,7 +7,7 @@ import { highlightText } from "../../utils/highlightText";
 // DB-like dummy source
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
 
-const BodyContent = ({ setActiveSubModule }) => {
+const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [docSearch, setDocSearch] = useState("");
@@ -176,6 +176,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                     onBack={() => {
                         setSelectedDocId(null);
                     }}
+                    setHasUnsavedModuleChanges={setHasUnsavedModuleChanges}
                 />
             ) : (
                 <div className={styles.documentsListView}>

@@ -417,58 +417,87 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             sections: JSON.stringify(doc.sections || []),
             authoredBy: doc.authoredBy || "",
             reviewedBy: doc.reviewedBy || "",
-        }
+            pdfFileName: doc.pretty_pdf_filename ?? "null",
+        };
     }, [doc])
 
     const hasUnsavedChanges = () => {
-        if (!initialDocRef.current) return false
+        if (!initialDocRef.current) return false;
 
-        const normalize = (v) => (v ?? "").toString().trim()
+        const normalize = (value) => (value ?? "").toString().trim();
+
+        const normalizeDateValue = (value) => {
+            if (!value) return "";
+
+            const parsedDate = dayjs(value);
+            return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : "";
+        };
+
+        const currentPdfName =
+            fileNameTemp !== "null" ? fileNameTemp : fileName;
 
         const titleChanged =
-            normalize(currTitle) !== normalize(initialDocRef.current.title)
+            normalize(currTitle) !== normalize(initialDocRef.current.title);
 
         const descChanged =
-            normalize(currDesc) !== normalize(initialDocRef.current.details)
+            normalize(currDesc) !== normalize(initialDocRef.current.details);
+
+        const reviewedDateChanged =
+            normalizeDateValue(selectDate) !==
+            normalizeDateValue(initialDocRef.current.lastReviewed);
+
+        const authorChanged =
+            normalize(authoredBy) !== normalize(initialDocRef.current.authoredBy);
+
+        const reviewerChanged =
+            normalize(reviewedBy) !== normalize(initialDocRef.current.reviewedBy);
 
         const fileChanged =
-            fileToUpload !== null
-
-        const fileNameChanged = doc.pretty_pdf_filename ?? "null" !== fileNameTemp ?? "null"
+            fileToUpload !== null ||
+            normalize(currentPdfName) !== normalize(initialDocRef.current.pdfFileName);
 
         const tagsChanged =
-            JSON.stringify(currTags) !== initialDocRef.current.tags
+            JSON.stringify(currTags) !== initialDocRef.current.tags;
 
         const sectionsChanged =
-            JSON.stringify(sections) !== initialDocRef.current.sections
+            JSON.stringify(sections) !== initialDocRef.current.sections;
 
         return (
-            authoredBy !== initialDocRef.current.authoredBy ||
-            reviewedBy !== initialDocRef.current.reviewedBy ||
             titleChanged ||
             descChanged ||
+            reviewedDateChanged ||
+            authorChanged ||
+            reviewerChanged ||
             fileChanged ||
             tagsChanged ||
             sectionsChanged
-        )
-    }
+        );
+    };
+
+    const hasChanges = hasUnsavedChanges();
+    const canSave = isSaveValid && hasChanges;
 
     useEffect(() => {
         setHasUnsavedModuleChanges?.(hasUnsavedChanges());
-
-        return () => {
-            setHasUnsavedModuleChanges?.(false);
-        };
     }, [
         currTitle,
         currDesc,
         fileToUpload,
+        fileName,
+        fileNameTemp,
         currTags,
         sections,
         authoredBy,
         reviewedBy,
+        selectDate,
         setHasUnsavedModuleChanges,
     ]);
+
+    useEffect(() => {
+        return () => {
+            setHasUnsavedModuleChanges?.(false);
+        };
+    }, [setHasUnsavedModuleChanges]);
 
     const hasSavedPdf =
         doc?.id !== "new" &&
@@ -556,7 +585,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                 {isHeaderCollapsed ? "Hidden" : "Shown"}
                             </span>
                         </button> */}
-                        {isSaveValid ? (
+                        {canSave ? (
                             <button
                                 className={styles.saveBtn}
                                 onClick={() => { setShowConfModal(true) }}>
