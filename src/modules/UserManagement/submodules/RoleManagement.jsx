@@ -3,6 +3,10 @@ import styles from "../styles/RoleManagement.module.css";
 import Button from "../../../shared/components/Button";
 import Dropdown from "../../../shared/components/Dropdown";
 import { useConfirmationModal } from "../../../shared/components/ConfirmationModal";
+import {
+  moduleFileNames,
+  moduleDisplayNames,
+} from "../../../config/moduleConfig";
 
 const createDefaultModuleState = (moduleNames = []) =>
   Object.fromEntries(moduleNames.map((name) => [name, name === "Home"]));
@@ -43,7 +47,7 @@ const getSelectedModules = (moduleState) =>
     .filter(([, enabled]) => Boolean(enabled))
     .map(([name]) => name);
 
-const BodyContent = ({ moduleFileNames }) => {
+const BodyContent = () => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
@@ -70,20 +74,17 @@ const BodyContent = ({ moduleFileNames }) => {
     [roles, selectedRole],
   );
 
-  const moduleNames = useMemo(
-    () => Object.keys(moduleFileNames ?? {}),
-    [moduleFileNames],
-  );
+  const moduleNames = useMemo(() => Object.keys(moduleFileNames ?? {}), []);
 
   const moduleLabelsByName = useMemo(
     () =>
       Object.fromEntries(
         Object.keys(moduleFileNames ?? {}).map((displayName) => [
           displayName,
-          displayName,
+          moduleDisplayNames[displayName] ?? displayName,
         ]),
       ),
-    [moduleFileNames],
+    [],
   );
 
   const isAdminRole = selectedRoleMeta?.roleName === "Admin";

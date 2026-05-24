@@ -7,28 +7,12 @@ import { Navigate, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { User } from "lucide-react";
 import LandingPage from "./pages/LandingPage";
-
-// IMPORTANT: FOR EDITING AND ADDING NEW MODULES
-const moduleFileNames = {
-  Home: "Home",
-  "View Documents": "ViewDocuments",
-  "Recent News": "RecentNews",
-  "Create Edit Documents": "CreateEditDocuments",
-  "Edit Home/News": "EditHomeNews",
-  "User Management": "UserManagement",
-};
-
-// IMPORTANT: FOR EDITING AND ADDING NEW MODULES
-const moduleSubmoduleFileNames = {
-  Home: {},
-  "View Documents": {},
-  "Recent News": {},
-  "Create Edit Documents": {},
-  "Edit Home/News": {},
-  "User Management": {
-    "Role Management": "RoleManagement",
-  },
-};
+import {
+  moduleFileNames,
+  moduleSubmoduleFileNames,
+  getModuleDisplayName,
+  sidebarModuleGroups,
+} from "./config/moduleConfig";
 
 function App() {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
@@ -397,19 +381,6 @@ function App() {
     }
   };
 
-  // IMPORTANT: FOR EDITING AND ADDING NEW MODULES
-  const moduleDisplayNames = {
-    Home: "Home",
-    "View Documents": "View Documents",
-    "Create Edit Documents": "Create/Edit Documents",
-    "Recent News": "Recent News",
-    "Edit Home/News": "Edit Home/News",
-    "User Management": "User Management",
-  };
-
-  const getModuleDisplayName = (moduleId) =>
-    moduleDisplayNames[moduleId] ?? moduleId;
-
   // DEV ONLY: Show all modules while backend permissions are not yet ready
   // const filteredModuleFileNames = moduleSubmoduleFileNames; // delete this and uncomment below once perms are ready
 
@@ -482,20 +453,6 @@ function App() {
   //   id: module,
   //   file: `${moduleFileNames[module]}.png`,
   // }));
-
-  // IMPORTANT: FOR EDITING AND ADDING NEW MODULES
-  const sidebarModuleGroups = [
-    {
-      id: "client-divider",
-      label: "Client Modules",
-      modules: ["Home", "View Documents", "Recent News"],
-    },
-    {
-      id: "admin-divider",
-      label: "Admin Modules",
-      modules: ["Create Edit Documents", "Edit Home/News", "User Management"],
-    },
-  ];
 
   const modulesIcons = sidebarModuleGroups.flatMap((group) => {
     const visibleModules = group.modules.filter(
