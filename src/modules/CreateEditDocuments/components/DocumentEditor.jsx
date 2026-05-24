@@ -41,6 +41,7 @@ function BodyContent({ doc, onBack }) {
     const [currDescTemp, setCurrDescTemp] = useState(null);
 
     const [viewingPDF, setViewingPDF] = useState(false);
+    const [isPdfFullscreenOpen, setIsPdfFullscreenOpen] = useState(false);
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
@@ -347,6 +348,29 @@ function BodyContent({ doc, onBack }) {
             sectionsChanged
         )
     }
+
+    const pdfPreviewUrl =
+        fileName !== "null" && doc?.pdf_filename
+            ? `${backend_base_url}/documents/get-pdf/${doc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`
+            : "#";
+
+    useEffect(() => {
+        if (!isPdfFullscreenOpen) return;
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                setIsPdfFullscreenOpen(false);
+            }
+        };
+
+        document.body.style.overflow = "hidden";
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.body.style.overflow = "";
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [isPdfFullscreenOpen]);
 
     return (
         <div className={styles.documents}>
@@ -761,6 +785,30 @@ function BodyContent({ doc, onBack }) {
                             </div>
                         </div>
                         <div className={styles.buttonsContainer}>
+                            <button
+                                type="button"
+                                className={
+                                    fileName === "null"
+                                        ? styles.pdfFullscreenBtnDisabled
+                                        : styles.pdfFullscreenBtn
+                                }
+                                onClick={() => {
+                                    if (fileName === "null") {
+                                        setShowNoPdfAlert(true);
+
+                                        setTimeout(() => {
+                                            setShowNoPdfAlert(false);
+                                        }, 2500);
+
+                                        return;
+                                    }
+
+                                    setIsPdfFullscreenOpen(true);
+                                }}
+                            >
+                                View PDF Fullscreen
+                            </button>
+
                             {
                                 (!viewingPDF) ? (
                                     // <button onClick={() => {
@@ -789,6 +837,10 @@ function BodyContent({ doc, onBack }) {
                                         className={styles.closeBtn}
                                         onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
+
+
+
+
                             }
                             {fileName !== "null" || fileNameTemp !== "null" ? (
                                 <button className={styles.pdfChip}>
@@ -835,7 +887,7 @@ function BodyContent({ doc, onBack }) {
                     <div className={styles.pdfViewerContainer}>
                         <iframe
                             className={styles.pdfIframe}
-                            src={`${backend_base_url}/documents/get-pdf/${doc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`}
+                            src={pdfPreviewUrl}
                             title={doc.title}
                         />
                     </div>
@@ -1395,6 +1447,52 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
+
+            {isPdfFullscreenOpen && fileName !== "null" && (
+                <div
+                    className={styles.pdfFullscreenOverlay}
+                    onClick={(event) => {
+                        if (event.target === event.currentTarget) {
+                            setIsPdfFullscreenOpen(false);
+                        }
+                    }}
+                >
+                    <div className={styles.pdfFullscreenPanel}>
+                        <div className={styles.pdfFullscreenHeader}>
+                            <div className={styles.pdfFullscreenTitleGroup}>
+                                <p>PDF Preview</p>
+                                <h3>{currTitle || doc.title}</h3>
+                            </div>
+
+                            <div className={styles.pdfFullscreenActions}>
+                                <a
+                                    className={styles.pdfFullscreenOpenTabBtn}
+                                    href={pdfPreviewUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Open in New Tab
+                                </a>
+
+                                <button
+                                    type="button"
+                                    className={styles.pdfFullscreenCloseBtn}
+                                    onClick={() => setIsPdfFullscreenOpen(false)}
+                                    aria-label="Close fullscreen PDF"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        </div>
+
+                        <iframe
+                            className={styles.pdfFullscreenIframe}
+                            src={pdfPreviewUrl}
+                            title={`${currTitle || doc.title} fullscreen PDF`}
+                        />
+                    </div>
+                </div>
+            )}
 
         </div>
     );

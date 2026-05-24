@@ -209,7 +209,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                     <div className={styles.searchFilterCreate}>
                         <div className={styles.searchBarContainer}>
                             <SearchBar
-                                placeholder="Search documents..."
+                                placeholder="Search by title, author, reviewer..."
                                 value={docSearch}
                                 onChange={setDocSearch}
                             />
