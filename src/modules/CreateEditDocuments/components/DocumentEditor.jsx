@@ -396,7 +396,9 @@ function BodyContent({ doc, onBack }) {
 
     const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
+    const [showClearTagsModal, setShowClearTagsModal] = useState(false);
     const initialDocRef = useRef(null)
+
 
     useEffect(() => {
         if (!doc) return
@@ -706,11 +708,13 @@ function BodyContent({ doc, onBack }) {
                                 <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }} >
                                     {currTags.length > 0 ? (
                                         <img
-                                            style={{ width: '1.4rem', height: '1.4rem' }}
-                                            src="/icons/close-gray.png" alt="remove all tags"
+                                            style={{ width: "1.4rem", height: "1.4rem" }}
+                                            src="/icons/close-gray.png"
+                                            alt="remove all tags"
+                                            title="Remove all tags"
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                setCurrTags([]);
+                                                setShowClearTagsModal(true);
                                             }}
                                         />
                                     ) : ""
@@ -1566,6 +1570,40 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
+
+            {showClearTagsModal && (
+                <div className={styles.confModalOverlay}>
+                    <div className={styles.confModal}>
+                        <div className={styles.confModalHeader}>
+                            <h3>Remove All Tags?</h3>
+                            <p>
+                                This will remove all selected tags from this document. Are you sure you want to continue?
+                            </p>
+                        </div>
+
+                        <div className={styles.confModalButtons}>
+                            <button
+                                type="button"
+                                className={styles.cancelBtn}
+                                onClick={() => setShowClearTagsModal(false)}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                className={styles.deleteBtn}
+                                onClick={() => {
+                                    setCurrTags([]);
+                                    setShowClearTagsModal(false);
+                                }}
+                            >
+                                Remove All Tags
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {isPdfFullscreenOpen && hasSavedPdf && (
                 <div
