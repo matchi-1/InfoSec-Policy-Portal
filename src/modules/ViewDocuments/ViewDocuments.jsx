@@ -34,7 +34,10 @@ const BodyContent = () => {
         tag: "",
         authorName: "",
         reviewerName: "",
+        sortBy: "",
+        sortOrder: "",
     };
+
     const [docFilters, setDocFilters] = useState(emptyDocFilters);
 
     // DB docs (full objects) dummy data vv
@@ -92,14 +95,48 @@ const BodyContent = () => {
                 options: getUniqueOptions(dbDocs, "reviewerName"),
                 emptyLabel: "All reviewers",
             },
+            {
+                key: "sortBy",
+                label: "Sort by",
+                type: "select",
+                options: [
+                    { label: "Document title", value: "title" },
+                    { label: "Author name", value: "authorName" },
+                    { label: "Reviewer name", value: "reviewerName" },
+                    { label: "Last updated", value: "lastUpdated" },
+                    { label: "Last reviewed", value: "lastReviewed" },
+                ],
+                emptyLabel: "Default: Last updated, newest first",
+            },
+            {
+                key: "sortOrder",
+                label: "Sort order",
+                type: "select",
+                options: [
+                    { label: "Ascending", value: "asc" },
+                    { label: "Descending", value: "desc" },
+                ],
+                emptyLabel: "Default: Descending",
+            },
         ];
     }, [dbDocs]);
+
+    const getSortValue = (doc, key) => {
+        if (!key) return "";
+
+        if (key === "lastUpdated" || key === "lastReviewed") {
+            const date = new Date(doc[key]);
+            return Number.isNaN(date.getTime()) ? 0 : date.getTime();
+        }
+
+        return String(doc[key] ?? "").toLowerCase();
+    };
 
     // Filter by title
     const filteredDocs = useMemo(() => {
         const q = docSearch.trim().toLowerCase();
 
-        return dbDocs.filter((d) => {
+        const filtered = dbDocs.filter((d) => {
             const matchesSearch =
                 !q || (d.title ?? "").toLowerCase().includes(q);
 
@@ -123,6 +160,28 @@ const BodyContent = () => {
                 matchesAuthoredBy &&
                 matchesReviewedBy
             );
+        });
+
+        const sortBy = docFilters.sortBy || "lastUpdated";
+        const sortOrder = docFilters.sortOrder || "desc";
+
+        if (!sortBy) {
+            return filtered;
+        }
+
+        return [...filtered].sort((a, b) => {
+            const aValue = getSortValue(a, sortBy);
+            const bValue = getSortValue(b, sortBy);
+
+            if (aValue < bValue) {
+                return sortOrder === "asc" ? -1 : 1;
+            }
+
+            if (aValue > bValue) {
+                return sortOrder === "asc" ? 1 : -1;
+            }
+
+            return 0;
         });
     }, [dbDocs, docSearch, docFilters]);
 
