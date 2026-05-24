@@ -31,7 +31,7 @@ const BodyContent = () => {
     const itemsPerPage = 8;
 
     const emptyDocFilters = {
-        category: "",
+        tag: "",
         authorName: "",
         reviewerName: "",
     };
@@ -46,15 +46,20 @@ const BodyContent = () => {
         setIsHeaderCollapsed(false);
     };
 
-    const getDocCategories = (doc) => {
-        if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
-        if (typeof doc?.category === "string" && doc.category.trim()) return [doc.category.trim()];
-        return [];
+    const getDocTags = (doc) => {
+        if (!Array.isArray(doc?.tags)) return [];
+
+        return doc.tags
+            .map((tag) => {
+                if (typeof tag === "string") return tag;
+                return tag?.tag_content;
+            })
+            .filter(Boolean);
     };
 
     const getUniqueOptions = (items, key) => {
-        if (key === "category") {
-            return [...new Set(items.flatMap((item) => getDocCategories(item)))].sort();
+        if (key === "tag") {
+            return [...new Set(items.flatMap((item) => getDocTags(item)))].sort();
         }
 
         return [...new Set(items.map((item) => item[key]).filter(Boolean))].sort();
@@ -67,11 +72,11 @@ const BodyContent = () => {
     const documentFilterFields = useMemo(() => {
         return [
             {
-                key: "category",
-                label: "Category",
+                key: "tag",
+                label: "Tags",
                 type: "select",
-                options: getUniqueOptions(dbDocs, "category"),
-                emptyLabel: "All categories",
+                options: getUniqueOptions(dbDocs, "tag"),
+                emptyLabel: "All tags",
             },
             {
                 key: "authorName",
@@ -98,11 +103,11 @@ const BodyContent = () => {
             const matchesSearch =
                 !q || (d.title ?? "").toLowerCase().includes(q);
 
-            const docCategories = getDocCategories(d);
+            const docTags = getDocTags(d);
 
-            const matchesCategory =
-                !docFilters.category ||
-                docCategories.includes(docFilters.category);
+            const matchesTag =
+                !docFilters.tag ||
+                docTags.includes(docFilters.tag);
 
             const matchesAuthoredBy =
                 !docFilters.authorName ||
@@ -114,7 +119,7 @@ const BodyContent = () => {
 
             return (
                 matchesSearch &&
-                matchesCategory &&
+                matchesTag &&
                 matchesAuthoredBy &&
                 matchesReviewedBy
             );
@@ -230,7 +235,7 @@ const BodyContent = () => {
                     <div className={styles.documentAndFooterContainer}>
                         <div className={styles.documentsContainer}>
                             {paginatedDocuments.map((doc) => {
-                                const categories = getDocCategories(doc);
+                                const tags = getDocTags(doc);
 
                                 return (
                                     <div
@@ -247,11 +252,15 @@ const BodyContent = () => {
                                             </p>
 
                                             <div className={styles.documentMetaChips}>
-                                                {categories.map((cat) => (
-                                                    <span key={cat} className={styles.metaChip}>
-                                                        {cat}
-                                                    </span>
-                                                ))}
+                                                {tags.length > 0 ? (
+                                                    tags.map((tag) => (
+                                                        <span key={tag} className={styles.metaChip}>
+                                                            {tag}
+                                                        </span>
+                                                    ))
+                                                ) : (
+                                                    <span className={styles.metaChip}>No tags</span>
+                                                )}
                                             </div>
 
                                             <div className={styles.documentMetaLine}>
@@ -312,7 +321,7 @@ const BodyContent = () => {
                                     </div>
 
                                     <div className={styles.documentDescription}>
-                                        <p>{selectedDoc.documentDetails}</p>
+                                        <p>{selectedDoc.details || "No description provided."}</p>
                                     </div>
                                 </div>
                             ) : (
@@ -326,10 +335,28 @@ const BodyContent = () => {
 
                             {selectedDoc && (
                                 <div className={styles.documentMetadata}>
-                                    <p>Authored by: {selectedDoc.authorName}</p>
-                                    <p>Last Updated: {new Date(selectedDoc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
-                                    <p>Reviewed by: {selectedDoc.reviewerName}</p>
-                                    <p>Last Reviewed: {new Date(selectedDoc.lastReviewed).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
+                                    <p>Authored by: {selectedDoc.authorName || "No author"}</p>
+                                    <p>
+                                        Last Updated:{" "}
+                                        {selectedDoc.lastUpdated
+                                            ? new Date(selectedDoc.lastUpdated).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "2-digit",
+                                                day: "2-digit",
+                                            })
+                                            : "No update date"}
+                                    </p>
+                                    <p>Reviewed by: {selectedDoc.reviewerName || "No reviewer"}</p>
+                                    <p>
+                                        Last Reviewed:{" "}
+                                        {selectedDoc.lastReviewed
+                                            ? new Date(selectedDoc.lastReviewed).toLocaleDateString("en-US", {
+                                                year: "numeric",
+                                                month: "2-digit",
+                                                day: "2-digit",
+                                            })
+                                            : "No review date"}
+                                    </p>
                                 </div>
                             )}
                         </div>
