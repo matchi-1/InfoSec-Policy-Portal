@@ -80,6 +80,7 @@ const BodyContent = () => {
                 type: "select",
                 options: getUniqueOptions(dbDocs, "tag"),
                 emptyLabel: "All tags",
+                searchable: true,
             },
             {
                 key: "authorName",
@@ -87,6 +88,7 @@ const BodyContent = () => {
                 type: "select",
                 options: getUniqueOptions(dbDocs, "authorName"),
                 emptyLabel: "All authors",
+                searchable: true,
             },
             {
                 key: "reviewerName",
@@ -94,6 +96,7 @@ const BodyContent = () => {
                 type: "select",
                 options: getUniqueOptions(dbDocs, "reviewerName"),
                 emptyLabel: "All reviewers",
+                searchable: true,
             },
             {
                 key: "sortBy",

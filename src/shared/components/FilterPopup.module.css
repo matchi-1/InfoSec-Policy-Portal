@@ -187,3 +187,121 @@
     transform: translateY(0) scale(1);
   }
 }
+
+
+.searchableDropdown {
+  position: relative;
+  width: 100%;
+}
+
+.searchableDropdownButton {
+  width: 100%;
+  height: 2rem;
+  border: 1px solid #b4bfd0;
+  border-radius: 0.35rem;
+  padding: 0 0.6rem;
+  font-size: 0.78rem;
+  color: #1a2346;
+  background-color: #fbfcfe;
+  box-sizing: border-box;
+  outline: none;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  text-align: left;
+}
+
+.searchableDropdownButton:hover {
+  border-color: #6275b0;
+}
+
+.searchableDropdownButton:focus {
+  border-color: #6275b0;
+  box-shadow: 0 0 0 2px rgba(98, 117, 176, 0.12);
+}
+
+.searchableDropdownButton span:first-child {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.searchableDropdownArrow {
+  font-size: 0.58rem;
+  color: var(--primary-blue);
+  flex-shrink: 0;
+}
+
+.searchableDropdownMenu {
+  position: absolute;
+  top: calc(100% + 0.3rem);
+  left: 0;
+  right: 0;
+  z-index: 20;
+
+  max-height: 11rem;
+  overflow-y: auto;
+
+  padding: 0.35rem;
+  border: 1px solid #c7d2e2;
+  border-radius: 0.45rem;
+  background-color: #ffffff;
+  box-shadow: 0 0.45rem 1rem rgba(31, 54, 94, 0.16);
+  box-sizing: border-box;
+}
+
+.searchableDropdownInput {
+  width: 100%;
+  height: 1.85rem;
+  margin-bottom: 0.35rem;
+  padding: 0 0.5rem;
+
+  border: 1px solid #b4bfd0;
+  border-radius: 0.35rem;
+  background-color: #fbfcfe;
+  color: #1a2346;
+
+  font-size: 0.76rem;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.searchableDropdownInput:focus {
+  border-color: #6275b0;
+  box-shadow: 0 0 0 2px rgba(98, 117, 176, 0.12);
+}
+
+.searchableDropdownOption {
+  width: 100%;
+  min-height: 1.8rem;
+  padding: 0.35rem 0.5rem;
+
+  border: none;
+  border-radius: 0.3rem;
+  background-color: transparent;
+  color: #1a2346;
+
+  font-size: 0.76rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.searchableDropdownOption:hover {
+  background-color: #e6f0ff;
+}
+
+.searchableDropdownOptionActive {
+  background-color: #dceaff;
+  color: var(--primary-blue);
+  font-weight: 600;
+}
+
+.searchableDropdownEmpty {
+  padding: 0.45rem 0.5rem;
+  color: #7b8494;
+  font-size: 0.74rem;
+  text-align: center;
+}
