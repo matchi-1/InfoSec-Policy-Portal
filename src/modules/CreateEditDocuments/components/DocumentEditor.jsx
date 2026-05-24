@@ -44,7 +44,7 @@ function BodyContent({ doc, onBack }) {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
-    const [fileName, setFileName] = useState(doc.pretty_pdf_filename??"null")
+    const [fileName, setFileName] = useState(doc.pretty_pdf_filename ?? "null")
     const [fileNameTemp, setFileNameTemp] = useState("null")
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
@@ -301,6 +301,11 @@ function BodyContent({ doc, onBack }) {
                 </p>
                 <div className={styles.headerRegion}>
                     <div className={styles.headerDock}>
+                        <p className={styles.headerCollapseHint}>
+                            {isHeaderCollapsed
+                                ? "Click here to show header →"
+                                : "Click here to collapse header →"}
+                        </p>
                         <button
                             type="button"
                             className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
@@ -370,9 +375,9 @@ function BodyContent({ doc, onBack }) {
                                 (!editingTitle) ? (
                                     <div className={styles.titleText}>
                                         <h1 onDoubleClick={() => {
-                                                setEditingTitle(true);
-                                                setCurrTitleTemp(currTitle);
-                                            }}
+                                            setEditingTitle(true);
+                                            setCurrTitleTemp(currTitle);
+                                        }}
                                         >{currTitle}</h1>
                                         <button
                                             className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
@@ -707,15 +712,15 @@ function BodyContent({ doc, onBack }) {
                                         View PDF
                                     </button>
                                 ) : (
-                                    <button 
-                                    className={styles.closeBtn}
-                                    onClick={() => { setViewingPDF(false) }}>Close PDF</button>
+                                    <button
+                                        className={styles.closeBtn}
+                                        onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
-                            { fileName !== "null" || fileNameTemp !== "null" ? (
+                            {fileName !== "null" || fileNameTemp !== "null" ? (
                                 <button className={styles.pdfChip}>
                                     <div>
-                                        <img src="/icons/pdf.png" alt="" className={styles.actionIcon}/>
+                                        <img src="/icons/pdf.png" alt="" className={styles.actionIcon} />
                                         <p>{fileName !== "null" ? fileName : fileNameTemp}</p>
                                     </div>
                                     <img
@@ -765,7 +770,7 @@ function BodyContent({ doc, onBack }) {
                         />
                     </div>
                 ) : (
-                    <div className={isHeaderCollapsed? styles.policyAccordionFull : styles.policyAccordion}>
+                    <div className={isHeaderCollapsed ? styles.policyAccordionFull : styles.policyAccordion}>
                         {filteredSections.map((section) => {
                             const isOpen = section.id === openSectionId && section.id != sectionTitleEditID;
                             return (
