@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useEffect } from "react";
 import Button from "./Button";
 import styles from "./ConfirmationModal.module.css";
 
@@ -62,51 +62,5 @@ const ConfirmationModal = ({
 
 export default ConfirmationModal;
 
-export const useConfirmationModal = () => {
-  const [confirmationState, setConfirmationState] = useState(null);
-
-  const askForConfirmation = useCallback(
-    (action, message = DEFAULT_MESSAGE) => {
-      if (typeof action !== "function") {
-        return;
-      }
-
-      setConfirmationState({
-        action,
-        message: message || DEFAULT_MESSAGE,
-      });
-    },
-    [],
-  );
-
-  const closeConfirmation = useCallback(() => {
-    setConfirmationState(null);
-  }, []);
-
-  const handleConfirm = useCallback(async () => {
-    const action = confirmationState?.action;
-    if (!action) {
-      return;
-    }
-
-    setConfirmationState(null);
-    await action();
-  }, [confirmationState]);
-
-  const confirmationModal = useMemo(
-    () => (
-      <ConfirmationModal
-        isOpen={Boolean(confirmationState)}
-        message={confirmationState?.message ?? DEFAULT_MESSAGE}
-        onCancel={closeConfirmation}
-        onConfirm={handleConfirm}
-      />
-    ),
-    [closeConfirmation, confirmationState, handleConfirm],
-  );
-
-  return {
-    askForConfirmation,
-    confirmationModal,
-  };
-};
+// The confirmation hook is provided from useConfirmationModal.js to
+// keep this file exporting only components (fast-refresh friendly).
