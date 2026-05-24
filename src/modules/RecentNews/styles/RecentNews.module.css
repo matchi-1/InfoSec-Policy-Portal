@@ -89,10 +89,11 @@
   min-height: 0;
   width: 100%;
   display: grid;
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  grid-template-columns: minmax(18rem, 0.75fr) minmax(30rem, 1.35fr);
   gap: 1rem;
   box-sizing: border-box;
 }
+
 
 .pinnedNoticeCard,
 .updatesCard {
@@ -172,23 +173,34 @@
   font-weight: 600;
 }
 
+
 /* Latest Updates */
+
+.updatesCard {
+  min-height: 0;
+  height: 100%;
+}
 
 .updatesList {
   flex: 1;
-  padding: 0.85rem;
+  min-height: 0;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
-  min-height: 0;
+  gap: 0.85rem;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .updateItem {
-  border: 1px solid var(--light-grey-lines);
-  border-radius: 0.5rem;
-  padding: 0.85rem;
-  background-color: white;
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #d8e2ef;
+  background: #ffffff;
+  box-shadow: 0 0.2rem 0.75rem rgba(15, 23, 42, 0.045);
+  box-sizing: border-box;
+  flex-shrink: 0;
 }
 
 .updateItemTop {
@@ -196,40 +208,97 @@
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
-  margin-bottom: 0.55rem;
-}
-
-.updateItemTop span {
-  background-color: var(--primary-blue);
-  color: white;
-  border-radius: 0.3rem;
-  padding: 0.25rem 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 600;
-  white-space: nowrap;
+  margin-bottom: 0.75rem;
 }
 
 .updateItemTop p {
-  color: var(--light-grey-text);
-  font-size: 0.75rem;
   margin: 0;
+  color: #64748b;
+  font-size: 0.78rem;
+  font-weight: 600;
   white-space: nowrap;
 }
 
-.updateItem h3 {
-  margin: 0;
-  color: #1f2937;
-  font-size: 0.95rem;
-  font-weight: 600;
-  line-height: 1.35;
+.updateTypePill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.32rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-transform: uppercase;
+  background: #eef2f7;
+  color: #334155;
+  white-space: nowrap;
 }
 
-.updateItem > p {
-  margin-top: 0.45rem;
-  color: #3f4a5f;
-  font-size: 0.85rem;
+.updateHeadline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.45rem;
+  color: #1f2937;
+  font-size: 0.92rem;
+  font-weight: 600;
   line-height: 1.45;
 }
+
+.updateTitlePill {
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  padding: 0.3rem 0.5rem;
+  border-radius: 0.5rem;
+  background: #f1f5f9;
+  color: #1e3a5f;
+  border: 1px solid #d8e2ef;
+  font-size: 0.74rem;
+  font-weight: 700;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.updateActionText {
+  color: #334155;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.updateDescription {
+  margin: 0;
+  color: #475569;
+  font-size: 0.75rem;
+  line-height: 1.5;
+
+}
+
+/* Only the update type tag changes color */
+
+.updateItemAnnouncement .updateTypePill {
+  background: #fff4e8;
+  color: #9a4d10;
+}
+
+.updateItemUpload .updateTypePill {
+  background: #eaf7ef;
+  color: #1f6f45;
+}
+
+.updateItemUpdate .updateTypePill {
+  background: #edf4ff;
+  color: #2856a8;
+}
+
+.updateItemSystem .updateTypePill {
+  background: #eef2f7;
+  color: #334155;
+}
+
 
 /* Responsive */
 
@@ -276,3 +345,7 @@
     gap: 0.35rem;
   }
 }
+
+
+
+
