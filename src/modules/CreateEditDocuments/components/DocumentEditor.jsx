@@ -1,4 +1,4 @@
-import { use, useEffect, useMemo, useState } from "react";
+import { use, useEffect, useMemo, useState, useRef } from "react";
 import styles from "../styles/DocumentEditor.module.css";
 import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
@@ -69,6 +69,7 @@ function BodyContent({ doc, onBack }) {
 
     // const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
     const [selectDate, setSelectDate] = useState(doc.lastReviewed ? dayjs(doc.lastReviewed) : dayjs());
+    const normalizeDate = (d) => d ? new Date(d).toISOString() : ""
 
     const [showConfModal, setShowConfModal] = useState(false);
 
@@ -298,10 +299,66 @@ function BodyContent({ doc, onBack }) {
 
     const [showNoPdfAlert, setShowNoPdfAlert] = useState(false);
 
+    const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
+    const initialDocRef = useRef(null)
+
+    useEffect(() => {
+        if (!doc) return
+
+        initialDocRef.current = {
+            title: doc.title || "",
+            details: doc.details || "",
+            lastReviewed: doc.lastReviewed,
+            tags: JSON.stringify(doc.tags || []),
+            sections: JSON.stringify(doc.sections || []),
+            authoredBy: doc.authoredBy || "",
+            reviewedBy: doc.reviewedBy || "",
+        }
+    }, [doc])
+
+    const hasUnsavedChanges = () => {
+        if (!initialDocRef.current) return false
+
+        const normalize = (v) => (v ?? "").toString().trim()
+
+        const titleChanged =
+            normalize(currTitle) !== normalize(initialDocRef.current.title)
+
+        const descChanged =
+            normalize(currDesc) !== normalize(initialDocRef.current.details)
+
+        const fileChanged =
+            fileToUpload !== null
+
+        const tagsChanged =
+            JSON.stringify(currTags) !== initialDocRef.current.tags
+
+        const sectionsChanged =
+            JSON.stringify(sections) !== initialDocRef.current.sections
+
+        return (
+            authoredBy !== initialDocRef.current.authoredBy ||
+            reviewedBy !== initialDocRef.current.reviewedBy ||
+            titleChanged ||
+            descChanged ||
+            fileChanged ||
+            tagsChanged ||
+            sectionsChanged
+        )
+    }
+
     return (
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
-                <p className={styles.backDocuBtn} onClick={onBack}>
+                <p className={styles.backDocuBtn}
+                    onClick={() => {
+                        if (hasUnsavedChanges()) {
+                            setShowBackConfirmModal(true)
+                        } else {
+                            onBack()
+                        }
+                    }}
+                >
                     <img src="/icons/to-left.png" />
                     <p>Back</p>
                 </p>
@@ -351,6 +408,8 @@ function BodyContent({ doc, onBack }) {
                         ) : (
                             <button
                                 className={styles.saveBtnDisabled}
+                                aria-label="Complete all required fields before saving"
+                                title="Complete all required fields before saving"
                             // onClick={() => { setShowConfModal(true) }}
                             >
                                 <img src="/icons/save-green.png" />
@@ -1236,11 +1295,11 @@ function BodyContent({ doc, onBack }) {
                 </div>
             }
             {
-                showTagModal && 
+                showTagModal &&
                 <div>
                     <input type="text" value={tagTxt} onChange={(e) => {
                         setTagTxt(e.target.value)
-                    }}/>
+                    }} />
 
                     <button
                         onClick={() => {
@@ -1257,7 +1316,7 @@ function BodyContent({ doc, onBack }) {
                                     'Content-Type': 'application/json',
                                 },
                                 body: JSON.stringify({
-                                    "tag_content":tagTxt
+                                    "tag_content": tagTxt
                                 })
                             })
                             setTagTxt("")
@@ -1266,6 +1325,40 @@ function BodyContent({ doc, onBack }) {
                         }}
                     >ok</button>
                 </div>
+            }
+
+            {
+                showBackConfirmModal && (
+                    <div className={styles.confModalOverlay}>
+                        <div className={styles.confModal}>
+                            <div className={styles.confModalHeader}>
+                                <h3>Unsaved Changes</h3>
+                                <p>
+                                    You have unsaved changes. Leaving now will discard them.
+                                </p>
+                            </div>
+
+                            <div className={styles.confModalButtons}>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => setShowBackConfirmModal(false)}
+                                >
+                                    Stay
+                                </button>
+
+                                <button
+                                    className={styles.deleteBtn}
+                                    onClick={() => {
+                                        setShowBackConfirmModal(false)
+                                        onBack()
+                                    }}
+                                >
+                                    Discard Changes
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
             }
         </div>
     );

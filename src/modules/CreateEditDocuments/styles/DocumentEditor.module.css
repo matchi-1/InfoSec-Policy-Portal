@@ -1402,6 +1402,7 @@
   cursor: pointer;
   font-weight: 600;
   border-bottom: 2px solid #f5f5f5;
+  text-wrap: nowrap;
 }
 
 .tagsDropdownList p:hover,
@@ -2018,6 +2019,15 @@
 
 .confirmBtn:hover {
   background: #086868;
+}
+
+.deleteBtn {
+  color: white;
+  background: #c62828;
+}
+
+.deleteBtn:hover {
+  background: #a61f1f;
 }
 
 @keyframes fade-in {
