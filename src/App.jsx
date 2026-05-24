@@ -266,6 +266,44 @@ function App() {
     return () => clearInterval(interval);
   }, [user]);
 
+
+  const getNotificationActorLabel = (notif) => {
+    const currentUserId = user?.user_id || user?.id || user?.employee_id;
+    const notifActorId = notif.actor || notif.actor_id;
+
+    if (currentUserId && notifActorId && String(notifActorId) === String(currentUserId)) {
+      return "You";
+    }
+
+    return notif.actor_name || notif.actor_full_name || "System";
+  };
+
+  const getNotificationTarget = (notif) => {
+    return notif.misc_title || notif.document_title || "an item";
+  };
+
+  const getNotificationMessage = (notif) => {
+    const actor = getNotificationActorLabel(notif);
+    const action = notif.action || "updated";
+    const target = getNotificationTarget(notif);
+
+    return `${actor} ${action} ${target}`;
+  };
+
+  const getNotificationTime = (createdAt) => {
+    if (!createdAt) return "";
+
+    const date = new Date(createdAt);
+
+    if (Number.isNaN(date.getTime())) return "";
+
+    return new Intl.DateTimeFormat("en-US", {
+      hour: "numeric",
+      minute: "2-digit",
+      hour12: true,
+    }).format(date);
+  };
+
   // hooks for loading modules
   useEffect(() => {
     if (activeModule) {
@@ -717,28 +755,12 @@ function App() {
                         key={i}
                       >
                         <div className="notif-msg">
-                          <p>
-                            {notif.actor ==
-                              JSON.parse(localStorage.getItem("user")).user_id
-                              ? "You"
-                              : notif.actor_name}{" "}
-                            {notif.action}{" "}
-                            {notif.misc_title
-                              ? notif.misc_title
-                              : notif.document_title}
-                          </p>
+                          <p>{getNotificationMessage(notif)}</p>
                         </div>
+
                         <div className="notif-time">
-                              <p>
-                                {new Intl.DateTimeFormat("en-US", {
-                                  // month: "short",
-                                  // day: "numeric",
-                                  hour: "numeric",
-                                  minute: "2-digit",
-                                  hour12: true,
-                                }).format(new Date(notif.created_at))}
-                              </p>
-                            </div>
+                          <p>{getNotificationTime(notif.created_at)}</p>
+                        </div>
                       </div>
                     ))
                   )}
