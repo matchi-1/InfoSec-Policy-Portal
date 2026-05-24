@@ -395,6 +395,18 @@ const BodyContent = () => {
                                 </label>
 
                                 <label className={styles.fieldGroup}>
+                                    <span>Pinned Notice Author</span>
+                                    <input
+                                        value={draftContent.recentNews.pinnedNotice.updatedBy}
+                                        onChange={(e) =>
+                                            handlePinnedNoticeChange("updatedBy", e.target.value)
+                                        }
+                                        disabled={!isEditMode}
+                                        placeholder="e.g., InfoSec Department"
+                                    />
+                                </label>
+
+                                <label className={styles.fieldGroup}>
                                     <span>Pinned Notice Message</span>
                                     <textarea
                                         value={draftContent.recentNews.pinnedNotice.message}
@@ -413,6 +425,9 @@ const BodyContent = () => {
                                         <p className={styles.noticeMeta}>
                                             {draftContent.recentNews.pinnedNotice.category} •{" "}
                                             {draftContent.recentNews.pinnedNotice.updatedAt}
+                                            {draftContent.recentNews.pinnedNotice.updatedBy
+                                                ? ` • By ${draftContent.recentNews.pinnedNotice.updatedBy}`
+                                                : ""}
                                         </p>
 
                                         <h2>{draftContent.recentNews.pinnedNotice.title}</h2>
