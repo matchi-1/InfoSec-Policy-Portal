@@ -106,7 +106,7 @@ const BodyContent = ({ setActiveSubModule }) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                "doc_id":docToDelete.id
+                "doc_id": docToDelete.id
             })
         })
 
@@ -118,8 +118,19 @@ const BodyContent = ({ setActiveSubModule }) => {
         const q = docSearch.trim().toLowerCase();
 
         const filtered = dbDocs.filter((doc) => {
-            const matchesSearch =
-                !q || (doc.title ?? "").toLowerCase().includes(q);
+            const searchableText = [
+                doc.title,
+                doc.authorName,
+                doc.reviewerName,
+                doc.details,
+                doc.documentDetails,
+                ...getDocCategories(doc),
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            const matchesSearch = !q || searchableText.includes(q);
 
             const docCategories = getDocCategories(doc);
 
