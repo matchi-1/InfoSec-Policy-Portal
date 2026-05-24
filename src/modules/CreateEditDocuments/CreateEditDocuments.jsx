@@ -61,19 +61,46 @@ const BodyContent = ({ setActiveSubModule }) => {
         }
     };
 
+    // const handleDeleteDoc = (doc) => {
+    //     const confirmed = window.confirm(
+    //         `Are you sure you want to delete "${doc.title}"?`
+    //     );
+
+    //     if (!confirmed) return;
+
+    //     setDbDocs((prev) => prev.filter((d) => d.id !== doc.id));
+
+    //     if (selectedDocId === doc.id) {
+    //         setSelectedDocId(null);
+    //         if (setActiveSubModule) setActiveSubModule(null);
+    //     }
+    // };
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [docToDelete, setDocToDelete] = useState(null);
+
     const handleDeleteDoc = (doc) => {
-        const confirmed = window.confirm(
-            `Are you sure you want to delete "${doc.title}"?`
+        setDocToDelete(doc);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDeleteDoc = () => {
+        if (!docToDelete) return;
+
+        setDbDocs((prev) =>
+            prev.filter((d) => d.id !== docToDelete.id)
         );
 
-        if (!confirmed) return;
-
-        setDbDocs((prev) => prev.filter((d) => d.id !== doc.id));
-
-        if (selectedDocId === doc.id) {
+        if (selectedDocId === docToDelete.id) {
             setSelectedDocId(null);
-            if (setActiveSubModule) setActiveSubModule(null);
+
+            if (setActiveSubModule) {
+                setActiveSubModule(null);
+            }
         }
+
+        setShowDeleteModal(false);
+        setDocToDelete(null);
     };
 
     const filteredDocs = useMemo(() => {
@@ -473,6 +500,47 @@ const BodyContent = ({ setActiveSubModule }) => {
                     </div>
                 </div>
             )}
+            {
+                showDeleteModal && (
+                    <div className={styles.confModalOverlay}>
+                        <div className={styles.confModal}>
+                            <div className={styles.confModalHeader}>
+                                <h3>Delete Document?</h3>
+
+                                <p>
+                                    This will permanently remove{" "}
+                                    <strong>
+                                        "{docToDelete?.title}"
+                                    </strong>{" "}
+                                    from the document list.
+                                </p>
+                            </div>
+
+                            <div className={styles.confModalButtons}>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => {
+                                        setShowDeleteModal(false);
+                                        setDocToDelete(null);
+                                    }}
+                                >
+                                    Cancel
+                                </button>
+
+                                <button
+                                    className={styles.deleteBtn}
+                                    onClick={confirmDeleteDoc}
+                                    style={{
+                                        background: "#c62828",
+                                    }}
+                                >
+                                    Delete Document
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </div>
     );
 };

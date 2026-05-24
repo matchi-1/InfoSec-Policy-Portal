@@ -452,3 +452,148 @@
     text-overflow: ellipsis;
   }
 }
+
+/*
+  CONFIRM MODAL
+*/
+
+.confModalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(4px);
+
+  animation: fade-in 0.18s ease;
+}
+
+.confModal {
+  width: min(26rem, 92vw);
+
+  background: #ffffff;
+  border: 1px solid #d7e1ee;
+  border-radius: 0.5rem;
+
+  box-shadow:
+    0 20px 40px rgba(29, 60, 110, 0.16),
+    0 4px 12px rgba(29, 60, 110, 0.08);
+
+  padding: 1.2rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+
+  animation: modal-pop 0.22s ease;
+}
+
+.confModalHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.confModalHeader h3 {
+  margin: 0;
+
+  font-size: 1.05rem;
+  font-weight: 700;
+  /* text-align: center;
+  border: 1px solid red; */
+  color: var(--primary-blue);
+}
+
+.confModalHeader p {
+  margin: 0;
+
+  font-size: 0.85rem;
+  line-height: 1.45;
+
+  color: var(--text-muted);
+}
+
+.confModalButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+}
+
+.confModalButtons button {
+  appearance: none;
+  border: none;
+
+  min-height: 2.4rem;
+  padding: 0 1rem;
+
+  border-radius: 0.5rem;
+
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    border-color 160ms ease;
+}
+
+.confModalButtons button:hover {
+  transform: translateY(-1px);
+}
+
+.cancelBtn {
+  background: #f4f7fb;
+  border: 1px solid #d7e1ee !important;
+  color: var(--text-sub);
+}
+
+.cancelBtn:hover {
+  background: #ebf1f8;
+}
+
+/* .confirmBtn {
+  background: var(--primary-green);
+  color: white;
+}
+
+.confirmBtn:hover {
+  background: #086868;
+} */
+
+.deleteBtn {
+  color: white;
+  background: #c62828;
+}
+
+.deleteBtn:hover {
+  background: #a61f1f;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-pop {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
