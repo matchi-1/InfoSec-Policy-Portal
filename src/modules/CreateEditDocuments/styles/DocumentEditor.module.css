@@ -2334,6 +2334,141 @@
   background: #f3f4f6;
 }
 
+.tagInputModal {
+  width: min(28rem, 92vw);
+}
+
+.tagInputBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.tagInputLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.tagInputLabel span {
+  color: var(--primary-blue);
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.tagInputLabel input {
+  width: 100%;
+  min-height: 2.45rem;
+  padding: 0 0.75rem;
+
+  border: 1px solid #d7e1ee;
+  border-radius: 0.45rem;
+
+  color: var(--text-body);
+  background: #fbfdff;
+
+  font: inherit;
+  font-size: 0.85rem;
+  box-sizing: border-box;
+}
+
+.tagInputLabel input:focus {
+  outline: none;
+  border-color: var(--primary-blue);
+  box-shadow: 0 0 0 3px rgba(31, 79, 149, 0.12);
+}
+
+.confirmBtn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.addTagOption {
+  width: 100%;
+  min-height: 2.35rem;
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 0.45rem;
+
+  margin: 0.4rem 0 0.5rem;
+  padding: 0.55rem 0.75rem;
+
+  border: 1px dashed var(--primary-green);
+  border-radius: 0.45rem;
+
+  background: #f6fbfb;
+  color: var(--primary-green);
+
+  font: inherit;
+  font-size: 0.78rem;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    transform 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.addTagOption:hover {
+  background: #e9f8f8;
+  border-color: #086868;
+  box-shadow: 0 0.35rem 0.8rem rgba(0, 120, 120, 0.12);
+  transform: translateY(-1px);
+}
+
+.addTagOption:active {
+  transform: translateY(0);
+}
+
+.addTagIcon {
+  width: 1.05rem;
+  height: 1.05rem;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 999px;
+  background: var(--primary-green);
+  color: white;
+
+  font-size: 0.9rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-right: 0.5rem;
+}
+
+.tagsContainer .tagsDropdownList .addTagOption {
+  appearance: none;
+  width: 100%;
+  height: auto;
+  min-height: 2.35rem;
+
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start !important;
+  text-align: left;
+
+  overflow: visible;
+}
+
+.tagsContainer .tagsDropdownList .addTagOption span {
+  flex: 0 0 auto;
+}
+
+.tagsContainer .tagsDropdownList .addTagOption span:last-child {
+  margin-left: 0;
+  text-align: left;
+}
+
 @media (max-width: 768px) {
   .pdfFullscreenBtn,
   .pdfFullscreenBtnDisabled {

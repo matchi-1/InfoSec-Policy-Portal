@@ -63,6 +63,10 @@ function BodyContent({ doc, onBack }) {
     const [showTagModal, setShowTagModal] = useState(false);
     const [tagTxt, setTagTxt] = useState("")
 
+    const [showAddTagConfirmModal, setShowAddTagConfirmModal] = useState(false);
+    const [tagToast, setTagToast] = useState(null);
+    const tagToastTimerRef = useRef(null);
+
     // const [currentMarkdown, setCurrentMarkdown] = useState("")
     // const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
@@ -79,6 +83,98 @@ function BodyContent({ doc, onBack }) {
     const [currAuthorName, setCurrAuthorName] = useState(doc.authoredBy ? doc.authorName : null)
     const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
     const [userList, setUserList] = useState([]);
+
+    const showTagToast = (title, message) => {
+        setTagToast({ title, message });
+
+        if (tagToastTimerRef.current) {
+            clearTimeout(tagToastTimerRef.current);
+        }
+
+        tagToastTimerRef.current = setTimeout(() => {
+            setTagToast(null);
+        }, 3000);
+    };
+
+    useEffect(() => {
+        return () => {
+            if (tagToastTimerRef.current) {
+                clearTimeout(tagToastTimerRef.current);
+            }
+        };
+    }, []);
+
+    const handleOpenAddTagConfirm = () => {
+        const cleanedTag = tagTxt.trim();
+
+        if (!cleanedTag) {
+            showTagToast("Tag Required", "Please enter a tag name before continuing.");
+            return;
+        }
+
+        const tagAlreadyExists = controlTags?.some(
+            (tag) => tag.tag_content?.trim().toLowerCase() === cleanedTag.toLowerCase()
+        );
+
+        if (tagAlreadyExists) {
+            showTagToast("Tag Already Exists", `"${cleanedTag}" is already in the tag list.`);
+            return;
+        }
+
+        setShowTagModal(false);
+        setShowAddTagConfirmModal(true);
+    };
+
+    const handleConfirmAddTag = async () => {
+        const cleanedTag = tagTxt.trim();
+
+        if (!cleanedTag) {
+            setShowAddTagConfirmModal(false);
+            showTagToast("Tag Required", "Please enter a tag name before continuing.");
+            return;
+        }
+
+        try {
+            const resp = await fetch(`${backend_base_url}/documents/add-tag/`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                    tag_content: cleanedTag,
+                }),
+            });
+
+            if (!resp.ok) {
+                throw new Error("Failed to add tag.");
+            }
+
+            await get_tags();
+
+            setTagTxt("");
+            setShowAddTagConfirmModal(false);
+            setShowTagsDropdown(true);
+
+            showTagToast("Tag Added", `"${cleanedTag}" was added to the tag list.`);
+        } catch (error) {
+            console.error("Failed to add tag:", error);
+
+            setShowAddTagConfirmModal(false);
+            setShowTagModal(true);
+
+            showTagToast("Failed to Add Tag", "Please try again.");
+        }
+    };
+
+    const handleCancelTagInput = () => {
+        setShowTagModal(false);
+        setTagTxt("");
+    };
+
+    const handleCancelAddTagConfirm = () => {
+        setShowAddTagConfirmModal(false);
+        setShowTagModal(true);
+    };
 
     const get_tags = async () => {
         const resp = await fetch(`${backend_base_url}/documents/get-tags/`);
@@ -640,13 +736,16 @@ function BodyContent({ doc, onBack }) {
                                         <input type="text" placeholder="Search for tags..." onChange={(e) => { setTagQuery(e.target.value) }} />
                                     </div>
                                     <div className={styles.tagsDropdownList}>
-                                        <div>
-                                            <p
-                                                onClick={() => {
-                                                    setShowTagModal(true)
-                                                }}
-                                            >add tag...</p>
-                                        </div>
+                                        <button
+                                            type="button"
+                                            className={styles.addTagOption}
+                                            onClick={() => {
+                                                setShowTagModal(true);
+                                            }}
+                                        >
+                                            <span className={styles.addTagIcon}>+</span>
+                                            <span>Add new tag</span>
+                                        </button>
                                         {
                                             filteredTags.length == 0 ? <p style={{ fontSize: '0.75rem', padding: '0.5rem', opacity: 0.7 }}>No tags found</p> :
                                                 filteredTags.map((tag) => {
@@ -1312,38 +1411,90 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 </div>
             }
-            {
-                showTagModal &&
-                <div>
-                    <input type="text" value={tagTxt} onChange={(e) => {
-                        setTagTxt(e.target.value)
-                    }} />
+            {showTagModal && (
+                <div className={styles.confModalOverlay}>
+                    <div className={`${styles.confModal} ${styles.tagInputModal}`}>
+                        <div className={styles.confModalHeader}>
+                            <h3>Add New Tag</h3>
+                            <p>
+                                Enter the ISO, NIST, or control tag you want to add to the tag list.
+                            </p>
+                        </div>
 
-                    <button
-                        onClick={() => {
-                            setShowTagModal(false)
-                            setTagTxt("")
-                        }}
-                    >cancel</button>
+                        <div className={styles.tagInputBody}>
+                            <label className={styles.tagInputLabel}>
+                                <span>Tag Name</span>
+                                <input
+                                    type="text"
+                                    value={tagTxt}
+                                    autoFocus
+                                    placeholder="e.g., ISO 27001, NIST AC-01"
+                                    onChange={(e) => setTagTxt(e.target.value)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === "Enter") {
+                                            handleOpenAddTagConfirm();
+                                        }
 
-                    <button
-                        onClick={async () => {
-                            const resp = await fetch(`${backend_base_url}/documents/add-tag/`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                                body: JSON.stringify({
-                                    "tag_content": tagTxt
-                                })
-                            })
-                            setTagTxt("")
-                            setShowTagModal(false)
-                            await get_tags();
-                        }}
-                    >ok</button>
+                                        if (e.key === "Escape") {
+                                            handleCancelTagInput();
+                                        }
+                                    }}
+                                />
+                            </label>
+                        </div>
+
+                        <div className={styles.confModalButtons}>
+                            <button
+                                type="button"
+                                className={styles.cancelBtn}
+                                onClick={handleCancelTagInput}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                className={styles.confirmBtn}
+                                onClick={handleOpenAddTagConfirm}
+                                disabled={!tagTxt.trim()}
+                            >
+                                OK
+                            </button>
+                        </div>
+                    </div>
                 </div>
-            }
+            )}
+
+            {showAddTagConfirmModal && (
+                <div className={styles.confModalOverlay}>
+                    <div className={styles.confModal}>
+                        <div className={styles.confModalHeader}>
+                            <h3>Add Tag?</h3>
+                            <p>
+                                Are you sure you want to add "{tagTxt.trim()}" to the tag list?
+                            </p>
+                        </div>
+
+                        <div className={styles.confModalButtons}>
+                            <button
+                                type="button"
+                                className={styles.cancelBtn}
+                                onClick={handleCancelAddTagConfirm}
+                            >
+                                Cancel
+                            </button>
+
+                            <button
+                                type="button"
+                                className={styles.confirmBtn}
+                                onClick={handleConfirmAddTag}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {
                 showBackConfirmModal && (
@@ -1458,6 +1609,15 @@ function BodyContent({ doc, onBack }) {
                             src={pdfPreviewUrl}
                             title={`${currTitle || doc.title} fullscreen PDF`}
                         />
+                    </div>
+                </div>
+            )}
+
+            {tagToast && (
+                <div className={styles.toastAlert}>
+                    <div className={styles.toastAlertContent}>
+                        <p className={styles.toastAlertTitle}>{tagToast.title}</p>
+                        <p className={styles.toastAlertText}>{tagToast.message}</p>
                     </div>
                 </div>
             )}
