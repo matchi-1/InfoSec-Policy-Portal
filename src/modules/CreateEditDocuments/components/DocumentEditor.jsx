@@ -342,7 +342,11 @@ function BodyContent({ doc, onBack }) {
                             {
                                 (!editingTitle) ? (
                                     <div className={styles.titleText}>
-                                        <h1 onDoubleClick={() => setEditingTitle(true)}>{currTitle}</h1>
+                                        <h1 onDoubleClick={() => {
+                                                setEditingTitle(true);
+                                                setCurrTitleTemp(currTitle);
+                                            }}
+                                        >{currTitle}</h1>
                                         <button
                                             className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
                                             onClick={() => {
@@ -393,7 +397,10 @@ function BodyContent({ doc, onBack }) {
                             {!editingDesc ? (
                                 <div className={styles.descText}>
                                     <p
-                                        onDoubleClick={() => setEditingDesc(true)}
+                                        onDoubleClick={() => {
+                                            setEditingDesc(true)
+                                            setCurrDescTemp(currDesc)
+                                        }}
                                     >{currDesc}</p>
                                     <button
                                         className={`${styles.iconActionBtn} ${styles.editActionBtn}`}
