@@ -391,69 +391,102 @@ const BodyContent = () => {
             </div>
 
             <div className={styles.actionsBar}>
-              {!isNewRoleModalOpen && isPermissionEditMode && (
+              {isNewRoleModalOpen ? (
+                <>
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className={styles.discardButton}
+                    onClick={() =>
+                      askForConfirmation(
+                        handleCancelCreateRole,
+                        "Cancel creating this new role? Unsaved selections will be lost.",
+                      )
+                    }
+                    disabled={isSaving || isCreating}
+                  >
+                    Cancel
+                  </Button>
+
+                  <Button
+                    variant="primary"
+                    size="md"
+                    className={styles.saveButton}
+                    onClick={() =>
+                      askForConfirmation(
+                        handleCreateRole,
+                        "Create this role with selected module access?",
+                      )
+                    }
+                    disabled={isSaving || isCreating || !newRoleName.trim()}
+                  >
+                    {isCreating ? "Creating..." : "Save Role"}
+                  </Button>
+                </>
+              ) : isPermissionEditMode ? (
+                hasUnsavedChanges ? (
+                  <>
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      className={styles.discardButton}
+                      onClick={() =>
+                        askForConfirmation(
+                          handleDiscardPermissions,
+                          "You have unsaved changes. Discarding would not save them.",
+                        )
+                      }
+                      disabled={isSaving || isCreating}
+                    >
+                      Cancel
+                    </Button>
+
+                    <Button
+                      variant="primary"
+                      size="md"
+                      className={styles.saveButton}
+                      onClick={() =>
+                        askForConfirmation(
+                          handleSave,
+                          "Save role module changes?",
+                        )
+                      }
+                      disabled={isSaving || isCreating}
+                    >
+                      {isSaving ? "Saving..." : "Save Role"}
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    variant="secondary"
+                    size="md"
+                    className={styles.discardButton}
+                    onClick={() =>
+                      askForConfirmation(
+                        handleDiscardPermissions,
+                        "Exit edit mode?",
+                      )
+                    }
+                    disabled={isSaving || isCreating}
+                  >
+                    Cancel
+                  </Button>
+                )
+              ) : (
                 <Button
-                  variant="secondary"
+                  variant="primary"
                   size="md"
-                  className={styles.discardButton}
-                  onClick={() =>
-                    askForConfirmation(
-                      handleDiscardPermissions,
-                      hasUnsavedChanges
-                        ? "You have unsaved changes. Discarding would not save them."
-                        : "Exit edit mode?",
-                    )
+                  className={styles.saveButton}
+                  onClick={handleStartEditPermissions}
+                  disabled={
+                    isSaving ||
+                    isCreating ||
+                    (!selectedRole && !isNewRoleModalOpen)
                   }
-                  disabled={isSaving || isCreating}
                 >
-                  Discard Changes
+                  Edit
                 </Button>
               )}
-
-              <Button
-                variant="primary"
-                size="md"
-                className={styles.saveButton}
-                onClick={() => {
-                  if (isNewRoleModalOpen) {
-                    askForConfirmation(
-                      handleCreateRole,
-                      "Create this role with selected module access?",
-                    );
-                    return;
-                  }
-
-                  if (!isPermissionEditMode) {
-                    handleStartEditPermissions();
-                    return;
-                  }
-
-                  if (!hasUnsavedChanges) {
-                    askForConfirmation(
-                      handleDiscardPermissions,
-                      "Exit edit mode?",
-                    );
-                    return;
-                  }
-
-                  askForConfirmation(handleSave, "Save role module changes?");
-                }}
-                disabled={
-                  isSaving ||
-                  isCreating ||
-                  (!selectedRole && !isNewRoleModalOpen)
-                }
-              >
-                {isNewRoleModalOpen
-                  ? isCreating
-                    ? "Creating..."
-                    : "Save Role"
-                  : isPermissionEditMode
-                    ? isSaving
-                      ? "Saving..."
-                      : "Save Role"
-                    : "Edit"}
-              </Button>
             </div>
           </div>
 

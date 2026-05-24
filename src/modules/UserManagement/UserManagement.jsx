@@ -334,55 +334,64 @@ const BodyContent = () => {
                         ? "Editing enabled"
                         : "Click Edit Roles/Permissions to make changes"}
                 </span>
-                {isEditMode && (
+                {isEditMode ? (
+                  hasUnsavedChanges ? (
+                    <>
+                      <Button
+                        className={styles.discardButton}
+                        variant="secondary"
+                        size="md"
+                        onClick={() =>
+                          askForConfirmation(
+                            handleDiscardChanges,
+                            "You have unsaved changes. Discarding would not save them.",
+                          )
+                        }
+                        disabled={isSavingChanges}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        className={styles.saveButton}
+                        variant="primary"
+                        size="md"
+                        onClick={() =>
+                          askForConfirmation(
+                            handleSaveChanges,
+                            "Save user role updates for selected user/s?",
+                          )
+                        }
+                        disabled={isSavingChanges}
+                      >
+                        {isSavingChanges ? "Saving..." : "Save Changes"}
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      className={styles.discardButton}
+                      variant="secondary"
+                      size="md"
+                      onClick={() =>
+                        askForConfirmation(
+                          handleDiscardChanges,
+                          "Exit edit mode?",
+                        )
+                      }
+                      disabled={isSavingChanges}
+                    >
+                      Cancel
+                    </Button>
+                  )
+                ) : (
                   <Button
-                    className={styles.discardButton}
-                    variant="secondary"
+                    className={styles.saveButton}
+                    variant="primary"
                     size="md"
-                    onClick={() =>
-                      askForConfirmation(
-                        handleDiscardChanges,
-                        hasUnsavedChanges
-                          ? "You have unsaved changes. Discarding would not save them."
-                          : "Exit edit mode?",
-                      )
-                    }
-                    disabled={isSavingChanges}
+                    onClick={handleEnterEditMode}
                   >
-                    Discard Changes
+                    Edit
                   </Button>
                 )}
-                <Button
-                  className={styles.saveButton}
-                  variant="primary"
-                  size="md"
-                  onClick={() => {
-                    if (!isEditMode) {
-                      handleEnterEditMode();
-                      return;
-                    }
-
-                    if (!hasUnsavedChanges) {
-                      askForConfirmation(
-                        handleDiscardChanges,
-                        "Exit edit mode?",
-                      );
-                      return;
-                    }
-
-                    askForConfirmation(
-                      handleSaveChanges,
-                      "Save user role updates for selected user/s?",
-                    );
-                  }}
-                  disabled={isSavingChanges}
-                >
-                  {isEditMode
-                    ? isSavingChanges
-                      ? "Saving..."
-                      : "Save Changes"
-                    : "Edit"}
-                </Button>
               </div>
             </div>
           </div>
