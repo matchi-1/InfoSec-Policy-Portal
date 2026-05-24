@@ -432,7 +432,7 @@ img {
 /* header navigation -- fixed height */
 .header-navi{
   position: relative;
-  z-index: 100000;
+  z-index: 999;
   height: var(--header-navi-height);
   width: 100%;
   display: flex;
@@ -587,7 +587,7 @@ img {
 }
 
 .notif-menu {
-  position: fixed;
+  position: absolute;
   top: 3.5rem;
   right: 12.5rem;
   padding-top: 1rem;
@@ -603,7 +603,7 @@ img {
   flex-direction: column;
   -webkit-overflow-scrolling: touch;
   border-radius: 0.3rem;
-  z-index: 99999;
+  z-index: 997;
 
 
   background: /* Shadow covers */
