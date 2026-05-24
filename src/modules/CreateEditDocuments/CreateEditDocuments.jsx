@@ -84,7 +84,7 @@ const BodyContent = ({ setActiveSubModule }) => {
         setShowDeleteModal(true);
     };
 
-    const confirmDeleteDoc = () => {
+    const confirmDeleteDoc = async () => {
         if (!docToDelete) return;
 
         setDbDocs((prev) =>
@@ -98,6 +98,17 @@ const BodyContent = ({ setActiveSubModule }) => {
                 setActiveSubModule(null);
             }
         }
+
+        console.log("(debug) to delete: ", docToDelete)
+        const resp = await fetch(`${backend_base_url}/documents/delete-doc/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "doc_id":docToDelete.id
+            })
+        })
 
         setShowDeleteModal(false);
         setDocToDelete(null);
