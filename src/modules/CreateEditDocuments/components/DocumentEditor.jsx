@@ -59,6 +59,9 @@ function BodyContent({ doc, onBack }) {
     const [subTitleEditID, setSubTitleEditID] = useState(null);
     const [subTitleTemp, setSubTitleTemp] = useState(null);
 
+    const [showTagModal, setShowTagModal] = useState(false);
+    const [tagTxt, setTagTxt] = useState("")
+
     // const [currentMarkdown, setCurrentMarkdown] = useState("")
     // const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
@@ -75,17 +78,18 @@ function BodyContent({ doc, onBack }) {
     const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
     const [userList, setUserList] = useState([]);
 
+    const get_tags = async () => {
+        const resp = await fetch(`${backend_base_url}/documents/get-tags/`);
+        const data = await resp.json()
+        console.log("(debug) tags from backend: ", data)
+        setControlTags(data)
+    }
+
     useEffect(() => {
         const get_users = async () => {
             const resp = await fetch(`${backend_base_url}/documents/get-users/`);
             const data = await resp.json()
             setUserList(data);
-        }
-        const get_tags = async () => {
-            const resp = await fetch(`${backend_base_url}/documents/get-tags/`);
-            const data = await resp.json()
-            console.log("(debug) tags from backend: ", data)
-            setControlTags(data)
         }
         get_users();
         get_tags();
@@ -542,6 +546,13 @@ function BodyContent({ doc, onBack }) {
                                         <input type="text" placeholder="Search for tags..." onChange={(e) => { setTagQuery(e.target.value) }} />
                                     </div>
                                     <div className={styles.tagsDropdownList}>
+                                        <div>
+                                            <p
+                                                onClick={() => {
+                                                    setShowTagModal(true)
+                                                }}
+                                            >add tag...</p>
+                                        </div>
                                         {
                                             filteredTags.length == 0 ? <p style={{ fontSize: '0.75rem', padding: '0.5rem', opacity: 0.7 }}>No tags found</p> :
                                                 filteredTags.map((tag) => {
@@ -1222,6 +1233,38 @@ function BodyContent({ doc, onBack }) {
                             </button>
                         </div>
                     </div>
+                </div>
+            }
+            {
+                showTagModal && 
+                <div>
+                    <input type="text" value={tagTxt} onChange={(e) => {
+                        setTagTxt(e.target.value)
+                    }}/>
+
+                    <button
+                        onClick={() => {
+                            setShowTagModal(false)
+                            setTagTxt("")
+                        }}
+                    >cancel</button>
+
+                    <button
+                        onClick={async () => {
+                            const resp = await fetch(`${backend_base_url}/documents/add-tag/`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    "tag_content":tagTxt
+                                })
+                            })
+                            setTagTxt("")
+                            setShowTagModal(false)
+                            await get_tags();
+                        }}
+                    >ok</button>
                 </div>
             }
         </div>
