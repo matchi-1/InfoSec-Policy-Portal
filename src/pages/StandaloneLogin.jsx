@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import styles from "./StandaloneLogin.module.css";
-import emailjs from "@emailjs/browser";
 import tooltipIcon from "../public/icons/tooltip.png";
 
 export default function StandaloneLogin() {
@@ -23,7 +22,7 @@ export default function StandaloneLogin() {
 
   const initialRegisInfo = {
     regis_firstName: "",
-    regist_lastName: "",
+    regis_lastName: "",
     regis_valid_email: "",
     regis_code: "",
     regis_pass: "",
@@ -37,6 +36,35 @@ export default function StandaloneLogin() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loginError, setLoginError] = useState("");
+  const [loginMessageType, setLoginMessageType] = useState("error"); 
+
+  const [regisStep, setRegisStep] = useState("details"); 
+
+  const backendBaseUrl =
+  (import.meta.env.VITE_BACKEND_API_BASE || "http://127.0.0.1:8000").replace(
+    /\/$/,
+    "",
+  );
+
+  const ALLOW_DEV_EMAIL_BYPASS =
+    import.meta.env.VITE_ALLOW_EMAIL_DEV_BYPASS === "true";
+
+  const REGISTER_CODE_COOLDOWN_SECONDS = 60;
+  const [regisCodeSent, setRegisCodeSent] = useState(false);
+  const [regisEmailVerified, setRegisEmailVerified] = useState(false);
+  const [regisSendingCode, setRegisSendingCode] = useState(false);
+  const [regisResendSeconds, setRegisResendSeconds] = useState(0);
+  const [regisDevBypass, setRegisDevBypass] = useState(false);
+
+  const [forgotStep, setForgotStep] = useState("email");
+  // email | reset
+
+  const RESET_CODE_COOLDOWN_SECONDS = 60;
+  const [resetCodeSent, setResetCodeSent] = useState(false);
+  const [resetSendingCode, setResetSendingCode] = useState(false);
+  const [resetResendSeconds, setResetResendSeconds] = useState(0);
+
+
 
   /*const isNewPassSame = async (newPass) => {
     console.log("checking password");
@@ -80,6 +108,26 @@ export default function StandaloneLogin() {
     }
   }, [location.pathname, navigate]);
 
+  useEffect(() => {
+    if (regisResendSeconds <= 0) return;
+
+    const timer = setTimeout(() => {
+      setRegisResendSeconds((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [regisResendSeconds]);
+
+  useEffect(() => {
+    if (resetResendSeconds <= 0) return;
+
+    const timer = setTimeout(() => {
+      setResetResendSeconds((prev) => Math.max(prev - 1, 0));
+    }, 1000);
+
+    return () => clearTimeout(timer);
+  }, [resetResendSeconds]);
+
   const handleLogin = async (e) => {
     e.preventDefault();
     console.log("Logging in:", credentials);
@@ -93,6 +141,7 @@ export default function StandaloneLogin() {
           localStorage.getItem("login_attempts")
         );
         console.log("lock lifts at " + lock_date.toString());
+        setLoginMessageType("error");
         setLoginError(
           `* Too many failed login attempts. Please try again in ${Math.ceil(
             (lock_date - new Date()) / 1000
@@ -141,6 +190,7 @@ export default function StandaloneLogin() {
 
         const { message } = err.response.data;
         console.error("Login failed:", message);
+        setLoginMessageType("error");
         setLoginError("* " + message + " *");
       } else {
         console.error("Login error:", err);
@@ -149,68 +199,18 @@ export default function StandaloneLogin() {
     }
   };
 
-  const generateAndSendCode = async (email, kinetiq_email, isConfirmCode) => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString();
-    localStorage.setItem("reset_code", code);
-    localStorage.setItem("reset_email", email);
-
-    console.log(`KINETIQ EMAIL :${kinetiq_email}`);
-
-    const templateStr = isConfirmCode
-      ? "confirm_code_template"
-      : "reset_code_template";
-
-    try {
-      emailjs.send("service_fpuj34n", templateStr, {
-        code,
-        email,
-        kinetiq_email,
-      });
-      console.log(
-        `${templateStr} sent successfully! to: ${email} for ${kinetiq_email} `
-      );
-    } catch (err) {
-      console.error("Failed to send email:", err);
-      alert("Error sending reset code.");
-    }
-  };
-
-
   const handleChangePassword = async () => {
-    const savedCode = localStorage.getItem("reset_code");
-    const savedEmail = localStorage.getItem("reset_email");
-
-    //if (await isNewPassSame(resetData.newPassword)) {
-     // setLoginError(
-      //  "* New password cannot be the same as the current password. *"
-      //);
-      //return;
-    //}
-
-    //if (resetData.code !== savedCode) {
-    //  setLoginError("* Invalid code. Please try again.* ");
-    //  return;
-    //}
-
-    //if (resetData.valid_email !== savedEmail) {
-    //  setLoginError(
-    //   "* Email does not match the code. Please check and try again. *"
-    //  );
-    //  return;
-    //}
-
-    if (resetData.newPassword.length < 8) {
-      setLoginError("* Password must be at least 8 characters long. *");
+    if (!isResetFormReady) {
+      setLoginMessageType("error");
+      setLoginError(`* ${resetFormDisabledReason || "Please fill up all the forms"} *`);
       return;
     }
 
-    if (resetData.newPassword !== resetData.confirmNewPassword) {
-      setLoginError("* Passwords do not match! *");
-      return;
-    }
+    const verified = await handleVerifyResetCode();
+    if (!verified) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/reset-password/", {
+      const res = await fetch(`${backendBaseUrl}/reset-password/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -222,15 +222,229 @@ export default function StandaloneLogin() {
       const result = await res.json();
 
       if (result.success) {
-        setLoginError(
-          `Password change for ${resetData.valid_email} successful.`
-        );
-        localStorage.removeItem("reset_code");
-        localStorage.removeItem("reset_email");
+        setLoginMessageType("success");
+        setLoginError(`Password change for ${resetData.valid_email} successful.`);
+
         setResetData(initialResetData);
+        setResetCodeSent(false);
+        setResetResendSeconds(0);
+        setForgotStep("email");
         setView("login");
       } else {
+        setLoginMessageType("error");
         setLoginError(`* ${result.message || "Something went wrong."} *`);
+      }
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Something went wrong. Please try again.";
+
+      setLoginMessageType("error");
+      setLoginError(`* ${msg} *`);
+    }
+  };
+
+  const isLoginActive = view === "login" || view === "forgot";
+
+
+  const isRegisEmailValid = /^[^\s@]+@[^\s@]+\.(com)$/.test(
+    (regisInfo.regis_valid_email || "").trim(),
+  );
+
+  const isRegisPasswordValid = /(?=.*[A-Za-z])(?=.*\d).{8,}/.test(
+    regisInfo.regis_pass || "",
+  );
+
+  const isRegisDetailsFilled =
+    (regisInfo.regis_firstName || "").trim() &&
+    (regisInfo.regis_lastName || "").trim() &&
+    (regisInfo.regis_valid_email || "").trim() &&
+    regisInfo.regis_pass &&
+    regisInfo.regis_confirm_pass;
+
+  const isRegisDetailsReady =
+    isRegisDetailsFilled &&
+    isRegisEmailValid &&
+    isRegisPasswordValid &&
+    regisInfo.regis_pass === regisInfo.regis_confirm_pass;
+
+  const detailsDisabledReason = !isRegisDetailsFilled
+    ? "Please fill up all the forms"
+    : !isRegisEmailValid
+      ? "Please enter a valid email address"
+      : !isRegisPasswordValid
+        ? "Password must be at least 8 characters and include letters and numbers"
+        : regisInfo.regis_pass !== regisInfo.regis_confirm_pass
+          ? "Passwords do not match"
+          : "";
+
+  const isRegisVerificationReady =
+    regisDevBypass ||
+    (regisCodeSent && (regisInfo.regis_code || "").trim());
+
+  const verifyDisabledReason = !regisCodeSent && !regisDevBypass
+    ? "Please send the email code first"
+    : !regisDevBypass && !(regisInfo.regis_code || "").trim()
+      ? "Please enter the verification code"
+      : "";
+
+  const handleSendRegisterCode = async () => {
+    if (!isRegisEmailValid) {
+      setLoginError("* Please enter a valid email address first *");
+      return false;
+    }
+
+    if (regisResendSeconds > 0 || regisSendingCode) return false;
+
+    try {
+      setRegisSendingCode(true);
+      setLoginError("");
+
+      const resp = await axios.post(`${backendBaseUrl}/auth/send-code/`, {
+        email: regisInfo.regis_valid_email,
+        purpose: "register",
+      });
+
+      if (resp.data.success) {
+        setRegisCodeSent(true);
+        setRegisEmailVerified(false);
+        setRegisResendSeconds(
+          resp.data.cooldown_seconds || REGISTER_CODE_COOLDOWN_SECONDS,
+        );
+        setLoginMessageType("success");
+        setLoginError("* Verification code sent. Please check your email. *");
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Failed to send verification code.";
+      
+      setLoginMessageType("error");
+      setLoginError(`* ${msg} *`);
+      return false;
+    } finally {
+      setRegisSendingCode(false);
+    }
+  };
+
+  const handleVerifyRegisterCode = async () => {
+    if (regisDevBypass) return true;
+
+    try {
+      const resp = await axios.post(`${backendBaseUrl}/auth/verify-code/`, {
+        email: regisInfo.regis_valid_email,
+        code: regisInfo.regis_code,
+        purpose: "register",
+      });
+
+      if (resp.data.success) {
+        setRegisEmailVerified(true);
+        return true;
+      }
+      setLoginMessageType("error");
+      setLoginError(`* ${resp.data.message || "Invalid verification code"} *`);
+      return false;
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Invalid verification code.";
+      
+      setLoginMessageType("error");
+      setLoginError(`* ${msg} *`);
+      return false;
+    }
+  };
+
+  const handleVerifyResetCode = async () => {
+    try {
+      const resp = await axios.post(`${backendBaseUrl}/auth/verify-code/`, {
+        email: resetData.valid_email,
+        code: resetData.code,
+        purpose: "reset_password",
+      });
+
+      if (resp.data.success) {
+        return true;
+      }
+
+      setLoginMessageType("error");
+      setLoginError(`* ${resp.data.message || "Invalid verification code"} *`);
+      return false;
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Invalid verification code.";
+
+      setLoginMessageType("error");
+      setLoginError(`* ${msg} *`);
+      return false;
+    }
+  };
+
+
+  const handleDevBypassRegisterCode = () => {
+    if (!ALLOW_DEV_EMAIL_BYPASS) return;
+
+    setRegisDevBypass(true);
+    setRegisCodeSent(true);
+    setRegisEmailVerified(true);
+    setRegisResendSeconds(0);
+    setRegisInfo((prev) => ({
+      ...prev,
+      regis_code: "DEV-BYPASS",
+    }));
+    setLoginMessageType("success");
+    setLoginError("* Dev bypass enabled for email verification. *");
+  };
+
+
+  const handleRegisterDetailsSubmit = async () => {
+    if (!isRegisDetailsReady) {
+      setLoginMessageType("error");
+      setLoginError(`* ${detailsDisabledReason || "Please fill up all the forms"} *`);
+      return;
+    }
+
+    const sent = await handleSendRegisterCode();
+
+    if (sent) {
+      setRegisStep("verify");
+    }
+  };
+
+  const handleFinalRegisterSubmit = async () => {
+    if (!isRegisVerificationReady) {
+      setLoginMessageType("error");
+      setLoginError(`* ${verifyDisabledReason || "Please enter the verification code"} *`);
+      return;
+    }
+
+    const verified = await handleVerifyRegisterCode();
+    if (!verified) return;
+
+    try {
+      const resp = await axios.post(`${backendBaseUrl}/register/`, {
+        first_name: regisInfo.regis_firstName,
+        last_name: regisInfo.regis_lastName,
+        email: regisInfo.regis_valid_email,
+        password: regisInfo.regis_pass,
+        confirm_password: regisInfo.regis_confirm_pass,
+        dev_bypass: regisDevBypass,
+      });
+
+      if (resp.data.success) {
+        localStorage.setItem("user", JSON.stringify(resp.data.data));
+        setLoginError("");
+        navigate("/");
+      } else {
+        setLoginError(`* ${resp.data.message || "Registration failed"} *`);
       }
     } catch (err) {
       const msg =
@@ -242,7 +456,88 @@ export default function StandaloneLogin() {
     }
   };
 
-  const isLoginActive = view === "login" || view === "forgot";
+  const isResetEmailValid = /^[^\s@]+@[^\s@]+\.(com)$/.test(
+    (resetData.valid_email || "").trim(),
+  );
+
+  const isResetPasswordValid = /(?=.*[A-Za-z])(?=.*\d).{8,}/.test(
+    resetData.newPassword || "",
+  );
+
+  const isResetEmailReady =
+    (resetData.valid_email || "").trim() && isResetEmailValid;
+
+  const resetEmailDisabledReason = !(resetData.valid_email || "").trim()
+    ? "Please enter your email address"
+    : !isResetEmailValid
+      ? "Please enter a valid email address"
+      : "";
+
+  const isResetFormReady =
+    resetCodeSent &&
+    (resetData.code || "").trim() &&
+    resetData.newPassword &&
+    resetData.confirmNewPassword &&
+    isResetPasswordValid &&
+    resetData.newPassword === resetData.confirmNewPassword;
+
+  const resetFormDisabledReason = !resetCodeSent
+    ? "Please send the email code first"
+    : !(resetData.code || "").trim()
+      ? "Please enter the verification code"
+      : !resetData.newPassword || !resetData.confirmNewPassword
+        ? "Please fill up all the forms"
+        : !isResetPasswordValid
+          ? "Password must be at least 8 characters and include letters and numbers"
+          : resetData.newPassword !== resetData.confirmNewPassword
+            ? "Passwords do not match"
+            : "";
+            
+  const handleSendResetCode = async () => {
+    if (!isResetEmailValid) {
+      setLoginMessageType("error");
+      setLoginError("* Please enter a valid email address first *");
+      return false;
+    }
+
+    if (resetResendSeconds > 0 || resetSendingCode) return false;
+
+    try {
+      setResetSendingCode(true);
+      setLoginError("");
+
+      const resp = await axios.post(`${backendBaseUrl}/auth/send-code/`, {
+        email: resetData.valid_email,
+        purpose: "reset_password",
+      });
+
+      if (resp.data.success) {
+        setResetCodeSent(true);
+        setResetResendSeconds(
+          resp.data.cooldown_seconds || RESET_CODE_COOLDOWN_SECONDS,
+        );
+
+        setLoginMessageType("success");
+        setLoginError("* Verification code sent. Please check your email. *");
+
+        return true;
+      }
+
+      return false;
+    } catch (err) {
+      const msg =
+        err?.response?.data?.message ||
+        err?.response?.data?.detail ||
+        "Failed to send verification code.";
+
+      setLoginMessageType("error");
+      setLoginError(`* ${msg} *`);
+      return false;
+    } finally {
+      setResetSendingCode(false);
+    }
+  };
+
 
   return (
     <div className={styles["login-container"]}>
@@ -284,7 +579,8 @@ export default function StandaloneLogin() {
             <h2>
               {view === "login" && "Welcome Back"}
               {view === "forgot" && "Reset your password"}
-              {view === "regis" && "Sign Up"}
+              {view === "regis" && regisStep === "details" && "Sign Up"}
+              {view === "regis" && regisStep !== "details" && "Verify Email"}
             </h2>
 
             {view === "login" && (
@@ -367,6 +663,11 @@ export default function StandaloneLogin() {
                       onClick={(e) => {
                         e.preventDefault();
                         setLoginError("");
+                        setLoginMessageType("error");
+                        setResetData(initialResetData);
+                        setResetCodeSent(false);
+                        setResetResendSeconds(0);
+                        setForgotStep("email");
                         setView("forgot");
                       }}
                     >
@@ -375,8 +676,14 @@ export default function StandaloneLogin() {
                   </div>
 
                   {loginError && (
-                    <p className={styles["login-error"]}>{loginError}</p>
-                  )}
+                        <p
+                          className={`${styles["login-error"]} ${
+                        loginMessageType === "success" ? styles["login-success"] : ""
+                      }`}
+                        >
+                          {loginError}
+                        </p>
+                      )}
 
                   <div className={styles["login-btn-div"]}>
                     <button type="submit" className={styles["login-btn"]}>
@@ -387,6 +694,8 @@ export default function StandaloneLogin() {
               </div>
             )}
 
+
+
             {view === "forgot" && (
               <div className={`${styles["reset-form"]} ${styles.formPanel} ${styles.panelFromBottom}`}>
                 <form
@@ -394,44 +703,100 @@ export default function StandaloneLogin() {
                   onSubmit={async (e) => {
                     e.preventDefault();
 
-                    const isValidEmail =
-                      /^[^\s@]+@[^\s@]+\.(com)$/.test(resetData.valid_email);
-                    if (!isValidEmail) {
-                      setLoginError("* Please enter a valid email address *");
+                    if (forgotStep === "email") {
+                      if (!isResetEmailReady) {
+                        setLoginMessageType("error");
+                        setLoginError(`* ${resetEmailDisabledReason || "Please enter your email address"} *`);
+                        return;
+                      }
+
+                      const sent = await handleSendResetCode();
+
+                      if (sent) {
+                        setForgotStep("reset");
+                      }
+
                       return;
                     }
-                    
-                    handleChangePassword();
-                    
+
+                    await handleChangePassword();
                   }}
                 >
-                  <div className={styles["reset-info-inner"]}>
-                    <div className={styles["reset-info-form-left"]}>
-                      <div className={styles.rowHeader}>
-                        <h4 className={styles.primaryCol}>Valid Email Address</h4>
-                        <h4 className={styles.secondaryCol}>Email Code</h4>
-                      </div>
+                  {forgotStep === "email" ? (
+                    <>
+                      <div className={styles.forgotEmailPanel}>
+                        <p className={styles.verifyEmailText}>
+                          Enter the email address linked to your account. We’ll send a
+                          verification code you can use to reset your password.
+                        </p>
 
-                      <div className={styles.splitRow}>
-                        <input
+
+                        <div style={{ width: "80%", alignSelf: "center" }}>
+                          <input
+                          
                           type="email"
-                          name="username"
                           placeholder="Enter your email"
                           value={resetData.valid_email}
                           onChange={(e) => {
                             setResetData({
                               ...resetData,
                               valid_email: e.target.value,
+                              code: "",
                             });
+                            setResetCodeSent(false);
+                            setResetResendSeconds(0);
                           }}
                           required
-                          className={styles.primaryCol}
                         />
+                        </div>
+                        
+                      </div>
 
+                      {loginError && (
+                        <p
+                          className={`${styles["login-error"]} ${
+                            loginMessageType === "success" ? styles["login-success"] : ""
+                          }`}
+                        >
+                          {loginError}
+                        </p>
+                      )}
+
+                      <div className={styles["button-back-container"]}>
+                        <button type="submit" className={styles["login-btn"]}>
+                          {resetSendingCode ? "Sending..." : "Continue"}
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles["back-btn"]}
+                          onClick={() => {
+                            setLoginError("");
+                            setResetData(initialResetData);
+                            setResetCodeSent(false);
+                            setResetResendSeconds(0);
+                            setForgotStep("email");
+                            setView("login");
+                          }}
+                        >
+                          Back
+                        </button>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className={styles.forgotResetPanel}>
+                        <p className={styles.verifyEmailText}>
+                          We sent a verification code to{" "}
+                          <strong>{resetData.valid_email}</strong>. Enter the code below
+                          within 10 minutes, then set your new password.
+                        </p>
+
+                        <div style = {{width:"50%", alignSelf:"center" }}>
+                        
                         <input
                           type="text"
-                          name="email"
-                          placeholder="Code"
+                          placeholder="Enter verification code"
                           value={resetData.code}
                           onChange={(e) => {
                             setResetData({
@@ -439,137 +804,163 @@ export default function StandaloneLogin() {
                               code: e.target.value,
                             });
                           }}
+                          className={styles.verifyCodeInput}
                           required
-                          className={styles.secondaryCol}
                         />
-                      </div>
 
-                      <div className={styles.linkRow}>
-                        <a href="#" className={styles.primaryCol}>
-                          Send Code
-                        </a>
-                        <a
-                          href="#"
-                          className={`${styles.secondaryCol} ${styles.mutedLink}`}
-                        >
-                          Resend Code? 50s
-                        </a>
-                      </div>
-                    </div>
-
-                    <div className={styles["reset-info-form-right"]}>
-                      <div className={styles.fieldGroup}>
-                        <div className={styles.fieldHeader}>
-                          <h4>Password</h4>
                         </div>
 
-                        <div className={styles["password-wrapper"]}>
-                          <input
-                            type={showNewPassword ? "text" : "password"}
-                            name="password"
-                            placeholder="New Password"
-                            value={resetData.newPassword}
-                            onChange={(e) => {
-                              setResetData({
-                                ...resetData,
-                                newPassword: e.target.value,
-                              });
-                            }}
-                            required
-                          />
-
-                          <span
-                            className={styles["eye-icon"]}
-                            onClick={() =>
-                              setShowNewPassword(!showNewPassword)
-                            }
+                        <div className={styles.resendRow}>
+                          <button
+                            type="button"
+                            className={styles.resendCodeButton}
+                            onClick={handleSendResetCode}
+                            disabled={resetResendSeconds > 0 || resetSendingCode}
                           >
-                            {showNewPassword ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="20"
-                                height="20"
+                            {resetSendingCode
+                              ? "Sending..."
+                              : resetResendSeconds > 0
+                                ? `Resend code in ${resetResendSeconds}s`
+                                : "Resend code"}
+                          </button>
+                        </div>
+
+                        <div className={styles.resetPasswordFields}>
+                          <div className={styles.fieldGroup}>
+                            
+                            
+                            <h4 className={styles.labelWithInfo}>
+                                Password
+                                <span
+                                  className={styles.infoWrap}
+                                  tabIndex={0}
+                                  aria-label="Password requirements"
+                                >
+                                  <img
+                                    className={styles.infoIcon}
+                                    src={tooltipIcon}
+                                    alt="Tooltip"
+                                  />
+                                  <span className={styles.tooltip}>
+                                    Use at least 8 characters, <br />
+                                    with a mix of letters and numbers.
+                                    <br />
+                                  </span>
+                                </span>
+                              </h4>
+
+
+                            <div className={styles["password-wrapper"]}>
+                              <input
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="New Password"
+                                value={resetData.newPassword}
+                                onChange={(e) => {
+                                  setResetData({
+                                    ...resetData,
+                                    newPassword: e.target.value,
+                                  });
+                                }}
+                                required
+                              />
+
+                              <span
+                                className={styles["eye-icon"]}
+                                onClick={() => setShowNewPassword(!showNewPassword)}
                               >
-                                <path
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="20"
-                                height="20"
-                              >
-                                <path
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
-                                />
-                                <circle
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  cx="12"
-                                  cy="12"
-                                  r="3"
-                                />
-                              </svg>
-                            )}
-                          </span>
+                                {showNewPassword ? (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    width="20"
+                                    height="20"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    width="20"
+                                    height="20"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                                    />
+                                    <circle
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      cx="12"
+                                      cy="12"
+                                      r="3"
+                                    />
+                                  </svg>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className={styles.fieldGroup}>
+                            <h4>Confirm Password</h4>
+
+                            <input
+                              type="password"
+                              placeholder="Re-enter new password"
+                              value={resetData.confirmNewPassword}
+                              onChange={(e) => {
+                                setResetData({
+                                  ...resetData,
+                                  confirmNewPassword: e.target.value,
+                                });
+                              }}
+                              required
+                            />
+                          </div>
                         </div>
                       </div>
 
-                      <div className={`${styles.fieldGroup} ${styles.topSpaced}`}>
-                        <h4>Confirm Password:</h4>
-                        <input
-                          type="password"
-                          name="confirmPassword"
-                          placeholder="Re-enter new Password"
-                          value={resetData.confirmNewPassword}
-                          onChange={(e) => {
-                            setResetData({
-                              ...resetData,
-                              confirmNewPassword: e.target.value,
-                            });
+                      {loginError && (
+                        <p
+                          className={`${styles["login-error"]} ${
+                            loginMessageType === "success" ? styles["login-success"] : ""
+                          }`}
+                        >
+                          {loginError}
+                        </p>
+                      )}
+
+                      <div className={`${styles["button-back-container"]} ${styles.verifyButtonStack}`}>
+                        <button type="submit" className={styles["login-btn"]}>
+                          Change Password
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles["back-btn"]}
+                          onClick={() => {
+                            setLoginError("");
+                            setForgotStep("email");
                           }}
-                          required
-                        />
+                        >
+                          Back
+                        </button>
                       </div>
-                    </div>
-                  </div>
-
-                  {loginError && (
-                    <p className={styles["login-error"]}>{loginError}</p>
+                    </>
                   )}
-
-                  <div className={styles["button-back-container"]}>
-                    <button
-                      type="submit"
-                      className={`${styles["login-btn"]} ${styles.autoWidthButton}`}
-                    >
-                      Change password
-                    </button>
-
-                    <button
-                      type="button"
-                      className={styles["back-btn"]}
-                      onClick={() => {
-                        setLoginError("");
-                        setView("login");
-                      }}
-                    >
-                      Back
-                    </button>
-                  </div>
                 </form>
               </div>
             )}
+
+
 
             {view === "regis" && (
               <div className={`${styles["regis-form"]} ${styles.formPanel} ${styles.panelFromRight}`}>
@@ -578,260 +969,286 @@ export default function StandaloneLogin() {
                   onSubmit={async (e) => {
                     e.preventDefault();
 
-                    const isValidEmail =
-                      /^[^\s@]+@[^\s@]+\.(com)$/.test(regisInfo.regis_valid_email);
-
-                    if (!isValidEmail) {
-                      setLoginError("* Please enter a valid email address *");
-                      return;
+                    if (regisStep === "details") {
+                      await handleRegisterDetailsSubmit();
+                    } else {
+                      await handleFinalRegisterSubmit();
                     }
-                    setLoginError(""); // clear any old error
-                    //generateAndSendCode(resetData.valid_email, credentials.email, true); // send the code to the email
-                    //const savedCode = localStorage.getItem("reset_code"); // better: use a regis_code key
-                     // if (code !== savedCode) {
-                    //    setLoginError("* Incorrect code, please try again *");
-                    //    return;
-                     // }
-
-                      try {
-                        const resp = await axios.post("http://127.0.0.1:8000/register/", {
-                          first_name: regisInfo.regis_firstName,
-                          last_name: regisInfo.regis_lastName,
-                          email: regisInfo.regis_valid_email,
-                          password: regisInfo.regis_pass,
-                          confirm_password: regisInfo.regis_confirm_pass,
-                        });
-
-                        if (resp.data.success) {
-                          localStorage.setItem("user", JSON.stringify(resp.data.data));
-                          setLoginError("");
-                          navigate("/");
-                        } else {
-                          // just in case backend ever returns 200 with success:false
-                          setLoginError(`* ${resp.data.message || "Registration failed"} *`);
-                        }
-                      } catch (err) {
-                        const msg =
-                          err?.response?.data?.message ||
-                          err?.response?.data?.detail || // DRF sometimes uses "detail"
-                          "Something went wrong. Please try again.";
-
-                        setLoginError(`* ${msg} *`);
-                      }
-
                   }}
                 >
-                  <div className={styles["regis-info-inner"]}>
-                    <div className={styles["regis-info-form-left"]}>
-                      
-                      
-                      <div className={`${styles.rowHeaderEqual}`}>
-                        <h4 className={styles.primaryCol}>First Name</h4>
-                        <h4 className={styles.secondaryCol}>Last Name</h4>
+                  {regisStep === "details" ? (
+                    <>
+                      <div className={styles["regis-info-inner"]}>
+                        <div className={styles["regis-info-form-left"]}>
+                          <div className={styles.rowHeaderEqual}>
+                            <h4 className={styles.primaryCol}>First Name</h4>
+                            <h4 className={styles.secondaryCol}>Last Name</h4>
+                          </div>
+
+                          <div className={styles.splitRowEqual}>
+                            <input
+                              type="text"
+                              placeholder="Enter your first name"
+                              value={regisInfo.regis_firstName}
+                              onChange={(e) => {
+                                setRegisInfo({
+                                  ...regisInfo,
+                                  regis_firstName: e.target.value,
+                                });
+                              }}
+                              required
+                              className={styles.primaryCol}
+                            />
+
+                            <input
+                              type="text"
+                              placeholder="Enter your last name"
+                              value={regisInfo.regis_lastName}
+                              onChange={(e) => {
+                                setRegisInfo({
+                                  ...regisInfo,
+                                  regis_lastName: e.target.value,
+                                });
+                              }}
+                              required
+                              className={styles.secondaryCol}
+                            />
+                          </div>
+
+                          <div className={`${styles.fieldGroup} ${styles.topSpaced}`}>
+                            <h4>Valid Email Address</h4>
+
+                            <input
+                              type="email"
+                              placeholder="Enter your email"
+                              value={regisInfo.regis_valid_email}
+                              onChange={(e) => {
+                                setRegisInfo({
+                                  ...regisInfo,
+                                  regis_valid_email: e.target.value,
+                                  regis_code: "",
+                                });
+                                setRegisCodeSent(false);
+                                setRegisEmailVerified(false);
+                                setRegisDevBypass(false);
+                                setRegisResendSeconds(0);
+                                setRegisStep("details");
+                              }}
+                              required
+                            />
+                          </div>
+                        </div>
+
+                        <div className={styles["regis-info-form-right"]}>
+                          <div className={styles.fieldGroup}>
+                            <div className={styles.fieldHeader}>
+                              <h4 className={styles.labelWithInfo}>
+                                Password
+                                <span
+                                  className={styles.infoWrap}
+                                  tabIndex={0}
+                                  aria-label="Password requirements"
+                                >
+                                  <img
+                                    className={styles.infoIcon}
+                                    src={tooltipIcon}
+                                    alt="Tooltip"
+                                  />
+                                  <span className={styles.tooltip}>
+                                    Use at least 8 characters, <br />
+                                    with a mix of letters and numbers.
+                                    <br />
+                                  </span>
+                                </span>
+                              </h4>
+                            </div>
+
+                            <div className={styles["password-wrapper"]}>
+                              <input
+                                type={showNewPassword ? "text" : "password"}
+                                placeholder="New Password"
+                                value={regisInfo.regis_pass}
+                                onChange={(e) => {
+                                  setRegisInfo({
+                                    ...regisInfo,
+                                    regis_pass: e.target.value,
+                                  });
+                                }}
+                                required
+                              />
+
+                              <span
+                                className={styles["eye-icon"]}
+                                onClick={() => setShowNewPassword(!showNewPassword)}
+                              >
+                                {showNewPassword ? (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    width="20"
+                                    height="20"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881"
+                                    />
+                                  </svg>
+                                ) : (
+                                  <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 24 24"
+                                    width="20"
+                                    height="20"
+                                  >
+                                    <path
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
+                                    />
+                                    <circle
+                                      fill="none"
+                                      stroke="currentColor"
+                                      strokeWidth="2"
+                                      cx="12"
+                                      cy="12"
+                                      r="3"
+                                    />
+                                  </svg>
+                                )}
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className={`${styles.fieldGroup} ${styles.topSpaced}`}>
+                            <h4>Confirm Password:</h4>
+                            <input
+                              type="password"
+                              placeholder="Re-enter new Password"
+                              value={regisInfo.regis_confirm_pass}
+                              onChange={(e) => {
+                                setRegisInfo({
+                                  ...regisInfo,
+                                  regis_confirm_pass: e.target.value,
+                                });
+                              }}
+                              required
+                            />
+                          </div>
+                        </div>
                       </div>
 
-                      <div className={styles.splitRowEqual}>
-                        <input
-                          type="text"
-                          name="username"
-                          placeholder="Enter your first name"
-                          value={regisInfo.regis_firstName}
-                          onChange={(e) => {
-                            setRegisInfo({
-                              ...regisInfo,
-                              regis_firstName: e.target.value,
-                            });
-                          }}
-                          required
-                          className={styles.primaryCol}
-                        />
+                      {loginError && (
+                        <p
+                          className={`${styles["login-error"]} ${
+                        loginMessageType === "success" ? styles["login-success"] : ""
+                      }`}
+                        >
+                          {loginError}
+                        </p>
+                      )}
 
-                        <input
-                          type="text"
-                          name="last name"
-                          placeholder="Enter your last name"
-                          value={regisInfo.regis_lastName}
-                          onChange={(e) => {
-                            setRegisInfo({
-                              ...regisInfo,
-                              regis_lastName: e.target.value,
-                            });
-                          }}
-                          required
-                          className={styles.primaryCol}
-                         // style = {width="50%"} 
-                        />
+                      <div className={styles["button-back-container"]}>
+                        <button type="submit" className={styles["login-btn"]}>
+                          {regisSendingCode ? "Sending..." : "Register"}
+                        </button>
                       </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className={styles.registerVerifyPanel}>
+                        {//<h3 className={styles.verifyTitle}>Verify your email</h3>
+                        }
+                        <p className={styles.verifyEmailText}>
+                          We sent a verification code to{" "}
+                          <strong>{regisInfo.regis_valid_email}</strong>. Enter the code below within 10 minutes to
+                          confirm your email address.
+                        </p>
 
-
-                      <div className={`${styles.rowHeader} ${styles.topSpaced}`}>
-                        <h4 className={styles.primaryCol}>Valid Email Address</h4>
-                        <h4 className={styles.secondaryCol}>Email Code</h4>
-                      </div>
-
-                      <div className={styles.splitRow}>
-                        <input
-                          type="email"
-                          name="username"
-                          placeholder="Enter your email"
-                          value={regisInfo.regis_valid_email}
-                          onChange={(e) => {
-                            setRegisInfo({
-                              ...regisInfo,
-                              regis_valid_email: e.target.value,
-                            });
-                          }}
-                          required
-                          className={styles.primaryCol}
-                        />
-
-                        <input
+                        <div style={{ width: "70%", alignSelf: "center" }}>
+                          <input
                           type="text"
-                          name="email"
-                          placeholder="Code"
+                          placeholder="Enter verification code"
                           value={regisInfo.regis_code}
                           onChange={(e) => {
                             setRegisInfo({
                               ...regisInfo,
                               regis_code: e.target.value,
                             });
+                            setRegisEmailVerified(false);
                           }}
-                          required
-                          className={styles.secondaryCol}
+                          disabled={regisDevBypass}
+                          className={`${styles.verifyCodeInput} ${
+                            regisDevBypass ? styles.disabledInput : ""
+                          }`}
                         />
-                      </div>
 
-                      <div className={styles.linkRow}>
-                        <a href="#" className={styles.primaryCol}>
-                          Send Code
-                        </a>
-                        <a
-                          href="#"
-                          className={`${styles.secondaryCol} ${styles.mutedLink}`}
-                        >
-                          Resend Code? 50s
-                        </a>
-                      </div>
-                    </div>
+                          </div>
 
-                    <div className={styles["regis-info-form-right"]}>
-                      <div className={styles.fieldGroup}>
-                        <div className={styles.fieldHeader}>
-                          <h4 className={styles.labelWithInfo}>
-                            Password
-                            <span
-                              className={styles.infoWrap}
-                              tabIndex={0}
-                              aria-label="Password requirements"
-                            >
-                              
 
-                              <img
-                                className={styles.infoIcon}
-                                src={tooltipIcon}
-                                alt="Tooltip"
-                                onError={() => console.log("Tooltip image failed to load")}
-                                onLoad={() => console.log("Tooltip image loaded successfully")}
-                              />
-                              <span className={styles.tooltip}>
-                                Use at least 8 characters, <br />
-                                with a mix of letters and numbers.
-                                <br />
-                              </span>
-                            </span>
-                          </h4>
-                        </div>
 
-                        <div className={styles["password-wrapper"]}>
-                          <input
-                            type={showNewPassword ? "text" : "password"}
-                            name="password"
-                            placeholder="New Password"
-                            value={regisInfo.regis_pass}
-                            onChange={(e) => {
-                              setRegisInfo({
-                                ...regisInfo,
-                                regis_pass: e.target.value,
-                              });
-                            }}
-                            required
-                          />
+                        
+                        
 
-                          <span
-                            className={styles["eye-icon"]}
-                            onClick={() =>
-                              setShowNewPassword(!showNewPassword)
-                            }
+                        <div className={styles.resendRow}>
+                          <button
+                            type="button"
+                            className={styles.resendCodeButton}
+                            onClick={handleSendRegisterCode}
+                            disabled={regisResendSeconds > 0 || regisSendingCode}
                           >
-                            {showNewPassword ? (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="20"
-                                height="20"
-                              >
-                                <path
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  d="M3 3l18 18M10.5 10.5a3 3 0 004.5 4.5M12 5c-4.418 0-8.209 2.865-10 6.5a10.05 10.05 0 002.015 2.881M12 19c4.418 0 8.209-2.865 10-6.5a10.05 10.05 0 00-2.015-2.881"
-                                />
-                              </svg>
-                            ) : (
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 24 24"
-                                width="20"
-                                height="20"
-                              >
-                                <path
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"
-                                />
-                                <circle
-                                  fill="none"
-                                  stroke="currentColor"
-                                  strokeWidth="2"
-                                  cx="12"
-                                  cy="12"
-                                  r="3"
-                                />
-                              </svg>
-                            )}
-                          </span>
+                            {regisSendingCode
+                              ? "Sending..."
+                              : regisResendSeconds > 0
+                                ? `Resend code in ${regisResendSeconds}s`
+                                : "Resend code"}
+                          </button>
                         </div>
-                      </div>
 
-                      <div className={`${styles.fieldGroup} ${styles.topSpaced}`}>
-                        <h4>Confirm Password:</h4>
-                        <input
-                          type="password"
-                          name="confirmPassword"
-                          placeholder="Re-enter new Password"
-                          value={regisInfo.regis_confirm_pass}
-                          onChange={(e) => {
-                            setRegisInfo({
-                              ...regisInfo,
-                              regis_confirm_pass: e.target.value,
-                            });
+                        {/*ALLOW_DEV_EMAIL_BYPASS && (
+                          <button
+                            type="button"
+                            className={styles.devBypassLink}
+                            onClick={handleDevBypassRegisterCode}
+                          >
+                            Dev exit: bypass email verification
+                          </button>
+                        )*/}
+
+                        {loginError && (
+                        <p
+                          className={`${styles["login-error"]} ${
+                        loginMessageType === "success" ? styles["login-success"] : ""
+                      }`}
+                        >
+                          {loginError}
+                        </p>
+                      )}
+
+                      <div className={`${styles["button-back-container"]} ${styles.verifyButtonStack}`}>
+                        <button type="submit" className={styles["login-btn"]}>
+                          Register
+                        </button>
+
+                        <button
+                          type="button"
+                          className={styles["back-btn"]}
+                          onClick={() => {
+                            setLoginError("");
+                            setRegisStep("details");
                           }}
-                          required
-                        />
+                        >
+                          Back
+                        </button>
                       </div>
-                    </div>
-                  </div>
 
-                  {loginError && (
-                    <p className={styles["login-error"]}>{loginError}</p>
+                      </div>
+
+                      
+                    </>
                   )}
-
-                  <div className={styles["button-back-container"]}>
-                    <button type="submit" className={styles["login-btn"]}>
-                      Register
-                    </button>
-                  </div>
                 </form>
               </div>
             )}
