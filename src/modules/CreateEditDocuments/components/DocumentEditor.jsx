@@ -226,7 +226,7 @@ function BodyContent({ doc, onBack }) {
         console.log("(debug) activesubid changing, activesub is now now: ", activeSub)
         // setInitialMarkdown((activeSub && activeSub.content) ? activeSub.content : "")
     }, [activeSub?.id])
-    
+
     // render content from a string (supports headings-ish + bullets)
     const renderContent = (text = "") => {
         const lines = String(text).split("\n");
@@ -776,7 +776,9 @@ function BodyContent({ doc, onBack }) {
                         {filteredSections.map((section) => {
                             const isOpen = section.id === openSectionId && section.id != sectionTitleEditID;
                             return (
-                                <div key={section.id} className={styles.policySection}>
+                                <div key={section.id}
+                                    className={`${styles.policySection} ${isOpen ? styles.policySectionOpen : ""
+                                        }`}>
                                     <button
                                         type="button"
                                         className={`${styles.policySectionHeader} ${isOpen ? styles.policySectionHeaderOpen : ""
