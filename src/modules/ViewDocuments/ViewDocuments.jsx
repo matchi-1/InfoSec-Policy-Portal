@@ -16,7 +16,9 @@ const BodyContent = () => {
     const [docSearch, setDocSearch] = useState("");
     const [docSearchField, setDocSearchField] = useState("all");
     const [policySearch, setPolicySearch] = useState("");
-    const [dbDocs, setDbDocs] = useState([])
+    const [dbDocs, setDbDocs] = useState([]);
+    const [isPdfFullscreenOpen, setIsPdfFullscreenOpen] = useState(false);
+
     useEffect(() => {
         const fetchDocuments = async () => {
             console.log("(debug) fetching docs from backend...")
@@ -260,6 +262,24 @@ const BodyContent = () => {
         setCurrentPage((p) => Math.max(p - 1, 1));
     };
 
+    useEffect(() => {
+        if (!isPdfFullscreenOpen) return;
+
+        const handleEscape = (event) => {
+            if (event.key === "Escape") {
+                setIsPdfFullscreenOpen(false);
+            }
+        };
+
+        document.body.style.overflow = "hidden";
+        document.addEventListener("keydown", handleEscape);
+
+        return () => {
+            document.body.style.overflow = "";
+            document.removeEventListener("keydown", handleEscape);
+        };
+    }, [isPdfFullscreenOpen]);
+
     return (
         <div className={`${styles.policies} ${isPdfViewActive ? styles.pdfActive : ""}`}>
             <div className={styles.bodyContentContainer}>
@@ -472,6 +492,16 @@ const BodyContent = () => {
                             )}
 
                             {isPdfViewActive && selectedDoc && (
+                                <button
+                                    type="button"
+                                    className={styles.documentButton}
+                                    onClick={() => setIsPdfFullscreenOpen(true)}
+                                >
+                                    View PDF in Fullscreen
+                                </button>
+                            )}
+
+                            {isPdfViewActive && selectedDoc && (
                                 <a
                                     className={styles.documentButton}
                                     href={selectedPdfPreviewUrl}
@@ -546,6 +576,52 @@ const BodyContent = () => {
                         )}
                     </div>
                 </div>
+
+                {isPdfFullscreenOpen && selectedDoc && (
+                    <div
+                        className={styles.pdfFullscreenOverlay}
+                        onClick={(event) => {
+                            if (event.target === event.currentTarget) {
+                                setIsPdfFullscreenOpen(false);
+                            }
+                        }}
+                    >
+                        <div className={styles.pdfFullscreenPanel}>
+                            <div className={styles.pdfFullscreenHeader}>
+                                <div className={styles.pdfFullscreenTitleGroup}>
+                                    <p className={styles.pdfFullscreenLabel}>PDF Preview</p>
+                                    <h3>{selectedDoc.title}</h3>
+                                </div>
+
+                                <div className={styles.pdfFullscreenActions}>
+                                    <a
+                                        className={styles.pdfFullscreenActionButton}
+                                        href={selectedPdfPreviewUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        Open in New Tab
+                                    </a>
+
+                                    <button
+                                        type="button"
+                                        className={styles.pdfFullscreenCloseButton}
+                                        onClick={() => setIsPdfFullscreenOpen(false)}
+                                        aria-label="Close fullscreen PDF"
+                                    >
+                                        ✕
+                                    </button>
+                                </div>
+                            </div>
+
+                            <iframe
+                                className={styles.pdfFullscreenIframe}
+                                src={selectedPdfPreviewUrl}
+                                title={`${selectedDoc.title} fullscreen preview`}
+                            />
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );
