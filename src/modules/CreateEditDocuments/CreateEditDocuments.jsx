@@ -47,11 +47,11 @@ const BodyContent = ({ setActiveSubModule }) => {
 
 
     const uniqueAuthors = useMemo(() => {
-        return [...new Set(dbDocs.map((doc) => doc.authoredBy).filter(Boolean))].sort();
+        return [...new Set(dbDocs.map((doc) => doc.authorName).filter(Boolean))].sort();
     }, [dbDocs]);
 
     const uniqueReviewers = useMemo(() => {
-        return [...new Set(dbDocs.map((doc) => doc.reviewedBy).filter(Boolean))].sort();
+        return [...new Set(dbDocs.map((doc) => doc.reviewerName).filter(Boolean))].sort();
     }, [dbDocs]);
 
     const handleSelectDoc = (docId, docTitle) => {
