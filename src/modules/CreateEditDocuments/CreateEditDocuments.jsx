@@ -474,8 +474,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                                         setTimeout(() => {
                                             setShowDeleteToast(false);
                                         }, 2500);
-
-                                        return;
                                     }}
                                     style={{
                                         background: "#c62828",

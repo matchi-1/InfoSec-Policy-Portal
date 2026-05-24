@@ -434,6 +434,8 @@ function BodyContent({ doc, onBack }) {
         const fileChanged =
             fileToUpload !== null
 
+        const fileNameChanged = doc.pretty_pdf_filename??"null" !== fileNameTemp??"null"
+
         const tagsChanged =
             JSON.stringify(currTags) !== initialDocRef.current.tags
 
