@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 
 // TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
 // import { controlTags } from "../data/controlTags.js";
-import { set } from "lodash";
+import { initial, set } from "lodash";
 
 
 function BodyContent({ doc, onBack }) {
@@ -60,7 +60,7 @@ function BodyContent({ doc, onBack }) {
     const [subTitleTemp, setSubTitleTemp] = useState(null);
 
     // const [currentMarkdown, setCurrentMarkdown] = useState("")
-    const [initialMarkdown, setInitialMarkdown] = useState("")
+    // const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
 
 
@@ -74,6 +74,8 @@ function BodyContent({ doc, onBack }) {
     const [currAuthorName, setCurrAuthorName] = useState(doc.authoredBy ? doc.authorName : null)
     const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
     const [userList, setUserList] = useState([]);
+
+    const [markdownSeed, setMarkdownSeed] = useState(crypto.randomUUID());
 
     useEffect(() => {
         const get_users = async () => {
@@ -223,8 +225,11 @@ function BodyContent({ doc, onBack }) {
         openSubs.find((sub) => sub.id === activeSubId) ?? openSubs[0] ?? null;
 
     useEffect(() => {
-        setInitialMarkdown(activeSub?.content ?? "")
+        console.log("(debug) activesubid changing, activesub is now now: ", activeSub)
+        // setInitialMarkdown((activeSub && activeSub.content) ? activeSub.content : "")
+        setMarkdownSeed(crypto.randomUUID())
     }, [activeSub?.id])
+    
     // render content from a string (supports headings-ish + bullets)
     const renderContent = (text = "") => {
         const lines = String(text).split("\n");
@@ -1075,7 +1080,7 @@ function BodyContent({ doc, onBack }) {
                                                             </ul> */}
                                                             <MDXEditor
                                                                 // key={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
-                                                                key={initialMarkdown}
+                                                                key={markdownSeed}
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
                                                                 // markdown={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
