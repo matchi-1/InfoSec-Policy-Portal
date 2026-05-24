@@ -408,7 +408,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                             <thead>
                                 <tr>
                                     <th>Title</th>
-                                    <th>Category</th>
                                     <th>Authored By</th>
                                     <th>Reviewed By</th>
                                     <th>Last Updated</th>
@@ -428,7 +427,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                                                 className={selectedDocId === doc.id ? styles.selectedRow : ""}
                                             >
                                                 <td>{highlightText(doc.title, docSearch)}</td>
-                                                <td>{categories.length ? categories.join(", ") : "—"}</td>
                                                 <td>{doc.authorName || "—"}</td>
                                                 <td>{doc.reviewerName || "—"}</td>
                                                 <td>{doc.lastUpdated ? new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' }) : "—"}</td>
