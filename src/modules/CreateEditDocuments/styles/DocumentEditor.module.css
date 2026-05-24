@@ -463,6 +463,13 @@
   flex-direction: row;
   overflow: hidden;
 
+  div {
+    display: flex;
+    flex-direction: row;
+    gap: 0.4rem;
+    overflow: hidden;
+  }
+
   p {
     flex: 1;
     min-width: 0;
@@ -470,6 +477,8 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
+    color: var(--primary-blue);
+    font-weight: 700;
   }
 }
 

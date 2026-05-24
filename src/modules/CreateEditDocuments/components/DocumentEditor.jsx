@@ -45,6 +45,7 @@ function BodyContent({ doc, onBack }) {
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
     const [fileName, setFileName] = useState(doc.pdf_filename??"null")
+    const [fileNameTemp, setFileNameTemp] = useState("null")
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
@@ -677,13 +678,17 @@ function BodyContent({ doc, onBack }) {
                                     onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
-                            { fileName !== "null" ? (
+                            { fileName !== "null" || fileNameTemp !== "null" ? (
                                 <button className={styles.pdfChip}>
-                                    <p>{fileName}</p>
+                                    <div>
+                                        <img src="/icons/pdf.png" alt="" className={styles.actionIcon}/>
+                                        <p>{fileName !== "null" ? fileName : fileNameTemp}</p>
+                                    </div>
                                     <img
                                         src="/icons/close-blue.png" alt="" className={styles.actionIcon}
                                         onClick={() => {
                                             setFileName("null")
+                                            setFileNameTemp("null")
                                             setFileToUpload(null)
                                             setViewingPDF(false)
                                         }} />
@@ -703,7 +708,7 @@ function BodyContent({ doc, onBack }) {
                                         </p>
 
                                         <p className={styles.toastAlertText}>
-                                            Upload a PDF document before viewing.
+                                            Upload a PDF file and save the document before viewing.
                                         </p>
                                     </div>
                                 </div>
@@ -1116,7 +1121,7 @@ function BodyContent({ doc, onBack }) {
                 )
             }
             {showUploadModal &&
-                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} setFileName={setFileName} />
+                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} setFileNameTemp={setFileNameTemp} />
             }
             {showConfModal &&
                 <div className={styles.confModalOverlay}>
