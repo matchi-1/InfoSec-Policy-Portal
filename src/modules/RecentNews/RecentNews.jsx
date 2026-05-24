@@ -135,14 +135,23 @@ const mapNotificationToUpdate = (rawNotification) => {
         action.includes("announcement") ||
         action.includes("notice")
     ) {
+        const isPublishedAnnouncement =
+            action.includes("publish") ||
+            action.includes("posted") ||
+            action.includes("created");
+
         return {
             id: rawNotification.id || notification.id,
             variant: "announcement",
             type: "Pinned Announcement",
             date: formattedDate,
             titleText: notification.misc_title || "Pinned notice",
-            actionText: "was posted or updated.",
-            description: `${actorName} updated the pinned notice.`,
+            actionText: isPublishedAnnouncement
+                ? "has been published."
+                : "has been updated.",
+            description: isPublishedAnnouncement
+                ? `${actorName} published a pinned announcement.`
+                : `${actorName} updated the pinned announcement.`,
             read: rawNotification.read ?? true,
         };
     }
