@@ -397,6 +397,12 @@ function BodyContent({ doc, onBack }) {
     const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
     const [showClearTagsModal, setShowClearTagsModal] = useState(false);
+
+    const [showSaveToast, setShowSaveToast] = useState(false);
+    const [showUploadToast, setShowUploadToast] = useState(false);
+    const [showRemoveToast, setShowRemoveToast] = useState(false);
+    const [deletedFile, setDeletedFile] = useState("");
+
     const initialDocRef = useRef(null)
 
 
@@ -1406,7 +1412,13 @@ function BodyContent({ doc, onBack }) {
                                         method: 'POST',
                                         body: data
                                     })
-                                    onBack();
+
+                                    setShowSaveToast(true);
+                                    setTimeout(() => {
+                                        setShowDeleteToast(false);
+                                    }, 1000);
+
+                                    setTimeout(() => { onBack(); }, 1000);
                                 }}
                             >
                                 Save Document
@@ -1556,11 +1568,20 @@ function BodyContent({ doc, onBack }) {
                                 <button
                                     className={styles.deleteBtn}
                                     onClick={() => {
-                                        setFileName("null")
-                                        setFileNameTemp("null")
-                                        setFileToUpload(null)
-                                        setViewingPDF(false)
-                                        setShowFileDeleteModal(false)
+                                        // save filename before deleting
+                                        setDeletedFile(fileNameTemp!=="null"? fileNameTemp : fileName);
+
+                                        setShowRemoveToast(true);
+
+                                        setTimeout(() => {
+                                            setShowRemoveToast(false);
+                                        }, 2500);
+
+                                        setFileName("null");
+                                        setFileNameTemp("null");
+                                        setFileToUpload(null);
+                                        setViewingPDF(false);
+                                        setShowFileDeleteModal(false);
                                     }}
                                 >
                                     Remove PDF
@@ -1650,6 +1671,37 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 </div>
             )}
+
+            {/* TOASTS */}
+            {showSaveToast && (
+                <div className={styles.toastAlert}>
+                    <div className={styles.toastAlertContent}>
+                        <p className={styles.toastAlertTitle}>
+                            Document Saved
+                        </p>
+
+                        <p className={styles.toastAlertText}>
+                            Document "<strong>{currTitle || doc.title}</strong>" saved successfully.
+                        </p>
+                    </div>
+                </div>
+            )
+            }
+
+            {showRemoveToast && (
+                <div className={styles.toastAlert}>
+                    <div className={styles.toastAlertContent}>
+                        <p className={styles.toastAlertTitle}>
+                            PDF Removed
+                        </p>
+
+                        <p className={styles.toastAlertText}>
+                            Document "<strong>{deletedFile}</strong>" is removed from this document.
+                        </p>
+                    </div>
+                </div>
+            )
+            }
 
             {tagToast && (
                 <div className={styles.toastAlert}>

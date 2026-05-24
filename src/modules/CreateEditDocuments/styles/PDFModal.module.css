@@ -1,4 +1,23 @@
 .PDFModal {
+  --bg-page: #eef4fd;
+  --card-bg: #ffffff;
+  --line: #bdc8d6;
+  --line-soft: #d7e1ee;
+  --line-strong: #94A9C6;
+  --primary-blue: #1f4f95;
+  --primary-blue-2: #4777ba;
+  --primary-blue-3: #2f66b3;
+  --primary-green: #007878;
+  --soft-blue: #dbe9ff;
+  --soft-blue-2: #f2f6fb;
+  --text-main: #1b3b6f;
+  --text-body: #2d3442;
+  --text-sub: #3b4a63;
+  --text-muted: #6f7f98;
+  --success: #0b8f8f;
+  --success-bg: #f6fbfb;
+  --danger: #d84b4b;
+
   position: fixed;
   inset: 0;
 
@@ -217,5 +236,109 @@
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+/*
+  TOAST ALERT
+*/
+
+.toastAlert {
+  position: fixed;
+  bottom: 1.4rem;
+  right: 1.4rem;
+  z-index: 9999;
+
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+
+  min-width: 16rem;
+  max-width: 22rem;
+
+  padding: 0.9rem 1rem;
+
+  border-radius: 0.4rem;
+
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255,255,255,0.98),
+      rgba(246,250,255,0.98)
+    );
+
+  border: 1px solid rgba(148, 169, 198, 0.28);
+
+  box-shadow:
+    0 18px 40px rgba(31, 79, 149, 0.14),
+    0 4px 12px rgba(31, 79, 149, 0.08);
+
+  backdrop-filter: blur(10px);
+
+  animation:
+    toastSlideIn 0.28s cubic-bezier(.2, .8, .2, 1),
+    toastFadeOut 0.28s ease 2.7s forwards;
+}
+
+.toastAlert::before {
+  content: "";
+
+  width: 0.38rem;
+  align-self: stretch;
+
+  border-radius: 999px;
+
+  background: linear-gradient(to bottom,
+      var(--primary-blue),
+      var(--primary-blue-2));
+}
+
+.toastAlertContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.toastAlertTitle {
+  margin: 0;
+
+  color: var(--primary-blue);
+
+  font-size: 0.83rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.toastAlertText {
+  margin: 0;
+
+  color: var(--text-muted);
+
+  font-size: 0.76rem;
+  line-height: 1.4;
+  font-weight: 500;
+}
+
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes toastFadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
   }
 }

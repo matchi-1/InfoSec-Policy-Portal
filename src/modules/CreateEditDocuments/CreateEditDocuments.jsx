@@ -12,11 +12,9 @@ const BodyContent = ({ setActiveSubModule }) => {
     const [selectedDocId, setSelectedDocId] = useState(null);
     const [docSearch, setDocSearch] = useState("");
 
-    const [selectedCategory, setSelectedCategory] = useState("");
     const [selectedAuthor, setSelectedAuthor] = useState("");
     const [selectedReviewer, setSelectedReviewer] = useState("");
 
-    const [isCategoryOpen, setIsCategoryOpen] = useState(false);
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isReviewerOpen, setIsReviewerOpen] = useState(false);
 
@@ -33,18 +31,6 @@ const BodyContent = ({ setActiveSubModule }) => {
         }
         fetchDocuments();
     }, [selectedDocId])
-
-    const getDocCategories = (doc) => {
-        if (Array.isArray(doc?.category)) return doc.category.filter(Boolean);
-        if (typeof doc?.category === "string" && doc.category.trim()) return [doc.category.trim()];
-        return [];
-    };
-
-
-    const uniqueCategories = useMemo(() => {
-        return [...new Set(dbDocs.flatMap((doc) => getDocCategories(doc)))].sort();
-    }, [dbDocs]);
-
 
     const uniqueAuthors = useMemo(() => {
         return [...new Set(dbDocs.map((doc) => doc.authorName).filter(Boolean))].sort();
@@ -78,6 +64,7 @@ const BodyContent = ({ setActiveSubModule }) => {
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [docToDelete, setDocToDelete] = useState(null);
+    const [deletedDoc, setdeletedDoc] = useState(null);
 
     const handleDeleteDoc = (doc) => {
         setDocToDelete(doc);
@@ -124,18 +111,12 @@ const BodyContent = ({ setActiveSubModule }) => {
                 doc.reviewerName,
                 doc.details,
                 doc.documentDetails,
-                ...getDocCategories(doc),
             ]
                 .filter(Boolean)
                 .join(" ")
                 .toLowerCase();
 
             const matchesSearch = !q || searchableText.includes(q);
-
-            const docCategories = getDocCategories(doc);
-
-            const matchesCategory =
-                !selectedCategory || docCategories.includes(selectedCategory);
 
             const matchesAuthor =
                 !selectedAuthor || doc.authorName === selectedAuthor;
@@ -145,7 +126,6 @@ const BodyContent = ({ setActiveSubModule }) => {
 
             return (
                 matchesSearch &&
-                matchesCategory &&
                 matchesAuthor &&
                 matchesReviewer
             );
@@ -156,14 +136,13 @@ const BodyContent = ({ setActiveSubModule }) => {
             const db = new Date(b.lastUpdated || 0);
             return db - da;
         });
-    }, [dbDocs, docSearch, selectedCategory, selectedAuthor, selectedReviewer]);
+    }, [dbDocs, docSearch, selectedAuthor, selectedReviewer]);
 
     const selectedDoc = useMemo(() => {
         if (selectedDocId === "new") {
             return {
                 id: "new",
                 title: "New Document",
-                category: [],
                 documentDetails: "New Document Description",
                 details: "New Document Description",
                 authoredBy: "",
@@ -186,6 +165,8 @@ const BodyContent = ({ setActiveSubModule }) => {
             details: found.details ?? found.documentDetails ?? "",
         };
     }, [dbDocs, selectedDocId]);
+
+    const [showDeleteToast, setShowDeleteToast] = useState(false);
 
     return (
         <div className={styles.bodyContentContainer}>
@@ -218,67 +199,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                             <div className={styles.filtersWrapper}>
 
                                 <div className={styles.filterContainer}>
-                                    <h2>Filter by Category</h2>
-                                    <div
-                                        className={
-                                            selectedCategory !== ""
-                                                ? styles.activeSelectedOption
-                                                : styles.selectedOption
-                                        }
-                                        onClick={() => {
-                                            setIsCategoryOpen(!isCategoryOpen);
-                                            setIsAuthOpen(false);
-                                            setIsReviewerOpen(false);
-                                        }}
-                                    >
-                                        <div><p>{selectedCategory || "All Categories"}</p></div>
-                                        <div>
-                                            <img
-                                                className={`${styles.dropdownArrow} ${isCategoryOpen ? styles.dropdownArrowOpen : ""
-                                                    }`}
-                                                src={
-                                                    selectedCategory !== ""
-                                                        ? "/icons/down-white.png"
-                                                        : "/icons/down.png"
-                                                }
-                                                alt="Down Icon"
-                                            />
-                                        </div>
-                                    </div>
-
-                                    {isCategoryOpen && (
-                                        <div className={styles.filterOptionsContainer}>
-                                            <div
-                                                className={styles.filterOptions}
-                                                onClick={() => {
-                                                    setSelectedCategory("");
-                                                    setIsCategoryOpen(false);
-                                                }}
-                                            >
-                                                All Categories
-                                            </div>
-
-                                            {uniqueCategories.map((category, index) => (
-                                                <div
-                                                    className={
-                                                        selectedCategory === category
-                                                            ? styles.activeFilter
-                                                            : styles.filterOptions
-                                                    }
-                                                    key={index}
-                                                    onClick={() => {
-                                                        setSelectedCategory(category);
-                                                        setIsCategoryOpen(false);
-                                                    }}
-                                                >
-                                                    {category}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div className={styles.filterContainer}>
                                     <h2>Filter by Author</h2>
                                     <div
                                         className={
@@ -288,7 +208,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                                         }
                                         onClick={() => {
                                             setIsAuthOpen(!isAuthOpen);
-                                            setIsCategoryOpen(false);
                                             setIsReviewerOpen(false);
                                         }}
                                     >
@@ -349,7 +268,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                                         }
                                         onClick={() => {
                                             setIsReviewerOpen(!isReviewerOpen);
-                                            setIsCategoryOpen(false);
                                             setIsAuthOpen(false);
                                         }}
                                     >
@@ -430,7 +348,6 @@ const BodyContent = ({ setActiveSubModule }) => {
                             <tbody>
                                 {filteredDocs.length > 0 ? (
                                     filteredDocs.map((doc) => {
-                                        const categories = getDocCategories(doc);
                                         console.log("(debug) listing docs: doc: ", doc)
                                         return (
                                             <tr
@@ -549,7 +466,17 @@ const BodyContent = ({ setActiveSubModule }) => {
 
                                 <button
                                     className={styles.deleteBtn}
-                                    onClick={confirmDeleteDoc}
+                                    onClick={() => {
+                                        setdeletedDoc(docToDelete.title);
+                                        confirmDeleteDoc()
+                                        setShowDeleteToast(true);
+
+                                        setTimeout(() => {
+                                            setShowDeleteToast(false);
+                                        }, 2500);
+
+                                        return;
+                                    }}
                                     style={{
                                         background: "#c62828",
                                     }}
@@ -557,6 +484,26 @@ const BodyContent = ({ setActiveSubModule }) => {
                                     Delete Document
                                 </button>
                             </div>
+                        </div>
+                    </div>
+                )
+            }
+            {/* TOASTS */}
+            {
+                showDeleteToast && (
+                    <div className={styles.toastAlert}>
+                        <div className={styles.toastAlertContent}>
+                            <p className={styles.toastAlertTitle}>
+                                Document Deleted
+                            </p>
+
+                            <p className={styles.toastAlertText}>
+                                Document{" "} 
+                                <strong>
+                                    "{deletedDoc}"
+                                </strong>{" "}
+                                deleted successfully.
+                            </p>
                         </div>
                     </div>
                 )
