@@ -389,9 +389,9 @@ function App() {
   useEffect(() => {
     const allowedModules = Array.isArray(rolePermissions)
       ? rolePermissions
-          .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
-          .map((m) => m.trim())
-          .filter(Boolean)
+        .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
+        .map((m) => m.trim())
+        .filter(Boolean)
       : [];
 
     const normalizeName = (s) =>
@@ -532,13 +532,12 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${
-                      isMainModuleCollapsed &&
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
                       isSidebarOpen &&
                       activeModule === module.id
-                        ? "opened"
-                        : ""
-                    }`}
+                      ? "opened"
+                      : ""
+                      }`}
                   >
                     {/* submodules - only show if this module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -602,13 +601,12 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${
-                      isMainModuleCollapsed &&
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
                       isSidebarOpen &&
                       activeModule === module.id
-                        ? "opened"
-                        : ""
-                    }`}
+                      ? "opened"
+                      : ""
+                      }`}
                   >
                     {/* Submodules - only show if the main module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -642,9 +640,8 @@ function App() {
         <div className="header-body-container">
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
-              className={`header-tabs-container ${
-                !showUserProfile && activeModule ? "visible" : "hidden"
-              }`}
+              className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
+                }`}
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
@@ -673,9 +670,8 @@ function App() {
               {/*<SearchBar />*/}
               <img
                 className="notif-icon"
-                src={`/icons/Notification-${
-                  hasNotification ? "active-" : ""
-                }logo.png`}
+                src={`/icons/Notification-${hasNotification ? "active-" : ""
+                  }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
                   setNotifOpen(!notifOpen);
@@ -720,16 +716,19 @@ function App() {
                         // }
                         key={i}
                       >
-                        <div className="notif-toprow">
-                          <div className="notif-origin">
-                            <p>
-                              {/* {notif.orig_submodule
-                                ? notif.orig_submodule
-                                : notif.orig_module} */}
-                            </p>
-                          </div>
-                          <div className="notif-time-and-icon">
-                            <div className="notif-time">
+                        <div className="notif-msg">
+                          <p>
+                            {notif.actor ==
+                              JSON.parse(localStorage.getItem("user")).user_id
+                              ? "You"
+                              : notif.actor_name}{" "}
+                            {notif.action}{" "}
+                            {notif.misc_title
+                              ? notif.misc_title
+                              : notif.document_title}
+                          </p>
+                        </div>
+                        <div className="notif-time">
                               <p>
                                 {new Intl.DateTimeFormat("en-US", {
                                   // month: "short",
@@ -740,27 +739,6 @@ function App() {
                                 }).format(new Date(notif.created_at))}
                               </p>
                             </div>
-                            {
-                              // !notif.read && (
-                              //   <p className="unread-notif-icon">
-                              //     <img src="/icons/unread-notif-icon.png" />
-                              //   </p>
-                              // ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
-                            }
-                          </div>
-                        </div>
-                        <div className="notif-msg">
-                          <p>
-                            {notif.actor ==
-                            JSON.parse(localStorage.getItem("user")).user_id
-                              ? "You"
-                              : notif.actor_name}{" "}
-                            {notif.action}{" "}
-                            {notif.misc_title
-                              ? notif.misc_title
-                              : notif.document_title}
-                          </p>
-                        </div>
                       </div>
                     ))
                   )}

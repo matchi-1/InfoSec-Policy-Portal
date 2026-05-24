@@ -685,6 +685,7 @@ function BodyContent({ doc, onBack }) {
                                         onClick={() => {
                                             setFileName("null")
                                             setFileToUpload(null)
+                                            setViewingPDF(false)
                                         }} />
                                 </button>
                             ) : (
@@ -1157,6 +1158,7 @@ function BodyContent({ doc, onBack }) {
                                     if (fileToUpload) {
                                         data.append('pdf_file', fileToUpload)
                                     }
+
                                     console.log("(debug) sending data to backend for doc update")
                                     console.log("(debug)", [...data])
 
