@@ -32,6 +32,8 @@ function App() {
   const [showUserProfile, setShowUserProfile] = useState(false);
   const [notifs, setNotifs] = useState([]);
   const [rolePermissions, setRolePermissions] = useState([]);
+  const [notifToast, setNotifToast] = useState(null);
+  const notifToastTimerRef = useRef(null);
 
   const displayName = user
     ? `${user.first_name} ${user.last_name?.charAt(0)}.`
@@ -226,31 +228,72 @@ function App() {
     };
   }, []);
 
-  //fetch notifs
-  const fetchNotifs = async (user) => {
-    console.log("Fetching notifs...");
-    const resp = await fetch(`${backend_base_url}/api/notifications/`, {
-      method: "GET",
-    });
-    const notif_items = await resp.json();
-    console.log("Notifs fetched:");
-    console.log(notif_items);
-    setNotifs(notif_items);
-    console.log("Final notif list:");
-    console.log(notif_items);
 
-    //look through notif times
-    // VERY placeholder/temp logic. for actual per-notif reading logic, use UserNotification many-to-many entity
-    notif_items.map((notif) => {
-      const notif_date = new Date(notif.created_at);
-      const latest_notif_open = new Date(
-        localStorage.getItem("last_notif_open"),
-      );
-      if (notif_date > latest_notif_open) {
-        setHasNotification(true);
-      }
+  const showNotifToast = (notif) => {
+    if (!notif) return;
+
+    setNotifToast({
+      id: notif.id,
+      message: getNotificationMessage(notif),
     });
+
+    if (notifToastTimerRef.current) {
+      clearTimeout(notifToastTimerRef.current);
+    }
+
+    notifToastTimerRef.current = setTimeout(() => {
+      setNotifToast(null);
+    }, 3500);
   };
+
+
+  const fetchNotifs = async (user) => {
+    try {
+      console.log("Fetching notifs...");
+
+      const resp = await fetch(`${backend_base_url}/api/notifications/`, {
+        method: "GET",
+      });
+
+      if (!resp.ok) {
+        console.warn("Notifications fetch failed:", resp.status);
+        return;
+      }
+
+      const notif_items = await resp.json();
+
+      console.log("Notifs fetched:");
+      console.log(notif_items);
+
+      setNotifs(notif_items);
+
+      const latestNotif = [...notif_items].sort(
+        (a, b) => new Date(b.created_at) - new Date(a.created_at),
+      )[0];
+
+      const lastNotifOpen = localStorage.getItem("last_notif_open");
+      const latestNotifOpenTime = lastNotifOpen
+        ? new Date(lastNotifOpen).getTime()
+        : 0;
+
+      const hasUnreadNotif = notif_items.some((notif) => {
+        const notifTime = new Date(notif.created_at).getTime();
+        return notifTime > latestNotifOpenTime;
+      });
+
+      setHasNotification(hasUnreadNotif);
+
+      // Same condition as the icon change:
+      // if polling fetched notifications and there is an unread/new one,
+      // show the disappearing toast.
+      if (hasUnreadNotif && latestNotif) {
+        showNotifToast(latestNotif);
+      }
+    } catch (error) {
+      console.error("fetchNotifs error:", error);
+    }
+  };
+
 
   //get notifs
   useEffect(() => {
@@ -713,14 +756,30 @@ function App() {
                 alt="Notificaton-Logo"
                 onClick={() => {
                   setNotifOpen(!notifOpen);
-                  setIsProfileMenuOpen(false); //close profile menu if notif menu is opened
+                  setIsProfileMenuOpen(false);
                   setHasNotification(false);
+                  setNotifToast(null);
+
+                  if (notifToastTimerRef.current) {
+                    clearTimeout(notifToastTimerRef.current);
+                  }
+
                   localStorage.setItem(
                     "last_notif_open",
                     new Date().toISOString(),
                   );
-                }} //to be replaecd by func for setting notifs as read
+                }}//to be replaecd by func for setting notifs as read
               ></img>
+              {notifToast && !notifOpen && (
+                <div className="notif-toast">
+                  <div className="notif-toast-dot"></div>
+
+                  <div className="notif-toast-content">
+                    <p className="notif-toast-label">New notification</p>
+                    <p className="notif-toast-message">{notifToast.message}</p>
+                  </div>
+                </div>
+              )}
               {notifOpen && (
                 <div className="notif-menu">
                   <div className="notif-title">
