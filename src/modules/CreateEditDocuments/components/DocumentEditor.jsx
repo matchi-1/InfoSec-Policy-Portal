@@ -424,10 +424,10 @@ function BodyContent({ doc, onBack }) {
                                         onChange={(e) => {
                                             setCurrDescTemp(e.target.value);
 
-                                            e.target.style.height = "auto";
-                                            e.target.style.height = `${e.target.scrollHeight}px`;
+                                            // e.target.style.height = "auto";
+                                            // e.target.style.height = `${e.target.scrollHeight}px`;
                                         }}
-                                        rows={2}
+                                        rows={3}
                                     />
                                     <button
                                         onClick={() => {
@@ -657,6 +657,7 @@ function BodyContent({ doc, onBack }) {
                                     //     fileName == "null" ? alert("no pdfs?") : setViewingPDF(true)
                                     // }}>View PDF</button>
                                     <button
+                                        className={fileName === "null" ? styles.viewBtnDisabled : styles.viewBtn}
                                         onClick={() => {
                                             if (fileName === "null") {
                                                 setShowNoPdfAlert(true);
@@ -674,19 +675,27 @@ function BodyContent({ doc, onBack }) {
                                         View PDF
                                     </button>
                                 ) : (
-                                    <button onClick={() => { setViewingPDF(false) }}>Close PDF</button>
+                                    <button 
+                                    className={styles.closeBtn}
+                                    onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
-                            <button onClick={() => { setShowUploadModal(true) }}>Upload PDF</button>
                             {fileName != "null" ? (
-                                <p
-                                    onClick={() => {
-                                        setFileName("null")
-                                        setFileToUpload(null)
-                                    }}
-                                >{fileName}<span>  x</span></p> //the 'x' in the span could be a button prob -harley
+                                <button className={styles.pdfChip}>
+                                    <p>{fileName}</p>
+                                    <img
+                                        src="/icons/close-blue.png" alt="" className={styles.actionIcon}
+                                        onClick={() => {
+                                            setFileName("null")
+                                            setFileToUpload(null)
+                                        }} />
+                                </button>
                             ) : (
-                                null
+                                <button
+                                    className={styles.uploadBtn}
+                                    onClick={() => { setShowUploadModal(true) }}>
+                                    Upload PDF
+                                </button>
                             )}
                             {showNoPdfAlert && (
                                 <div className={styles.toastAlert}>
@@ -719,7 +728,7 @@ function BodyContent({ doc, onBack }) {
                         />
                     </div>
                 ) : (
-                    <div className={styles.policyAccordion}>
+                    <div className={isHeaderCollapsed? styles.policyAccordionFull : styles.policyAccordion}>
                         {filteredSections.map((section) => {
                             const isOpen = section.id === openSectionId && section.id != sectionTitleEditID;
                             return (
