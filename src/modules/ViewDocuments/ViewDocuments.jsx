@@ -14,6 +14,7 @@ const BodyContent = () => {
     const [isPdfViewActive, setIsPdfViewActive] = useState(false);
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
     const [docSearch, setDocSearch] = useState("");
+    const [docSearchField, setDocSearchField] = useState("all");
     const [policySearch, setPolicySearch] = useState("");
     const [dbDocs, setDbDocs] = useState([])
     useEffect(() => {
@@ -140,8 +141,18 @@ const BodyContent = () => {
         const q = docSearch.trim().toLowerCase();
 
         const filtered = dbDocs.filter((d) => {
-            const matchesSearch =
-                !q || (d.title ?? "").toLowerCase().includes(q);
+            const searchableText = [
+                d.title,
+                d.authorName,
+                d.reviewerName,
+                d.details,
+                ...getDocTags(d),
+            ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+            const matchesSearch = !q || searchableText.includes(q);
 
             const docTags = getDocTags(d);
 
@@ -186,7 +197,7 @@ const BodyContent = () => {
 
             return 0;
         });
-    }, [dbDocs, docSearch, docFilters]);
+    }, [dbDocs, docSearch, docSearchField, docFilters]);
 
     useEffect(() => {
         setCurrentPage(1);

@@ -1,23 +1,51 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 
-const SearchBar = ({ value = "", onChange, placeholder = "Search..." }) => {
+const normalizeSearchField = (field) => {
+  if (typeof field === "string") {
+    return {
+      label: field,
+      value: field,
+    };
+  }
+
+  return {
+    label: field?.label ?? "",
+    value: field?.value ?? "",
+  };
+};
+
+const SearchBar = ({
+  value = "",
+  onChange,
+  placeholder = "Search...",
+
+  // Optional props
+  searchFields = [],
+  selectedField,
+  onFieldChange,
+}) => {
   const [isFocused, setIsFocused] = useState(false);
   const [inputValue, setInputValue] = useState(value);
   const [hoveredButton, setHoveredButton] = useState(null);
   const [activeButton, setActiveButton] = useState(null);
 
+  const normalizedSearchFields = useMemo(() => {
+    return searchFields.map(normalizeSearchField).filter((field) => field.value);
+  }, [searchFields]);
+
+  const hasSearchFields = normalizedSearchFields.length > 0;
 
   useEffect(() => {
     setInputValue(value);
   }, [value]);
 
   const handleSearch = () => {
-    onChange(inputValue);
+    onChange?.(inputValue);
   };
 
   const handleClear = () => {
     setInputValue("");
-    onChange("");
+    onChange?.("");
   };
 
   const handleInputChange = (e) => {
@@ -25,8 +53,12 @@ const SearchBar = ({ value = "", onChange, placeholder = "Search..." }) => {
     setInputValue(newValue);
 
     if (newValue.trim() === "") {
-      onChange("");
+      onChange?.("");
     }
+  };
+
+  const handleFieldChange = (e) => {
+    onFieldChange?.(e.target.value);
   };
 
   const handleKeyDown = (e) => {
@@ -68,6 +100,24 @@ const SearchBar = ({ value = "", onChange, placeholder = "Search..." }) => {
         }}
       >
         <img src="/icons/search-icon.png" alt="Search" style={styles.icon} />
+
+        {hasSearchFields && (
+          <select
+            value={selectedField ?? normalizedSearchFields[0]?.value ?? ""}
+            onChange={handleFieldChange}
+            style={styles.fieldSelect}
+            aria-label="Search by"
+          >
+            {normalizedSearchFields.map((field) => (
+              <option key={field.value} value={field.value}>
+                {field.label}
+              </option>
+            ))}
+          </select>
+        )}
+
+        {hasSearchFields && <div style={styles.divider} />}
+
         <input
           type="text"
           placeholder={placeholder}
@@ -146,6 +196,24 @@ const styles = {
     marginRight: "0.45rem",
     flexShrink: 0,
   },
+  fieldSelect: {
+    height: "100%",
+    maxWidth: "6.8rem",
+    border: "none",
+    outline: "none",
+    backgroundColor: "transparent",
+    color: "#1a2346",
+    fontSize: "0.78rem",
+    cursor: "pointer",
+    flexShrink: 0,
+  },
+  divider: {
+    width: "1px",
+    height: "60%",
+    backgroundColor: "#c7d2e2",
+    margin: "0 0.45rem",
+    flexShrink: 0,
+  },
   input: {
     border: "none",
     outline: "none",
@@ -162,7 +230,6 @@ const styles = {
     margin: 0,
     boxSizing: "border-box",
   },
-
   actionButton: {
     width: "1.8rem",
     height: "1.75rem",
@@ -186,7 +253,6 @@ const styles = {
     backgroundColor: "#DDE1E8",
     transform: "scale(0.97)",
   },
-
   actionIcon: {
     color: "#727272",
     fontSize: "0.72rem",
