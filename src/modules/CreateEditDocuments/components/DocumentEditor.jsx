@@ -75,8 +75,6 @@ function BodyContent({ doc, onBack }) {
     const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
     const [userList, setUserList] = useState([]);
 
-    const [markdownSeed, setMarkdownSeed] = useState(crypto.randomUUID());
-
     useEffect(() => {
         const get_users = async () => {
             const resp = await fetch(`${backend_base_url}/documents/get-users/`);
@@ -227,7 +225,6 @@ function BodyContent({ doc, onBack }) {
     useEffect(() => {
         console.log("(debug) activesubid changing, activesub is now now: ", activeSub)
         // setInitialMarkdown((activeSub && activeSub.content) ? activeSub.content : "")
-        setMarkdownSeed(crypto.randomUUID())
     }, [activeSub?.id])
     
     // render content from a string (supports headings-ish + bullets)
@@ -1080,7 +1077,7 @@ function BodyContent({ doc, onBack }) {
                                                             </ul> */}
                                                             <MDXEditor
                                                                 // key={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
-                                                                key={markdownSeed}
+                                                                key={activeSub?.id}
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
                                                                 // markdown={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
