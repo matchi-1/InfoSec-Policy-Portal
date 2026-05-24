@@ -247,6 +247,67 @@ function App() {
   };
 
 
+  const getNotificationActionLabel = (notif) => {
+    const action = String(notif.action || "").toLowerCase();
+
+    if (
+      action.includes("pin") ||
+      action.includes("announcement") ||
+      action.includes("notice")
+    ) {
+      return "posted an announcement";
+    }
+
+    if (
+      action.includes("edit") ||
+      action.includes("update") ||
+      action.includes("modified")
+    ) {
+      return "updated a document";
+    }
+
+    if (
+      action.includes("upload") ||
+      action.includes("create") ||
+      action.includes("new")
+    ) {
+      return "uploaded a document";
+    }
+
+    return notif.action || "made an update";
+  };
+
+  const getNotificationVariantClass = (notif) => {
+    const action = String(notif.action || "").toLowerCase();
+
+    if (
+      action.includes("pin") ||
+      action.includes("announcement") ||
+      action.includes("notice")
+    ) {
+      return "notif-pill-announcement";
+    }
+
+    if (
+      action.includes("upload") ||
+      action.includes("create") ||
+      action.includes("new")
+    ) {
+      return "notif-pill-upload";
+    }
+
+    if (
+      action.includes("edit") ||
+      action.includes("update") ||
+      action.includes("modified")
+    ) {
+      return "notif-pill-update";
+    }
+
+    return "notif-pill-system";
+  };
+
+  // fetch notifs
   const fetchNotifs = async (user) => {
     try {
       console.log("Fetching notifs...");
@@ -814,7 +875,16 @@ function App() {
                         key={i}
                       >
                         <div className="notif-msg">
-                          <p>{getNotificationMessage(notif)}</p>
+                          <p className="notif-message-line">
+                            <span className="notif-actor-name">
+                              {getNotificationActorLabel(notif)}
+                            </span>{" "}
+                            {getNotificationActionLabel(notif)}
+                          </p>
+
+                          <span className={`notif-title-pill ${getNotificationVariantClass(notif)}`}>
+                            {getNotificationTarget(notif)}
+                          </span>
                         </div>
 
                         <div className="notif-time">

@@ -670,6 +670,58 @@ img {
   min-width: 0;
 }
 
+.notif-message-line {
+  margin: 0 0 0.4rem;
+  color: #64748b;
+  font-size: 0.8rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.notif-actor-name {
+  color: var(--primary-blue);
+  font-weight: 800;
+}
+
+.notif-title-pill {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  padding: 0.2rem 0.4rem;
+  border-radius: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.25;
+  border: 1px solid #d8e2ef;
+  background-color: #f8fafc;
+  color: #334155;
+  overflow-wrap: anywhere;
+}
+
+.notif-pill-announcement {
+  background-color: #fff9f3;
+  border-color: #f8dfc6;
+  color: #b76c2e;
+}
+
+.notif-pill-upload {
+  background-color: #eaf7ef;
+  border-color: #c9ead6;
+  color: #1f6f45;
+}
+
+.notif-pill-update {
+  background-color: #edf4ff;
+  border-color: #cadcff;
+  color: #2856a8;
+}
+
+.notif-pill-system {
+  background-color: #eef2f7;
+  border-color: #d8e2ef;
+  color: #334155;
+}
+
 .notif-msg p,
 .notif-empty .notif-msg p {
   margin: 0;
