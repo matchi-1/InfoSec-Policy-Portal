@@ -23,6 +23,7 @@ const withFixedModules = (
 
 const normalizeRoleList = (payload) => {
   const roles = Array.isArray(payload) ? payload : (payload?.data ?? []);
+
   return roles.map((role) => ({
     roleId: role.role_id,
     roleName: role.role_name,
@@ -48,24 +49,30 @@ const getSelectedModules = (moduleState) =>
     .filter(([, enabled]) => Boolean(enabled))
     .map(([name]) => name);
 
-const BodyContent = () => {
+const BodyContent = ({ setHasUnsavedModuleChanges }) => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
+
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState("");
+
   const [draftModules, setDraftModules] = useState(() =>
     createDefaultModuleState(),
   );
   const [savedModules, setSavedModules] = useState(() =>
     createDefaultModuleState(),
   );
+
   const [isNewRoleModalOpen, setIsNewRoleModalOpen] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
+
   const [isPermissionEditMode, setIsPermissionEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+
   const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
+
   const { askForConfirmation, confirmationModal } = useConfirmationModal();
   const { showInformation, informationModal } = useInformationModal();
 
@@ -92,6 +99,41 @@ const BodyContent = () => {
   const isAdminRole = selectedRoleMeta?.roleName === "Admin";
   const impactedUsers = selectedRoleMeta?.userCount ?? 0;
   const canEditPermissions = isPermissionEditMode || isNewRoleModalOpen;
+  const isUserManagementLocked = isAdminRole && !isNewRoleModalOpen;
+
+  const hasUnsavedChanges = useMemo(() => {
+    return moduleNames.some(
+      (moduleName) => draftModules[moduleName] !== savedModules[moduleName],
+    );
+  }, [draftModules, moduleNames, savedModules]);
+
+  const hasNewRoleDraftChanges = useMemo(() => {
+    if (!isNewRoleModalOpen) {
+      return false;
+    }
+
+    const defaultNewRoleModules = createDefaultModuleState(moduleNames);
+
+    const modulesChanged = moduleNames.some(
+      (moduleName) =>
+        draftModules[moduleName] !== defaultNewRoleModules[moduleName],
+    );
+
+    return Boolean(newRoleName.trim()) || modulesChanged;
+  }, [draftModules, isNewRoleModalOpen, moduleNames, newRoleName]);
+
+  const hasUnsavedRoleManagementChanges =
+    (isPermissionEditMode && hasUnsavedChanges) || hasNewRoleDraftChanges;
+
+  useEffect(() => {
+    setHasUnsavedModuleChanges?.(hasUnsavedRoleManagementChanges);
+  }, [hasUnsavedRoleManagementChanges, setHasUnsavedModuleChanges]);
+
+  useEffect(() => {
+    return () => {
+      setHasUnsavedModuleChanges?.(false);
+    };
+  }, [setHasUnsavedModuleChanges]);
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -100,12 +142,14 @@ const BodyContent = () => {
 
       try {
         const resp = await fetch(`${backend_base_url}/roles/`);
+
         if (!resp.ok) {
           throw new Error(`Failed to fetch roles (${resp.status})`);
         }
 
         const payload = await resp.json();
         const normalizedRoles = normalizeRoleList(payload);
+
         setRoles(normalizedRoles);
 
         if (!normalizedRoles.length) {
@@ -128,7 +172,7 @@ const BodyContent = () => {
   }, [backend_base_url, moduleNames]);
 
   useEffect(() => {
-    if (!selectedRole) {
+    if (!selectedRole || isNewRoleModalOpen) {
       return;
     }
 
@@ -146,6 +190,7 @@ const BodyContent = () => {
 
         const payload = await resp.json();
         const roleDetail = payload?.data ?? payload;
+
         const nextModules = withFixedModules(
           toModuleState(roleDetail?.modules ?? [], moduleNames),
           {
@@ -157,36 +202,69 @@ const BodyContent = () => {
         setSavedModules(nextModules);
         setDraftModules(nextModules);
         setIsPermissionEditMode(false);
+        setHasUnsavedModuleChanges?.(false);
       } catch (error) {
         setErrorMessage(error.message || "Unable to load role details");
       }
     };
 
     fetchRoleByName();
-  }, [backend_base_url, moduleNames, selectedRole]);
-
-  const hasUnsavedChanges = useMemo(() => {
-    return moduleNames.some(
-      (moduleName) => draftModules[moduleName] !== savedModules[moduleName],
-    );
-  }, [draftModules, moduleNames, savedModules]);
-
-  const isUserManagementLocked = isAdminRole && !isNewRoleModalOpen;
+  }, [
+    backend_base_url,
+    isNewRoleModalOpen,
+    moduleNames,
+    selectedRole,
+    setHasUnsavedModuleChanges,
+  ]);
 
   const handleRoleChange = (nextRole) => {
-    setStatusMessage("");
-    setIsPermissionEditMode(false);
-    setSelectedRole(nextRole);
+    if (nextRole === selectedRole) {
+      return;
+    }
+
+    const switchRole = () => {
+      setStatusMessage("");
+      setErrorMessage("");
+      setIsPermissionEditMode(false);
+      setIsNewRoleModalOpen(false);
+      setNewRoleName("");
+      setHasUnsavedModuleChanges?.(false);
+      setSelectedRole(nextRole);
+    };
+
+    if (hasUnsavedRoleManagementChanges) {
+      askForConfirmation(
+        switchRole,
+        "You have unsaved role changes. Switching roles will discard them. Continue?",
+      );
+      return;
+    }
+
+    switchRole();
   };
 
   const handleStartCreateRole = () => {
-    setStatusMessage("");
-    setErrorMessage("");
-    setIsPermissionEditMode(false);
-    const createRoleModules = createDefaultModuleState(moduleNames);
-    setDraftModules(createRoleModules);
-    setNewRoleName("");
-    setIsNewRoleModalOpen(true);
+    const startCreate = () => {
+      setStatusMessage("");
+      setErrorMessage("");
+      setIsPermissionEditMode(false);
+
+      const createRoleModules = createDefaultModuleState(moduleNames);
+
+      setDraftModules(createRoleModules);
+      setNewRoleName("");
+      setIsNewRoleModalOpen(true);
+    };
+
+    if (hasUnsavedRoleManagementChanges) {
+      askForConfirmation(
+        startCreate,
+        "You have unsaved role changes. Creating a new role will discard them. Continue?",
+      );
+      return;
+    }
+
+    startCreate();
   };
 
   const handleCancelCreateRole = () => {
@@ -196,6 +274,7 @@ const BodyContent = () => {
     setErrorMessage("");
     setDraftModules(savedModules);
     setIsPermissionEditMode(false);
+    setHasUnsavedModuleChanges?.(false);
   };
 
   const handleStartEditPermissions = () => {
@@ -210,17 +289,22 @@ const BodyContent = () => {
     setStatusMessage("");
     setErrorMessage("");
     setIsPermissionEditMode(false);
+    setHasUnsavedModuleChanges?.(false);
   };
 
-  // Precompute stable toggle handlers so we don't create a new lambda per render
   const toggleHandlers = useMemo(() => {
     const map = {};
+
     moduleNames.forEach((name) => {
       map[name] = () =>
-        setDraftModules((current) => ({ ...current, [name]: !current[name] }));
+        setDraftModules((current) => ({
+          ...current,
+          [name]: !current[name],
+        }));
     });
+
     return map;
-  }, [moduleNames, setDraftModules]);
+  }, [moduleNames]);
 
   const handleSave = async () => {
     if (!selectedRole) {
@@ -232,6 +316,7 @@ const BodyContent = () => {
         lockUserManagement: isUserManagementLocked,
       }),
     );
+
     if (!modules.length) {
       setErrorMessage("Select at least one module.");
       return;
@@ -261,12 +346,11 @@ const BodyContent = () => {
         lockUserManagement: isUserManagementLocked,
       });
 
-      const toModules = modules;
-
       setSavedModules(nextModules);
       setDraftModules(nextModules);
       setStatusMessage("Role modules saved.");
       setIsPermissionEditMode(false);
+      setHasUnsavedModuleChanges?.(false);
 
       setRoles((currentRoles) =>
         currentRoles.map((role) =>
@@ -280,8 +364,8 @@ const BodyContent = () => {
         details: [
           {
             title: selectedRole,
-            lines: toModules.length
-              ? ["Permissions:", ...toModules.map((m) => `- ${m}`)]
+            lines: modules.length
+              ? ["Permissions:", ...modules.map((module) => `- ${module}`)]
               : ["None"],
           },
         ],
@@ -295,6 +379,7 @@ const BodyContent = () => {
 
   const handleCreateRole = async () => {
     const roleName = newRoleName.trim();
+
     if (!roleName) {
       setErrorMessage("Role name is required.");
       return;
@@ -305,6 +390,7 @@ const BodyContent = () => {
         lockUserManagement: isUserManagementLocked,
       }),
     );
+
     if (!modules.length) {
       setErrorMessage("Select at least one module for the new role.");
       return;
@@ -328,18 +414,22 @@ const BodyContent = () => {
       }
 
       const listResp = await fetch(`${backend_base_url}/roles/`);
+
       if (!listResp.ok) {
         throw new Error(`Failed to refresh roles (${listResp.status})`);
       }
 
       const refreshedPayload = await listResp.json();
       const normalizedRoles = normalizeRoleList(refreshedPayload);
+
       setRoles(normalizedRoles);
       setSelectedRole(roleName);
       setNewRoleName("");
       setIsNewRoleModalOpen(false);
       setIsPermissionEditMode(false);
       setStatusMessage("Role created successfully.");
+      setHasUnsavedModuleChanges?.(false);
+
       showInformation({
         title: "Role created",
         message: `Created role ${roleName}`,
@@ -347,7 +437,7 @@ const BodyContent = () => {
           {
             title: roleName,
             lines: modules.length
-              ? ["Permissions:", ...modules.map((m) => `- ${m}`)]
+              ? ["Permissions:", ...modules.map((module) => `- ${module}`)]
               : ["None"],
           },
         ],
@@ -364,7 +454,9 @@ const BodyContent = () => {
       <div className={styles.bodyContentContainer}>
         <header className={styles.headerSection}>
           <p className={styles.pageLabel}>System Administration</p>
+
           <h1>Role Management</h1>
+
           <p className={styles.pageDescription}>
             Configure role-based module access and manage permissions assigned
             to user roles.
@@ -372,20 +464,26 @@ const BodyContent = () => {
         </header>
 
         <section
-          className={`${styles.workspaceShell} ${canEditPermissions ? styles.workspaceShellEditing : ""}`}
+          className={`${styles.workspaceShell} ${canEditPermissions ? styles.workspaceShellEditing : ""
+            }`}
         >
           <div className={styles.workspaceToolbar}>
             <div className={styles.modeNotice}>
               <span
-                className={`${styles.modeBadge} ${canEditPermissions ? styles.modeBadgeEditing : styles.modeBadgeReadonly}`}
+                className={`${styles.modeBadge} ${canEditPermissions
+                  ? styles.modeBadgeEditing
+                  : styles.modeBadgeReadonly
+                  }`}
               >
                 {canEditPermissions ? "Editing" : "Read Only"}
               </span>
+
               <span className={styles.modeDescription}>
                 {isNewRoleModalOpen
                   ? "Create a role, choose modules, then save the new configuration."
                   : canEditPermissions
-                    ? `Editing permissions for ${selectedRole || "the selected role"}. Save when you are done.`
+                    ? `Editing permissions for ${selectedRole || "the selected role"
+                    }. Save when you are done.`
                     : "Select a role, then press Edit to unlock the table."}
               </span>
             </div>
@@ -496,6 +594,7 @@ const BodyContent = () => {
                 <>
                   <div className={styles.configHeader}>
                     <h3>Select Configuration</h3>
+
                     <Button
                       variant="primary"
                       size="sm"
@@ -539,6 +638,7 @@ const BodyContent = () => {
                 <>
                   <div className={styles.modalHeader}>
                     <h4>Creating New Role</h4>
+
                     <Button
                       variant="primary"
                       size="sm"
@@ -588,13 +688,16 @@ const BodyContent = () => {
                 {!isLoading &&
                   moduleNames.map((moduleName) => {
                     const isHome = moduleName === "Home";
+
                     const isForcedAdminUM =
                       isUserManagementLocked &&
                       moduleName === "User Management";
+
                     const checked =
                       isHome ||
                       isForcedAdminUM ||
                       Boolean(draftModules[moduleName]);
+
                     const disabled =
                       (!selectedRole && !isNewRoleModalOpen) ||
                       !canEditPermissions ||
@@ -615,6 +718,7 @@ const BodyContent = () => {
                             aria-label={`Access permission for ${moduleName}`}
                             disabled={disabled}
                           />
+
                           <span className={styles.checkboxVisual} />
                         </label>
                       </div>
