@@ -4,6 +4,8 @@ import styles from "./styles/RecentNews.module.css";
 const backendUrl =
     import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
+const LATEST_UPDATES_WINDOW_DAYS = 10;
+
 const DEFAULT_PINNED_NOTICE = {
     category: "Security Notice",
     updatedAt: "Jan 20, 2026",
@@ -50,6 +52,23 @@ const formatDate = (value) => {
         day: "numeric",
         year: "numeric",
     });
+};
+
+const isWithinPastDays = (value, numberOfDays) => {
+    if (!value) return false;
+
+    const date = new Date(value);
+
+    if (Number.isNaN(date.getTime())) {
+        return false;
+    }
+
+    const now = new Date();
+    const cutoffDate = new Date();
+
+    cutoffDate.setDate(now.getDate() - numberOfDays);
+
+    return date >= cutoffDate && date <= now;
 };
 
 const getActorName = (notification) => {
@@ -189,9 +208,24 @@ const loadLatestUpdates = async () => {
         const notifications = Array.isArray(data) ? data : data.results || [];
 
         return notifications
-            .map(mapNotificationToUpdate)
-            .sort((a, b) => new Date(b.date) - new Date(a.date))
-            .slice(0, 5);
+            .filter((notification) => {
+                const rawNotification = notification.notification || notification;
+
+                return isWithinPastDays(
+                    rawNotification.created_at,
+                    LATEST_UPDATES_WINDOW_DAYS,
+                );
+            })
+            .sort((a, b) => {
+                const notifA = a.notification || a;
+                const notifB = b.notification || b;
+
+                return (
+                    new Date(notifB.created_at).getTime() -
+                    new Date(notifA.created_at).getTime()
+                );
+            })
+            .map(mapNotificationToUpdate);
     } catch (error) {
         console.error("Failed to load latest updates:", error);
         return [];
@@ -301,6 +335,12 @@ const BodyContent = () => {
                             <p>Latest Updates</p>
                         </div>
 
+                        <div className={styles.updatesNotice}>
+                            <p>
+                                Showing notification updates from the past {LATEST_UPDATES_WINDOW_DAYS} days.
+                            </p>
+                        </div>
+
                         <div className={styles.updatesList}>
                             {isLoadingUpdates ? (
                                 <article className={styles.updateItem}>
@@ -363,8 +403,8 @@ const BodyContent = () => {
                                         </span>
                                     </div>
                                     <p>
-                                        New document uploads, document edits, and pinned announcements
-                                        will appear here.
+                                        New document uploads, document edits, and pinned announcements from the
+                                        past {LATEST_UPDATES_WINDOW_DAYS} days will appear here.
                                     </p>
                                 </article>
                             )}

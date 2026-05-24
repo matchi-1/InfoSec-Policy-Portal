@@ -300,6 +300,22 @@
 }
 
 
+.updatesNotice {
+  padding: 0.65rem 1rem;
+  border-bottom: 1px solid #edf1f7;
+  background-color: #f8fafc;
+  flex-shrink: 0;
+}
+
+.updatesNotice p {
+  margin: 0;
+  color: #64748b;
+  font-size: 0.75rem;
+  font-weight: 600;
+  line-height: 1.35;
+}
+
+
 /* Responsive */
 
 @media (max-width: 1000px) {
