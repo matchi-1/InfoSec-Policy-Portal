@@ -253,7 +253,9 @@ export default function PolicySections({ data = [], query = "", isDocumentSelect
                                                 <ul className={styles.policyBulletList}>
                                                     {/* {activeSub ? renderContent(activeSub.content) : null} */}
                                                     {activeSub ?
-                                                        <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, [rehypeSanitize, extendedSchema]]}>{activeSub.content}</ReactMarkdown>
+                                                        <div className="prose">
+                                                            <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, [rehypeSanitize, extendedSchema]]}>{activeSub.content}</ReactMarkdown>
+                                                        </div>
                                                         : null}
                                                 </ul>
                                             </div>

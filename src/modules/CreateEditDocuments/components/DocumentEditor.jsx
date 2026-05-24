@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 
 
 // TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
-import { controlTags } from "../data/controlTags.js";
+// import { controlTags } from "../data/controlTags.js";
 import { set } from "lodash";
 
 
@@ -44,12 +44,13 @@ function BodyContent({ doc, onBack }) {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
-    const [fileName, setFileName] = useState(doc.pdf_filename??"null")
+    const [fileName, setFileName] = useState(doc.pretty_pdf_filename??"null")
     const [fileNameTemp, setFileNameTemp] = useState("null")
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
     const [tagQuery, setTagQuery] = useState("");
+    const [controlTags, setControlTags] = useState(null);
     const [filteredTags, setFilteredTags] = useState(controlTags);
 
     const [sectionTitleEditID, setSectionTitleEditID] = useState(null);
@@ -75,13 +76,24 @@ function BodyContent({ doc, onBack }) {
     const [userList, setUserList] = useState([]);
 
     useEffect(() => {
-        const get_docs = async () => {
+        const get_users = async () => {
             const resp = await fetch(`${backend_base_url}/documents/get-users/`);
             const data = await resp.json()
             setUserList(data);
         }
-        get_docs();
+        const get_tags = async () => {
+            const resp = await fetch(`${backend_base_url}/documents/get-tags/`);
+            const data = await resp.json()
+            console.log("(debug) tags from backend: ", data)
+            setControlTags(data)
+        }
+        get_users();
+        get_tags();
     }, [])
+
+    useEffect(() => {
+        console.log("(debug) tags: ", controlTags)
+    }, [controlTags])
 
     useEffect(() => {
         console.log("user list")
@@ -174,19 +186,34 @@ function BodyContent({ doc, onBack }) {
         });
     };
 
+    // useEffect(() => {
+    //     if (tagQuery == "") {
+    //         setFilteredTags(controlTags)
+    //     } else {
+    //         const filteredData = controlTags.filter(item => {
+    //             return Object.values(item)
+    //                 .join('')
+    //                 .toLowerCase()
+    //                 .includes(tagQuery.toLowerCase());
+    //         });
+    //         setFilteredTags(filteredData);
+    //     }
+    // }, [tagQuery])
     useEffect(() => {
-        if (tagQuery == "") {
-            setFilteredTags(controlTags)
+        if (!controlTags) return;
+
+        if (tagQuery.trim() === "") {
+            setFilteredTags(controlTags);
         } else {
-            const filteredData = controlTags.filter(item => {
-                return Object.values(item)
-                    .join('')
-                    .toLowerCase()
-                    .includes(tagQuery.toLowerCase());
-            });
+            const q = tagQuery.toLowerCase();
+
+            const filteredData = controlTags.filter(item =>
+                item.tag_content?.toLowerCase().includes(q)
+            );
+
             setFilteredTags(filteredData);
         }
-    }, [tagQuery])
+    }, [tagQuery, controlTags]);
 
     const openSection = filteredSections.find((s) => s.id === openSectionId);
     const openSubs = openSection?.subsections ?? [];
@@ -463,7 +490,7 @@ function BodyContent({ doc, onBack }) {
                                         currTags.map((tag) => {
                                             return (
                                                 <div className={styles.tagChips}>
-                                                    <p>{tag}</p>
+                                                    <p>{tag.tag_content}</p>
                                                     <img
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -515,7 +542,7 @@ function BodyContent({ doc, onBack }) {
                                                         return (
                                                             <p onClick={() => {
                                                                 setCurrTags((prev) => [...prev, tag])
-                                                            }}>{tag}</p>
+                                                            }}>{tag.tag_content}</p>
                                                         )
                                                     }
                                                 })
@@ -1050,6 +1077,7 @@ function BodyContent({ doc, onBack }) {
                                                                 // markdown={sections.find((sect)=>sect.id===openSectionId)?.subsections?.find((subsect)=>subsect.id===activeSubId).content ?? ""}
                                                                 markdown={activeSub?.content ?? ""}
                                                                 onChange={(md) => {
+                                                                    console.log("(debug) markdown: ", md)
                                                                     setSections(prevSections =>
                                                                         prevSections.map((sect) => {
                                                                             if (sect.id === openSectionId) {
