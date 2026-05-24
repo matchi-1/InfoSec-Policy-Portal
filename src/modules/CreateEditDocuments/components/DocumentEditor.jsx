@@ -44,7 +44,7 @@ function BodyContent({ doc, onBack }) {
 
     const [showUploadModal, setShowUploadModal] = useState(false);
     const [fileToUpload, setFileToUpload] = useState(null);
-    const [fileName, setFileName] = useState(doc.pdf_filename)
+    const [fileName, setFileName] = useState(doc.pdf_filename??"null")
 
     const [currTags, setCurrTags] = useState(doc.tags ? doc.tags : []);
     const [showTagsDropdown, setShowTagsDropdown] = useState(false);
