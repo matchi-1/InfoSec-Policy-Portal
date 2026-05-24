@@ -299,6 +299,7 @@ function BodyContent({ doc, onBack }) {
 
     const [showNoPdfAlert, setShowNoPdfAlert] = useState(false);
 
+    const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
     const initialDocRef = useRef(null)
 
@@ -798,10 +799,7 @@ function BodyContent({ doc, onBack }) {
                                     <img
                                         src="/icons/close-blue.png" alt="" className={styles.actionIcon}
                                         onClick={() => {
-                                            setFileName("null")
-                                            setFileNameTemp("null")
-                                            setFileToUpload(null)
-                                            setViewingPDF(false)
+                                            setShowFileDeleteModal(true)
                                         }} />
                                 </button>
                             ) : (
@@ -1360,6 +1358,44 @@ function BodyContent({ doc, onBack }) {
                     </div>
                 )
             }
+
+            {
+                showFileDeleteModal && (
+                    <div className={styles.confModalOverlay}>
+                        <div className={styles.confModal}>
+                            <div className={styles.confModalHeader}>
+                                <h3>Delete Attached PDF?</h3>
+                                <p>
+                                    This will remove the currently attached PDF from the document.
+                                </p>
+                            </div>
+
+                            <div className={styles.confModalButtons}>
+                                <button
+                                    className={styles.cancelBtn}
+                                    onClick={() => setShowFileDeleteModal(false)}
+                                >
+                                    Stay
+                                </button>
+
+                                <button
+                                    className={styles.deleteBtn}
+                                    onClick={() => {
+                                        setFileName("null")
+                                        setFileNameTemp("null")
+                                        setFileToUpload(null)
+                                        setViewingPDF(false)
+                                        setShowFileDeleteModal(false)
+                                    }}
+                                >
+                                    Remove PDF
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
+
         </div>
     );
 }
