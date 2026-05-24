@@ -30,6 +30,9 @@ const DEFAULT_PORTAL_CONTENT = {
     },
 };
 
+const backendUrl =
+    import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+
 const normalizePortalContent = (content) => {
     return {
         home: {
@@ -50,59 +53,45 @@ const normalizePortalContent = (content) => {
     };
 };
 
-const loadPortalContent = () => {
-    // BACKEND TODO:
-    // Replace this localStorage logic with a GET request later.
-    //
-    // Example:
-    // const response = await fetch(`${backendUrl}/api/portal-content/`, {
-    //   credentials: "include",
-    // });
-    // const data = await response.json();
-    // return normalizePortalContent(data);
-
+const loadPortalContent = async () => {
     try {
-        const savedContent = localStorage.getItem(PORTAL_CONTENT_STORAGE_KEY);
+        const response = await fetch(`${backendUrl}/api/portal-content/`);
 
-        if (!savedContent) {
-            return DEFAULT_PORTAL_CONTENT;
+        if (!response.ok) {
+            throw new Error("Failed to load portal content.");
         }
 
-        return normalizePortalContent(JSON.parse(savedContent));
+        const data = await response.json();
+        return normalizePortalContent(data);
     } catch (error) {
         console.error("Failed to load portal content:", error);
         return DEFAULT_PORTAL_CONTENT;
     }
 };
 
-const savePortalContent = (content) => {
-    // BACKEND TODO:
-    // Replace this localStorage logic with a PUT/PATCH request later.
-    //
-    // Example:
-    // await fetch(`${backendUrl}/api/portal-content/`, {
-    //   method: "PUT",
-    //   headers: { "Content-Type": "application/json" },
-    //   credentials: "include",
-    //   body: JSON.stringify(content),
-    // });
-    //
-    // Backend logic needed:
-    // 1. Validate that the user is an admin.
-    // 2. Save app description, mission, vision, core values, and pinned notice.
-    // 3. Set updated_at and updated_by in the backend.
-    // 4. Return the updated portal content object.
-    //
-    // Optional later:
-    // If pinned notice changes, backend can create a notification record.
+const savePortalContent = async (content) => {
+    const response = await fetch(`${backendUrl}/api/portal-content/`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(content),
+    });
 
-    localStorage.setItem(PORTAL_CONTENT_STORAGE_KEY, JSON.stringify(content));
+    if (!response.ok) {
+        throw new Error("Failed to save portal content.");
+    }
+
+    const data = await response.json();
+    const normalizedContent = normalizePortalContent(data);
 
     window.dispatchEvent(
         new CustomEvent("portal-content-updated", {
-            detail: content,
+            detail: normalizedContent,
         }),
     );
+
+    return normalizedContent;
 };
 
 const BodyContent = () => {
@@ -112,9 +101,13 @@ const BodyContent = () => {
     const [saveStatus, setSaveStatus] = useState("");
 
     useEffect(() => {
-        const content = loadPortalContent();
-        setSavedContent(content);
-        setDraftContent(content);
+        const fetchPortalContent = async () => {
+            const content = await loadPortalContent();
+            setSavedContent(content);
+            setDraftContent(content);
+        };
+
+        fetchPortalContent();
     }, []);
 
     const showStatus = (message) => {
@@ -142,31 +135,20 @@ const BodyContent = () => {
         showStatus("Draft restored to the last saved content.");
     };
 
-    const handleSave = () => {
-        const contentToSave = normalizePortalContent({
-            ...draftContent,
-            recentNews: {
-                ...draftContent.recentNews,
-                pinnedNotice: {
-                    ...draftContent.recentNews.pinnedNotice,
+    const handleSave = async () => {
+        try {
+            const contentToSave = normalizePortalContent(draftContent);
 
-                    // BACKEND TODO:
-                    // Later, updatedAt and updatedBy should come from the backend response.
-                    updatedAt: new Date().toLocaleDateString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                    }),
-                    updatedBy: "Current Admin User",
-                },
-            },
-        });
+            const savedFromBackend = await savePortalContent(contentToSave);
 
-        savePortalContent(contentToSave);
-        setSavedContent(contentToSave);
-        setDraftContent(contentToSave);
-        setIsEditMode(false);
-        showStatus("Changes saved successfully.");
+            setSavedContent(savedFromBackend);
+            setDraftContent(savedFromBackend);
+            setIsEditMode(false);
+            showStatus("Changes saved successfully.");
+        } catch (error) {
+            console.error("Failed to save portal content:", error);
+            showStatus("Failed to save changes. Please try again.");
+        }
     };
 
     const handleHomeChange = (field, value) => {
