@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./styles/EditHomeNews.module.css";
-
-const PORTAL_CONTENT_STORAGE_KEY = "infosec_portal_content_v1";
+import ConfirmationModal from "../../shared/components/ConfirmationModal";
 
 const DEFAULT_PORTAL_CONTENT = {
     home: {
@@ -98,7 +97,94 @@ const BodyContent = () => {
     const [savedContent, setSavedContent] = useState(DEFAULT_PORTAL_CONTENT);
     const [draftContent, setDraftContent] = useState(DEFAULT_PORTAL_CONTENT);
     const [isEditMode, setIsEditMode] = useState(false);
-    const [saveStatus, setSaveStatus] = useState("");
+    const [modal, setModal] = useState({
+        isOpen: false,
+        type: null,
+        message: "",
+        confirmLabel: "Confirm",
+        cancelLabel: "Cancel",
+        showCancel: true,
+    });
+
+
+    const getChangedAreas = () => {
+        const changedAreas = [];
+
+        if (
+            draftContent.home.appDescription !== savedContent.home.appDescription ||
+            draftContent.home.mission !== savedContent.home.mission ||
+            draftContent.home.vision !== savedContent.home.vision
+        ) {
+            changedAreas.push("Home Content");
+        }
+
+        if (
+            JSON.stringify(draftContent.home.coreValues) !==
+            JSON.stringify(savedContent.home.coreValues)
+        ) {
+            changedAreas.push("Core Values");
+        }
+
+        if (
+            JSON.stringify(draftContent.recentNews.pinnedNotice) !==
+            JSON.stringify(savedContent.recentNews.pinnedNotice)
+        ) {
+            changedAreas.push("Recent News Pinned Notice");
+        }
+
+        return changedAreas;
+    };
+
+    const closeModal = () => {
+        setModal({
+            isOpen: false,
+            type: null,
+            message: "",
+            confirmLabel: "Confirm",
+            cancelLabel: "Cancel",
+            showCancel: true,
+        });
+    };
+
+    const openConfirmModal = (type) => {
+        if (type === "save") {
+            const changedAreas = getChangedAreas();
+
+            setModal({
+                isOpen: true,
+                type: "save",
+                message:
+                    changedAreas.length > 0
+                        ? `You changed ${changedAreas.join(", ")}. Are you sure you want to save these changes?`
+                        : "No changes were detected. Do you still want to continue?",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: true,
+            });
+        }
+
+        if (type === "cancel") {
+            setModal({
+                isOpen: true,
+                type: "cancel",
+                message: "Are you sure you want to discard your changes?",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: true,
+            });
+        }
+
+        if (type === "reset") {
+            setModal({
+                isOpen: true,
+                type: "reset",
+                message: "Are you sure you want to reset the draft to the last saved content?",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: true,
+            });
+        }
+    };
 
     useEffect(() => {
         const fetchPortalContent = async () => {
@@ -110,45 +196,88 @@ const BodyContent = () => {
         fetchPortalContent();
     }, []);
 
-    const showStatus = (message) => {
-        setSaveStatus(message);
-
-        setTimeout(() => {
-            setSaveStatus("");
-        }, 3000);
-    };
-
     const handleEnterEditMode = () => {
         setDraftContent(savedContent);
         setIsEditMode(true);
-        setSaveStatus("");
     };
 
     const handleCancel = () => {
         setDraftContent(savedContent);
         setIsEditMode(false);
-        showStatus("Editing cancelled. No changes were saved.");
     };
 
     const handleResetToLastSaved = () => {
         setDraftContent(savedContent);
-        showStatus("Draft restored to the last saved content.");
     };
 
     const handleSave = async () => {
         try {
             const contentToSave = normalizePortalContent(draftContent);
-
             const savedFromBackend = await savePortalContent(contentToSave);
 
             setSavedContent(savedFromBackend);
             setDraftContent(savedFromBackend);
             setIsEditMode(false);
-            showStatus("Changes saved successfully.");
+
+            return true;
         } catch (error) {
             console.error("Failed to save portal content:", error);
-            showStatus("Failed to save changes. Please try again.");
+            return false;
         }
+    };
+
+    const handleModalConfirm = async () => {
+        if (modal.type === "save") {
+            const changedAreas = getChangedAreas();
+            const wasSaved = await handleSave();
+
+            setModal({
+                isOpen: true,
+                type: "message",
+                message: wasSaved
+                    ? changedAreas.length > 0
+                        ? `You changed ${changedAreas.join(", ")}.`
+                        : "No changes were detected."
+                    : "Failed to save changes. Please try again.",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: false,
+            });
+
+            return;
+        }
+
+        if (modal.type === "cancel") {
+            handleCancel();
+
+            setModal({
+                isOpen: true,
+                type: "message",
+                message: "Your changes were discarded.",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: false,
+            });
+
+            return;
+        }
+
+        if (modal.type === "reset") {
+            handleResetToLastSaved();
+
+            setModal({
+                isOpen: true,
+                type: "message",
+                message: "Draft restored to the last saved content.",
+                confirmLabel: "Confirm",
+                cancelLabel: "Cancel",
+                showCancel: false,
+            });
+
+            return;
+        }
+
+        closeModal();
     };
 
     const handleHomeChange = (field, value) => {
@@ -253,7 +382,7 @@ const BodyContent = () => {
                                     <button
                                         type="button"
                                         className={styles.secondaryButton}
-                                        onClick={handleResetToLastSaved}
+                                        onClick={() => openConfirmModal("reset")}
                                     >
                                         Reset to Last Saved
                                     </button>
@@ -261,7 +390,7 @@ const BodyContent = () => {
                                     <button
                                         type="button"
                                         className={styles.secondaryButton}
-                                        onClick={handleCancel}
+                                        onClick={() => openConfirmModal("cancel")}
                                     >
                                         Cancel
                                     </button>
@@ -269,7 +398,7 @@ const BodyContent = () => {
                                     <button
                                         type="button"
                                         className={styles.primaryButton}
-                                        onClick={handleSave}
+                                        onClick={() => openConfirmModal("save")}
                                     >
                                         Save Changes
                                     </button>
@@ -278,7 +407,7 @@ const BodyContent = () => {
                         </div>
                     </div>
 
-                    {saveStatus && <div className={styles.saveStatus}>{saveStatus}</div>}
+
 
                     <div className={styles.contentGrid}>
                         <section className={styles.editorCard}>
@@ -440,6 +569,15 @@ const BodyContent = () => {
                     </div>
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={modal.isOpen}
+                message={modal.message}
+                confirmLabel={modal.confirmLabel}
+                cancelLabel={modal.cancelLabel}
+                showCancel={modal.showCancel}
+                onConfirm={handleModalConfirm}
+                onCancel={closeModal}
+            />
         </div>
     );
 };

@@ -11,6 +11,7 @@ const ConfirmationModal = ({
   onCancel,
   confirmLabel = "Confirm",
   cancelLabel = "Cancel",
+  showCancel = true,
 }) => {
   useEffect(() => {
     if (!isOpen) {
@@ -48,9 +49,12 @@ const ConfirmationModal = ({
         <p className={styles.message}>{message}</p>
 
         <div className={styles.actions}>
-          <Button variant="secondary" size="md" onClick={onCancel}>
-            {cancelLabel}
-          </Button>
+          {showCancel && (
+            <Button variant="secondary" size="md" onClick={onCancel}>
+              {cancelLabel}
+            </Button>
+          )}
+
           <Button variant="primary" size="md" onClick={onConfirm}>
             {confirmLabel}
           </Button>

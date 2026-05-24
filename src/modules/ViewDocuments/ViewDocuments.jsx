@@ -5,6 +5,7 @@ import PolicySections from "./components/PolicySections";
 import { highlightText } from "../../utils/highlightText";
 import FilterPopup from "../../shared/components/FilterPopup";
 
+
 //  DB-like dummy source
 import { policyDocumentsDb } from "./data/policyDocumentsDb";
 
