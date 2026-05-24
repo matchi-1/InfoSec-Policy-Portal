@@ -298,8 +298,6 @@ function BodyContent({ doc, onBack }) {
         reviewedBy &&
         JSON.parse(localStorage.getItem("user"))?.user_id;
 
-    const [showNoPdfAlert, setShowNoPdfAlert] = useState(false);
-
     const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
     const initialDocRef = useRef(null)
@@ -349,10 +347,22 @@ function BodyContent({ doc, onBack }) {
         )
     }
 
-    const pdfPreviewUrl =
-        fileName !== "null" && doc?.pdf_filename
-            ? `${backend_base_url}/documents/get-pdf/${doc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`
-            : "#";
+    const hasSavedPdf =
+        doc?.id !== "new" &&
+        doc?.pdf_filename &&
+        doc.pdf_filename !== "null" &&
+        fileName !== "null";
+
+    const pdfPreviewUrl = hasSavedPdf
+        ? `${backend_base_url}/documents/get-pdf/${doc.pdf_filename}#view=FitH&toolbar=1&navpanes=0`
+        : "#";
+
+    useEffect(() => {
+        if (!hasSavedPdf) {
+            setViewingPDF(false);
+            setIsPdfFullscreenOpen(false);
+        }
+    }, [hasSavedPdf]);
 
     useEffect(() => {
         if (!isPdfFullscreenOpen) return;
@@ -785,63 +795,35 @@ function BodyContent({ doc, onBack }) {
                             </div>
                         </div>
                         <div className={styles.buttonsContainer}>
-                            <button
-                                type="button"
-                                className={
-                                    fileName === "null"
-                                        ? styles.pdfFullscreenBtnDisabled
-                                        : styles.pdfFullscreenBtn
-                                }
-                                onClick={() => {
-                                    if (fileName === "null") {
-                                        setShowNoPdfAlert(true);
-
-                                        setTimeout(() => {
-                                            setShowNoPdfAlert(false);
-                                        }, 2500);
-
-                                        return;
-                                    }
-
-                                    setIsPdfFullscreenOpen(true);
-                                }}
-                            >
-                                View PDF Fullscreen
-                            </button>
-
-                            {
-                                (!viewingPDF) ? (
-                                    // <button onClick={() => {
-                                    //     fileName == "null" ? alert("no pdfs?") : setViewingPDF(true)
-                                    // }}>View PDF</button>
+                            {hasSavedPdf && (
+                                <>
                                     <button
-                                        className={fileName === "null" ? styles.viewBtnDisabled : styles.viewBtn}
-                                        onClick={() => {
-                                            if (fileName === "null") {
-                                                setShowNoPdfAlert(true);
-
-                                                setTimeout(() => {
-                                                    setShowNoPdfAlert(false);
-                                                }, 2500);
-
-                                                return;
-                                            }
-
-                                            setViewingPDF(true);
-                                        }}
+                                        type="button"
+                                        className={styles.pdfFullscreenBtn}
+                                        onClick={() => setIsPdfFullscreenOpen(true)}
                                     >
-                                        View PDF
+                                        View PDF Fullscreen
                                     </button>
-                                ) : (
-                                    <button
-                                        className={styles.closeBtn}
-                                        onClick={() => { setViewingPDF(false) }}>Close PDF</button>
-                                )
 
-
-
-
-                            }
+                                    {!viewingPDF ? (
+                                        <button
+                                            type="button"
+                                            className={styles.viewBtn}
+                                            onClick={() => setViewingPDF(true)}
+                                        >
+                                            View PDF
+                                        </button>
+                                    ) : (
+                                        <button
+                                            type="button"
+                                            className={styles.closeBtn}
+                                            onClick={() => setViewingPDF(false)}
+                                        >
+                                            Close PDF
+                                        </button>
+                                    )}
+                                </>
+                            )}
                             {fileName !== "null" || fileNameTemp !== "null" ? (
                                 <button className={styles.pdfChip}>
                                     <div>
@@ -861,20 +843,6 @@ function BodyContent({ doc, onBack }) {
                                     Upload PDF
                                 </button>
                             )}
-                            {showNoPdfAlert && (
-                                <div className={styles.toastAlert}>
-                                    <div className={styles.toastAlertContent}>
-                                        <p className={styles.toastAlertTitle}>
-                                            No PDF Available
-                                        </p>
-
-                                        <p className={styles.toastAlertText}>
-                                            Upload a PDF file and save the document before viewing.
-                                        </p>
-                                    </div>
-                                </div>
-                            )
-                            }
                         </div>
                     </div>
                     {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
@@ -1448,7 +1416,7 @@ function BodyContent({ doc, onBack }) {
                 )
             }
 
-            {isPdfFullscreenOpen && fileName !== "null" && (
+            {isPdfFullscreenOpen && hasSavedPdf && (
                 <div
                     className={styles.pdfFullscreenOverlay}
                     onClick={(event) => {
