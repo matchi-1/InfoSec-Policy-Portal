@@ -127,10 +127,10 @@ const BodyContent = ({ setActiveSubModule }) => {
                 !selectedCategory || docCategories.includes(selectedCategory);
 
             const matchesAuthor =
-                !selectedAuthor || doc.authoredBy === selectedAuthor;
+                !selectedAuthor || doc.authorName === selectedAuthor;
 
             const matchesReviewer =
-                !selectedReviewer || doc.reviewedBy === selectedReviewer;
+                !selectedReviewer || doc.reviewerName === selectedReviewer;
 
             return (
                 matchesSearch &&
