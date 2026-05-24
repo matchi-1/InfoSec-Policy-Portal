@@ -302,17 +302,12 @@
   gap: 0.6rem;
 }
 
-.discardButton,
-.saveButton {
-  min-height: 2.2rem;
-}
-
 .discardButton {
   min-width: 8.8rem;
 }
 
 .saveButton {
-  min-width: 6.6rem;
+  min-width: 4.5rem;
 }
 
 .modalBackdrop {

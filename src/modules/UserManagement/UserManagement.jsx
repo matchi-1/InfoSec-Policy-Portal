@@ -318,7 +318,7 @@ const BodyContent = () => {
                   <Button
                     className={styles.discardButton}
                     variant="secondary"
-                    size="lg"
+                    size="md"
                     onClick={handleDiscardChanges}
                     disabled={isSavingChanges}
                   >
@@ -328,7 +328,7 @@ const BodyContent = () => {
                 <Button
                   className={styles.saveButton}
                   variant="primary"
-                  size="lg"
+                  size="md"
                   onClick={() => {
                     if (!isEditMode) {
                       handleEnterEditMode();
