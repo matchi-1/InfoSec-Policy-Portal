@@ -431,6 +431,8 @@ img {
 
 /* header navigation -- fixed height */
 .header-navi{
+  position: relative;
+  z-index: 100000;
   height: var(--header-navi-height);
   width: 100%;
   display: flex;
@@ -439,7 +441,6 @@ img {
   background-color: white;
   padding: 1rem 2rem 1rem 2rem;
   gap: 1rem;
-  z-index: 1;
   box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1);
 }
 
@@ -586,7 +587,7 @@ img {
 }
 
 .notif-menu {
-  position: absolute;
+  position: fixed;
   top: 3.5rem;
   right: 12.5rem;
   padding-top: 1rem;
@@ -602,7 +603,7 @@ img {
   flex-direction: column;
   -webkit-overflow-scrolling: touch;
   border-radius: 0.3rem;
-  z-index: 999;
+  z-index: 99999;
 
 
   background: /* Shadow covers */
@@ -633,7 +634,7 @@ img {
 }
 
 .notif-menu::-webkit-scrollbar-thumb {
-  background: #346acd;
+  background: var(--primary-blue);
   border-radius: 0.5rem;
   border: 0.25rem solid white; 
 }
@@ -648,14 +649,15 @@ img {
 
 .notif-item, .notif-empty {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.3rem;
   padding-left: 0.8rem;
   padding-right: 2rem;
-  padding-top: 1rem;
+  padding-top: 1.3rem;
+  justify-content: space-between;
   
   color: #787878;
-  font-size: 5;
+  font-size: 1rem;
 }
 
 .notif-item {
@@ -832,3 +834,130 @@ img {
   justify-content: center;
 }
 
+@media (max-width: 900px) {
+  .shell-container {
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* In small screens, only the hamburger stays visible when closed */
+  .sidebar-icons-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: var(--sidebar-icons-width);
+    min-width: var(--sidebar-icons-width);
+    height: var(--header-navi-height);
+    background-color: white;
+    z-index: 1002;
+    box-shadow:  none;
+    overflow: hidden;
+    border-right: none;
+  }
+
+  .sidebar-icons-container .sidebar-main-menu-container,
+  .sidebar-icons-container .sidebar-module-icons,
+  .sidebar-icons-container .sidebar-kinetiq-footer {
+    display: none;
+  }
+
+  /* When opened, the icon rail becomes full height again */
+  .shell-container.sidebar-open .sidebar-icons-container {
+    height: 100vh;
+  }
+
+  .shell-container.sidebar-open .sidebar-icons-container,
+  .shell-container.sidebar-open .sidebar-desc-container {
+    box-shadow: none !important;
+  }
+
+  .shell-container.sidebar-open .sidebar-icons-container .sidebar-main-menu-container,
+  .shell-container.sidebar-open .sidebar-icons-container .sidebar-module-icons,
+  .shell-container.sidebar-open .sidebar-icons-container .sidebar-kinetiq-footer {
+    display: flex;
+  }
+
+  /* Description sidebar becomes the rest of the full-screen menu */
+  .sidebar-desc-container {
+    position: fixed;
+    top: 0;
+    left: var(--sidebar-icons-width);
+    height: 100vh;
+    width: calc(100vw - var(--sidebar-icons-width));
+    min-width: calc(100vw - var(--sidebar-icons-width));
+    background-color: white;
+    z-index: 1001;
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-100%);
+    box-shadow: none;
+    border-left: none;
+    transition:
+      transform 0.25s ease-in-out,
+      opacity 0.25s ease-in-out;
+  }
+
+  .sidebar-desc-container.closed {
+    width: calc(100vw - var(--sidebar-icons-width));
+    min-width: calc(100vw - var(--sidebar-icons-width));
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .shell-container.sidebar-open .sidebar-desc-container {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+
+  .sidebar-module-descs {
+    padding-right: 1rem;
+  }
+
+  .sidebar-module-desc-item,
+  .sidebar-submodule-item,
+  .sidebar-divider-desc {
+    width: calc(100vw - var(--sidebar-icons-width) - 1.5rem);
+  }
+
+  /* Hide the right/content side when the menu is open */
+  .shell-container.sidebar-open .header-body-container {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Main app content uses the full screen when sidebar is closed */
+  .header-body-container {
+    width: 100vw;
+    flex: 1;
+  }
+
+  /* Give the hamburger its own space in the header */
+  .header-navi {
+    padding-left: calc(var(--sidebar-icons-width) + 1rem);
+    padding-right: 1rem;
+  }
+
+  .body-container {
+    padding: 1rem;
+  }
+
+  .header-right-container {
+    gap: 0.75rem;
+  }
+
+  .header-profile-name {
+    display: none;
+  }
+
+  .notif-menu {
+    right: 1rem;
+    width: calc(100vw - 2rem);
+  }
+
+  .profile-dropdown {
+    right: 1rem;
+  }
+
+
+}

@@ -1,17 +1,23 @@
-
-import { useState, useRef, Suspense, lazy, act, useEffect } from "react";
+import { useState, useRef, Suspense, lazy, useEffect } from "react";
 import "./App.css";
 import "./MediaQueries.css";
 //import SearchBar from "./shared/components/SearchBar";
 import UserProfile from "./shared/components/UserProfile";
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { User } from "lucide-react";
 import LandingPage from "./pages/LandingPage";
+import {
+  moduleFileNames,
+  moduleSubmoduleFileNames,
+  getModuleDisplayName,
+  sidebarModuleGroups,
+} from "./config/moduleConfig";
 
 function App() {
-  const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
+  const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isCompactSidebar, setIsCompactSidebar] = useState(false);
   const [hasNotification, setHasNotification] = useState(false);
   const [activeModule, setActiveModule] = useState(null);
   const [activeSubModule, setActiveSubModule] = useState(null);
@@ -34,37 +40,37 @@ function App() {
   const iconsRef = useRef(null);
   const descsRef = useRef(null);
 
-
   // DEV ONLY: Disabled until backend role-permission endpoint is fixed
-   useEffect(() => {
-     // Permissions Access
-     if (!user?.role?.role_name) return;
+  useEffect(() => {
+    // Permissions Access
+    if (!user?.role?.role_name) return;
 
-     const fetchRolePermissions = async () => {
-       try {
-         const resp = await fetch(
-           `http://127.0.0.1:8000/roles/${encodeURIComponent(
-             user.role.role_name,
-           )}/permissions/`,
-           { credentials: "include" },
-         );
+    const fetchRolePermissions = async () => {
+      try {
+        const resp = await fetch(
+          `http://127.0.0.1:8000/roles/${encodeURIComponent(
+            user.role.role_name,
+          )}/permissions/`,
+          { credentials: "include" },
+        );
 
-         if (!resp.ok) {
-           console.warn("roles permissions fetch failed", resp.status);
-           return;
-         }
+        if (!resp.ok) {
+          console.warn("roles permissions fetch failed", resp.status);
+          return;
+        }
 
-         const payload = await resp.json();
-         const data = payload?.data ?? payload ?? {};
-         const perms = Array.isArray(data) ? data : (data?.modules ?? []);
-         setRolePermissions(perms);
-       } catch (err) {
-         console.error("fetchRolePermissions error:", err);
-       }
-     };
+        const payload = await resp.json();
+        const data = payload?.data ?? payload ?? {};
+        const perms = Array.isArray(data) ? data : (data?.modules ?? []);
+        setRolePermissions(perms);
+        console.log(perms);
+      } catch (err) {
+        console.error("fetchRolePermissions error:", err);
+      }
+    };
 
-     fetchRolePermissions();
-   }, [user]);
+    fetchRolePermissions();
+  }, [user]);
 
   // landing page
   const [showLanding, setShowLanding] = useState(true);
@@ -199,28 +205,52 @@ function App() {
     };
   }, [notifOpen]);
 
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+
+    const handleResize = () => {
+      setIsCompactSidebar(mediaQuery.matches);
+
+      // On smaller screens, default to content-only + hamburger
+      if (mediaQuery.matches) {
+        setIsSidebarOpen(false);
+      }
+    };
+
+    handleResize();
+
+    mediaQuery.addEventListener("change", handleResize);
+
+    return () => {
+      mediaQuery.removeEventListener("change", handleResize);
+    };
+  }, []);
+
   //fetch notifs
   const fetchNotifs = async (user) => {
-    console.log("Fetching notifs...")
-    const resp = await fetch(`${backend_base_url}/api/notifications/`, { method: 'GET' })
+    console.log("Fetching notifs...");
+    const resp = await fetch(`${backend_base_url}/api/notifications/`, {
+      method: "GET",
+    });
     const notif_items = await resp.json();
-    console.log("Notifs fetched:")
-    console.log(notif_items)
-    setNotifs(notif_items)
-    console.log('Final notif list:')
-    console.log(notif_items)
+    console.log("Notifs fetched:");
+    console.log(notif_items);
+    setNotifs(notif_items);
+    console.log("Final notif list:");
+    console.log(notif_items);
 
     //look through notif times
     // VERY placeholder/temp logic. for actual per-notif reading logic, use UserNotification many-to-many entity
     notif_items.map((notif) => {
-      const notif_date = new Date(notif.created_at)
-      const latest_notif_open = new Date(localStorage.getItem("last_notif_open"))
+      const notif_date = new Date(notif.created_at);
+      const latest_notif_open = new Date(
+        localStorage.getItem("last_notif_open"),
+      );
       if (notif_date > latest_notif_open) {
-        setHasNotification(true)
+        setHasNotification(true);
       }
-
-    })
-  }
+    });
+  };
 
   //get notifs
   useEffect(() => {
@@ -277,6 +307,7 @@ function App() {
         <LazyComponent
           loadSubModule={loadSubModule}
           setActiveSubModule={setActiveSubModule}
+          moduleFileNames={moduleFileNames}
           user_id={user?.user_id}
           employee_id={user?.employee_id}
         />
@@ -299,6 +330,7 @@ function App() {
         <LazyComponent
           loadSubModule={loadSubModule}
           setActiveSubModule={setActiveSubModule}
+          moduleFileNames={moduleFileNames}
           user_id={user?.user_id}
           employee_id={user?.employee_id}
         />
@@ -311,102 +343,110 @@ function App() {
     }
   };
 
-  const moduleFileNames = {
-    Home: "Home",
-    "Create Edit Documents": "CreateEditDocuments",
-    "View Documents": "ViewDocuments",
-    "Recent News": "RecentNews",
-    "User Management": "UserManagement",
-    "Edit Home/News": "EditHomeNews",
+  const handleMainModuleClick = (moduleId) => {
+    setIsSidebarOpen(true);
+
+    if (activeModule === moduleId) {
+      if (activeSubModule) {
+        setActiveSubModule(null);
+        loadMainModule(moduleId);
+        setIsMainModuleCollapsed(true);
+      } else {
+        isMainModuleCollapsed
+          ? setIsMainModuleCollapsed(false)
+          : setIsMainModuleCollapsed(true);
+        setActiveSubModule(null);
+      }
+    } else {
+      setIsMainModuleCollapsed(true);
+      setActiveModule(moduleId);
+      setActiveSubModule(null);
+      loadMainModule(moduleId);
+    }
+
+    // On small screens, selecting a module closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
   };
 
-  const moduleSubmoduleFileNames = {
-    Home: {},
-    "Create Edit Documents": {},
-    "View Documents": {},
-    "Recent News": {},
-    "Edit Home/News": {},
-    "User Management": {
-      "Role Management": "RoleManagement",
-    },
+  const handleSubModuleClick = (submodule) => {
+    setActiveSubModule(submodule);
+
+    // On small screens, selecting a submodule closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    }
   };
-
-  const moduleDisplayNames = {
-    Home: "Home",
-    "Create Edit Documents": "Create/Edit Documents",
-    "View Documents": "View Documents",
-    "Recent News": "Recent News",
-    "Edit Home/News": "Edit Home/News",
-    "User Management": "User Management",
-  };
-
-  const getModuleDisplayName = (moduleId) =>
-    moduleDisplayNames[moduleId] ?? moduleId;
-
 
   // DEV ONLY: Show all modules while backend permissions are not yet ready
-  const filteredModuleFileNames = moduleSubmoduleFileNames;   // delete this and uncomment below once perms are ready
+  // const filteredModuleFileNames = moduleSubmoduleFileNames; // delete this and uncomment below once perms are ready
 
   // DEV ONLY: UNCOMMENT THIS!! once permissions are ready, filter modules based on perms
-  // const allowedModules = Array.isArray(rolePermissions)
-  //   ? rolePermissions
-  //       .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
-  //       .map((m) => m.trim())
-  //       .filter(Boolean)
-  //   : [];
+  const [filteredModuleFileNames, setFilteredModules] = useState({});
+  useEffect(() => {
+    const allowedModules = Array.isArray(rolePermissions)
+      ? rolePermissions
+        .flatMap((perm) => (typeof perm === "string" ? perm.split(",") : []))
+        .map((m) => m.trim())
+        .filter(Boolean)
+      : [];
 
-  // const normalizeName = (s) =>
-  //   String(s ?? "")
-  //     .replace(/\s+/g, "")
-  //     .toLowerCase();
-  // const normalizedAllowed = new Set(
-  //   allowedModules.map((a) => normalizeName(a)),
-  // );
-  // const isAll = normalizedAllowed.has(normalizeName("All"));
+    const normalizeName = (s) =>
+      String(s ?? "")
+        .replace(/\s+/g, "")
+        .toLowerCase();
+    const normalizedAllowed = new Set(
+      allowedModules.map((a) => normalizeName(a)),
+    );
+    const isAll = normalizedAllowed.has(normalizeName("All"));
+    const filteredModules = {};
 
-  // let filteredModuleFileNames = {};
+    if (isAll) {
+      // allow everything (all modules + all submodules)
+      setFilteredModules(structuredClone(moduleSubmoduleFileNames));
+      return;
+    } else {
+      // First, include any whole-main-module permissions that match (case/space-insensitive)
+      Object.keys(moduleFileNames).forEach((mainKey) => {
+        if (normalizedAllowed.has(normalizeName(mainKey))) {
+          filteredModules[mainKey] = {
+            ...moduleSubmoduleFileNames[mainKey],
+          };
+        }
+      });
 
-  // if (isAll) {
-  //   // allow everything (all modules + all submodules)
-  //   filteredModuleFileNames = structuredClone(moduleSubmoduleFileNames);
-  // } else {
-  //   // First, include any whole-main-module permissions that match (case/space-insensitive)
-  //   Object.keys(moduleFileNames).forEach((mainKey) => {
-  //     if (normalizedAllowed.has(normalizeName(mainKey))) {
-  //       filteredModuleFileNames[mainKey] = {
-  //         ...moduleSubmoduleFileNames[mainKey],
-  //       };
-  //     }
-  //   });
+      // Then, process explicit perms that may include submodules like "Policies/PolicySections"
+      allowedModules.forEach((permission) => {
+        const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
+        const mainKey = Object.keys(moduleSubmoduleFileNames).find(
+          (k) => normalizeName(k) === normalizeName(mainRaw),
+        );
+        if (!mainKey) return; // ignore unknown perms safely
 
-  // Then, process explicit perms that may include submodules like "Policies/PolicySections"
-  //   allowedModules.forEach((permission) => {
-  //     const [mainRaw, subRaw] = permission.split(/\/(.*)/s);
-  //     const mainKey = Object.keys(moduleSubmoduleFileNames).find(
-  //       (k) => normalizeName(k) === normalizeName(mainRaw),
-  //     );
-  //     if (!mainKey) return; // ignore unknown perms safely
+        if (!filteredModules[mainKey]) filteredModules[mainKey] = {};
 
-  //     if (!filteredModuleFileNames[mainKey])
-  //       filteredModuleFileNames[mainKey] = {};
+        if (!subRaw) {
+          // allow all submodules under this main module
+          filteredModules[mainKey] = {
+            ...moduleSubmoduleFileNames[mainKey],
+          };
+        } else {
+          const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
+            (sk) => normalizeName(sk) === normalizeName(subRaw),
+          );
+          if (subKey) {
+            filteredModules[mainKey][subKey] =
+              moduleSubmoduleFileNames[mainKey][subKey];
+          }
+        }
+      });
+    }
 
-  //     if (!subRaw) {
-  //       // allow all submodules under this main module
-  //       filteredModuleFileNames[mainKey] = {
-  //         ...moduleSubmoduleFileNames[mainKey],
-  //       };
-  //     } else {
-  //       const subKey = Object.keys(moduleSubmoduleFileNames[mainKey]).find(
-  //         (sk) => normalizeName(sk) === normalizeName(subRaw),
-  //       );
-  //       if (subKey) {
-  //         filteredModuleFileNames[mainKey][subKey] =
-  //           moduleSubmoduleFileNames[mainKey][subKey];
-  //       }
-  //     }
-  //   });
-  // }
-
+    setFilteredModules(filteredModules);
+  }, [rolePermissions]);
 
   // DEV ONLY: Uncomment this if you want that all modules are just shown, and there is no distinction between admin and clients
   // const modulesIcons = Object.keys(filteredModuleFileNames).map((module) => ({
@@ -414,21 +454,28 @@ function App() {
   //   file: `${moduleFileNames[module]}.png`,
   // }));
 
-  const modulesIcons = [
-    { type: "divider", id: "client-divider", label: "Client Modules" },
-    { type: "module", id: "Home", file: `${moduleFileNames.Home}.png` },
-    { type: "module", id: "View Documents", file: `${moduleFileNames["View Documents"]}.png` },
-    { type: "module", id: "Recent News", file: `${moduleFileNames["Recent News"]}.png` },
+  const modulesIcons = sidebarModuleGroups.flatMap((group) => {
+    const visibleModules = group.modules.filter(
+      (moduleId) => filteredModuleFileNames[moduleId],
+    );
 
-    { type: "divider", id: "admin-divider", label: "Admin Modules" },
-    { type: "module", id: "Create Edit Documents", file: `${moduleFileNames["Create Edit Documents"]}.png` },
-    { type: "module", id: "Edit Home/News", file: `${moduleFileNames["Edit Home/News"]}.png` },
-    { type: "module", id: "User Management", file: `${moduleFileNames["User Management"]}.png` },
-  ];
+    if (visibleModules.length === 0) {
+      return [];
+    }
+
+    return [
+      { type: "divider", id: group.id, label: group.label },
+      ...visibleModules.map((moduleId) => ({
+        type: "module",
+        id: moduleId,
+        file: `${moduleFileNames[moduleId]}.png`,
+      })),
+    ];
+  });
 
   return (
     <div className="shell">
-      <div className="shell-container">
+      <div className={`shell-container ${isSidebarOpen ? "sidebar-open" : ""}`}>
         {/* collapsible menu */}
 
         {/* static left navi -- icons */}
@@ -467,37 +514,10 @@ function App() {
                   {/* Main Module Icons */}
                   <div
                     className={`sidebar-module-icons-item 
-                      ${isSidebarOpen ? "opened" : ""} 
-                      ${activeModule === module.id ? "active" : ""} 
-                      ${hoveredModule === module.id ? "hovered" : ""}`}
-                    onClick={() => {
-                      setIsSidebarOpen(true);
-
-                      if (activeModule === module.id) {
-                        // if the main module is active, and is clicked when a submodule is open, go back to main module
-                        if (activeSubModule) {
-                          setActiveSubModule(null);
-                          loadMainModule(module.id);
-                          setIsMainModuleCollapsed(true);
-                        } else {
-                          // if it's already active and is the opened module, toggle off
-                          isMainModuleCollapsed
-                            ? setIsMainModuleCollapsed(false)
-                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                          //setActiveModule(null);
-                          setActiveSubModule(null);
-                        }
-                      } else {
-                        // otherwise, activate it
-                        setIsMainModuleCollapsed(true);
-                        setActiveModule(module.id);
-                        setActiveSubModule(null);
-                        loadMainModule(module.id);
-                      }
-
-                      /*setActiveModule(module.id);
-                      setActiveSubModule(null); // Reset submodule when a main module is clicked*/
-                    }}
+    ${isSidebarOpen ? "opened" : ""} 
+    ${activeModule === module.id ? "active" : ""} 
+    ${hoveredModule === module.id ? "hovered" : ""}`}
+                    onClick={() => handleMainModuleClick(module.id)}
                     onMouseEnter={() => setHoveredModule(module.id)}
                     onMouseLeave={() => setHoveredModule(null)}
                   >
@@ -573,31 +593,7 @@ function App() {
                     className={`sidebar-module-desc-item 
                             ${activeModule === module.id ? "active" : ""} 
                             ${hoveredModule === module.id ? "hovered" : ""}`}
-                    onClick={() => {
-                      setIsSidebarOpen(true);
-                      if (activeModule === module.id) {
-                        // if the main module is active, and is clicked when a submodule is open, go back to main module
-                        if (activeSubModule) {
-                          setActiveModule(module.id);
-                          setActiveSubModule(null);
-                          loadMainModule(module.id);
-                          setIsMainModuleCollapsed(true);
-                        } else {
-                          // if it's already active and is the opened module, toggle off
-                          isMainModuleCollapsed
-                            ? setIsMainModuleCollapsed(false)
-                            : setIsMainModuleCollapsed(true); // open submodules if reclicked
-                          //setActiveModule(null);
-                          setActiveSubModule(null);
-                        }
-                      } else {
-                        // otherwise, activate it
-                        setIsMainModuleCollapsed(true);
-                        setActiveModule(module.id);
-                        setActiveSubModule(null);
-                        loadMainModule(module.id);
-                      }
-                    }}
+                    onClick={() => handleMainModuleClick(module.id)}
                     onMouseEnter={() => setHoveredModule(module.id)}
                     onMouseLeave={() => setHoveredModule(null)}
                   >
@@ -621,10 +617,7 @@ function App() {
                             className={`sidebar-submodule-item
                             ${activeSubModule === sub ? "active" : ""} 
                             ${hoveredSubModule === sub ? "hovered" : ""}`}
-                            onClick={() => {
-                              setActiveSubModule(sub);
-                              //loadSubModule(sub);
-                            }}
+                            onClick={() => handleSubModuleClick(sub)}
                             onMouseEnter={() => setHoveredSubModule(sub)}
                             onMouseLeave={() => setHoveredSubModule(null)}
                           >
@@ -684,7 +677,10 @@ function App() {
                   setNotifOpen(!notifOpen);
                   setIsProfileMenuOpen(false); //close profile menu if notif menu is opened
                   setHasNotification(false);
-                  localStorage.setItem("last_notif_open", new Date().toISOString())
+                  localStorage.setItem(
+                    "last_notif_open",
+                    new Date().toISOString(),
+                  );
                 }} //to be replaecd by func for setting notifs as read
               ></img>
               {notifOpen && (
@@ -720,40 +716,29 @@ function App() {
                         // }
                         key={i}
                       >
-                        <div className="notif-toprow">
-                          <div className="notif-origin">
-                            <p>
-                              {/* {notif.orig_submodule
-                                ? notif.orig_submodule
-                                : notif.orig_module} */}
-                            </p>
-                          </div>
-                          <div className="notif-time-and-icon">
-                            <div className="notif-time">
+                        <div className="notif-msg">
+                          <p>
+                            {notif.actor ==
+                              JSON.parse(localStorage.getItem("user")).user_id
+                              ? "You"
+                              : notif.actor_name}{" "}
+                            {notif.action}{" "}
+                            {notif.misc_title
+                              ? notif.misc_title
+                              : notif.document_title}
+                          </p>
+                        </div>
+                        <div className="notif-time">
                               <p>
-                                {
-                                  new Intl.DateTimeFormat("en-US", {
-                                    // month: "short",
-                                    // day: "numeric",
-                                    hour: "numeric",
-                                    minute: "2-digit",
-                                    hour12: true,
-                                  }).format(new Date(notif.created_at))
-                                }
+                                {new Intl.DateTimeFormat("en-US", {
+                                  // month: "short",
+                                  // day: "numeric",
+                                  hour: "numeric",
+                                  minute: "2-digit",
+                                  hour12: true,
+                                }).format(new Date(notif.created_at))}
                               </p>
                             </div>
-                            {
-                              // !notif.read && (
-                              //   <p className="unread-notif-icon">
-                              //     <img src="/icons/unread-notif-icon.png" />
-                              //   </p>
-                              // ) /* placeholder, should be an img/icon etc (or maybe ascii icon to avoid loading time) */
-                            }
-                          </div>
-                        </div>
-                        <div className="notif-msg">
-                          <p>{notif.actor == JSON.parse(localStorage.getItem("user")).user_id ? "You" : notif.actor_name} {notif.action} {notif.misc_title ? notif.misc_title : notif.document_title}</p>
-                        </div>
                       </div>
                     ))
                   )}
