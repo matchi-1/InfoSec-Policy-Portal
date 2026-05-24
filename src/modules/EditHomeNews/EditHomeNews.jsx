@@ -135,6 +135,8 @@ const BodyContent = () => {
         return changedAreas;
     };
 
+    const hasChanges = getChangedAreas().length > 0;
+
     const closeModal = () => {
         setModal({
             isOpen: false,
@@ -379,13 +381,6 @@ const BodyContent = () => {
                                 </button>
                             ) : (
                                 <>
-                                    <button
-                                        type="button"
-                                        className={styles.secondaryButton}
-                                        onClick={() => openConfirmModal("reset")}
-                                    >
-                                        Reset to Last Saved
-                                    </button>
 
                                     <button
                                         type="button"
@@ -397,8 +392,18 @@ const BodyContent = () => {
 
                                     <button
                                         type="button"
+                                        className={styles.secondaryButton}
+                                        onClick={() => openConfirmModal("reset")}
+                                        disabled={!hasChanges}
+                                    >
+                                        Reset to Last Saved
+                                    </button>
+
+                                    <button
+                                        type="button"
                                         className={styles.primaryButton}
                                         onClick={() => openConfirmModal("save")}
+                                        disabled={!hasChanges}
                                     >
                                         Save Changes
                                     </button>

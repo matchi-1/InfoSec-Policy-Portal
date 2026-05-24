@@ -404,6 +404,13 @@
   line-height: 1.45;
 }
 
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* Responsive */
 
 @media (max-width: 1050px) {
