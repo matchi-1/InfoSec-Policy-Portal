@@ -22,6 +22,7 @@ const getInitials = (firstName, lastName, email) => {
   const firstInitial = firstName?.trim()?.[0] ?? "";
   const lastInitial = lastName?.trim()?.[0] ?? "";
   const fallbackInitial = email?.trim()?.[0] ?? "U";
+
   return (
     `${firstInitial}${lastInitial}`.toUpperCase() ||
     fallbackInitial.toUpperCase()
@@ -32,6 +33,7 @@ const getAvatarColor = (userId) => {
   const digits = String(userId ?? "")
     .split("")
     .reduce((sum, char) => sum + char.charCodeAt(0), 0);
+
   return AVATAR_COLORS[digits % AVATAR_COLORS.length];
 };
 
@@ -41,6 +43,7 @@ const getRoleName = (roles) => {
   }
 
   const firstRole = roles[0];
+
   return (
     firstRole?.role_name ?? firstRole?.name ?? firstRole?.role ?? "Unassigned"
   );
@@ -74,28 +77,34 @@ const buildPageItems = (currentPage, totalPages) => {
     currentPage - 1,
     currentPage + 1,
   ]);
+
   const normalizedPages = [...pages]
     .filter((page) => page >= 1 && page <= totalPages)
     .sort((a, b) => a - b);
 
   const items = [];
+
   normalizedPages.forEach((page, index) => {
     const previousPage = normalizedPages[index - 1];
+
     if (previousPage && page - previousPage > 1) {
       items.push("...");
     }
+
     items.push(page);
   });
 
   return items;
 };
 
-const BodyContent = () => {
+const BodyContent = ({ setHasUnsavedModuleChanges }) => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
+
   const [users, setUsers] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
+
   const [roleOptions, setRoleOptions] = useState([]);
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
@@ -105,6 +114,7 @@ const BodyContent = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [draftRoles, setDraftRoles] = useState({});
   const [committedRoles, setCommittedRoles] = useState({});
+
   const { askForConfirmation, confirmationModal } = useConfirmationModal();
   const { showInformation, informationModal } = useInformationModal();
 
@@ -112,14 +122,14 @@ const BodyContent = () => {
     const fetchAllRoles = async () => {
       try {
         const resp = await fetch(`${backend_base_url}/roles/`);
+
         if (!resp.ok) {
           throw new Error(`Failed to fetch roles (${resp.status})`);
         }
 
         const payload = await resp.json();
-        const rawRoles = Array.isArray(payload)
-          ? payload
-          : (payload.data ?? []);
+        const rawRoles = Array.isArray(payload) ? payload : payload.data ?? [];
+
         const nextRoleOptions = rawRoles.map((role) => ({
           label: role.role_name,
           value: role.role_name,
@@ -143,17 +153,19 @@ const BodyContent = () => {
         const resp = await fetch(
           `${backend_base_url}/users/?page=${currentPage}`,
         );
+
         if (!resp.ok) {
           throw new Error(`Failed to fetch users (${resp.status})`);
         }
 
         const payload = await resp.json();
-        const rawUsers = Array.isArray(payload)
-          ? payload
-          : (payload.data ?? []);
+
+        const rawUsers = Array.isArray(payload) ? payload : payload.data ?? [];
         const normalizedUsers = rawUsers.map(normalizeUser);
+
         const nextTotalPages =
           Number(payload.total_pages ?? payload.num_pages ?? 1) || 1;
+
         const nextTotalUsers =
           Number(
             payload.total_users ?? payload.count ?? normalizedUsers.length,
@@ -167,8 +179,15 @@ const BodyContent = () => {
           normalizedUsers.map((user) => [user.userId, user.role]),
         );
 
-        setDraftRoles((current) => ({ ...current, ...roleMap }));
-        setCommittedRoles((current) => ({ ...current, ...roleMap }));
+        setDraftRoles((current) => ({
+          ...current,
+          ...roleMap,
+        }));
+
+        setCommittedRoles((current) => ({
+          ...current,
+          ...roleMap,
+        }));
       } catch (error) {
         setErrorMessage(error.message || "Unable to load users");
       } finally {
@@ -188,8 +207,8 @@ const BodyContent = () => {
       }
 
       const currentRole = isEditMode
-        ? (draftRoles[user.userId] ?? user.role)
-        : (committedRoles[user.userId] ?? user.role);
+        ? draftRoles[user.userId] ?? user.role
+        : committedRoles[user.userId] ?? user.role;
 
       return (
         user.name.toLowerCase().includes(normalizedSearch) ||
@@ -206,6 +225,16 @@ const BodyContent = () => {
       ),
     [committedRoles, draftRoles, users],
   );
+
+  useEffect(() => {
+    setHasUnsavedModuleChanges?.(isEditMode && hasUnsavedChanges);
+  }, [isEditMode, hasUnsavedChanges, setHasUnsavedModuleChanges]);
+
+  useEffect(() => {
+    return () => {
+      setHasUnsavedModuleChanges?.(false);
+    };
+  }, [setHasUnsavedModuleChanges]);
 
   const paginationItems = useMemo(
     () => buildPageItems(currentPage, totalPages),
@@ -229,6 +258,35 @@ const BodyContent = () => {
     setDraftRoles({ ...committedRoles });
     setErrorMessage("");
     setIsEditMode(false);
+    setHasUnsavedModuleChanges?.(false);
+  };
+
+  const discardCurrentPageChanges = () => {
+    setDraftRoles({ ...committedRoles });
+    setErrorMessage("");
+    setHasUnsavedModuleChanges?.(false);
+  };
+
+  const requestPageChange = (targetPage) => {
+    const safeTargetPage = Math.min(Math.max(targetPage, 1), totalPages);
+
+    if (safeTargetPage === currentPage || isLoadingUsers) {
+      return;
+    }
+
+    if (isEditMode && hasUnsavedChanges) {
+      askForConfirmation(
+        () => {
+          discardCurrentPageChanges();
+          setCurrentPage(safeTargetPage);
+        },
+        `You have unsaved role changes on this page. Changing pages will discard those changes. Continue to page ${safeTargetPage}?`,
+      );
+
+      return;
+    }
+
+    setCurrentPage(safeTargetPage);
   };
 
   const handleSaveChanges = async () => {
@@ -241,12 +299,16 @@ const BodyContent = () => {
         fromRole: committedRoles[user.userId] ?? user.role,
         toRole: draftRoles[user.userId] ?? user.role,
       }))
-      .filter((c) => Boolean(c.toRole));
+      .filter((change) => Boolean(change.toRole));
 
-    const updates = changes.map((c) => ({ user_id: c.userId, role: c.toRole }));
+    const updates = changes.map((change) => ({
+      user_id: change.userId,
+      role: change.toRole,
+    }));
 
     if (!updates.length) {
       setIsEditMode(false);
+      setHasUnsavedModuleChanges?.(false);
       return;
     }
 
@@ -268,22 +330,26 @@ const BodyContent = () => {
 
       setCommittedRoles((currentRoles) => {
         const nextRoles = { ...currentRoles };
+
         updates.forEach((update) => {
           nextRoles[update.user_id] = update.role;
         });
+
         return nextRoles;
       });
+
       setIsEditMode(false);
+      setHasUnsavedModuleChanges?.(false);
 
       showInformation({
         title: "Role changes saved",
         message: "The following role updates were applied:",
-        details: changes.map((c) => ({
-          title: c.name,
+        details: changes.map((change) => ({
+          title: change.name,
           lines: [
-            `User: ${c.email}`,
-            `Initial role: ${c.fromRole}`,
-            `New role: ${c.toRole}`,
+            `User: ${change.email}`,
+            `Initial role: ${change.fromRole}`,
+            `New role: ${change.toRole}`,
           ],
         })),
       });
@@ -306,16 +372,22 @@ const BodyContent = () => {
             View users, search accounts, and update assigned access roles.
           </p>
         </header>
+
         <section
-          className={`${styles.managementPanel} ${isEditMode ? styles.managementPanelEditing : ""}`}
+          className={`${styles.managementPanel} ${isEditMode ? styles.managementPanelEditing : ""
+            }`}
         >
           <div className={styles.panelTop}>
             <div className={styles.modeNotice}>
               <span
-                className={`${styles.modeBadge} ${isEditMode ? styles.modeBadgeEditing : styles.modeBadgeReadonly}`}
+                className={`${styles.modeBadge} ${isEditMode
+                    ? styles.modeBadgeEditing
+                    : styles.modeBadgeReadonly
+                  }`}
               >
                 {isEditMode ? "Editing" : "Read Only"}
               </span>
+
               <span className={styles.modeDescription}>
                 {isEditMode
                   ? "Update user roles, then save or discard your changes."
@@ -334,6 +406,7 @@ const BodyContent = () => {
                         ? "Editing enabled"
                         : "Click Edit Roles/Permissions to make changes"}
                 </span>
+
                 {isEditMode ? (
                   hasUnsavedChanges ? (
                     <>
@@ -351,6 +424,7 @@ const BodyContent = () => {
                       >
                         Cancel
                       </Button>
+
                       <Button
                         className={styles.saveButton}
                         variant="primary"
@@ -433,7 +507,11 @@ const BodyContent = () => {
 
               {!isLoadingUsers &&
                 filteredUsers.map((user) => (
-                  <div className={styles.tableRow} role="row" key={user.userId}>
+                  <div
+                    className={styles.tableRow}
+                    role="row"
+                    key={user.userId}
+                  >
                     <div className={styles.userCell} role="cell">
                       <div
                         className={styles.avatar}
@@ -480,7 +558,7 @@ const BodyContent = () => {
               <button
                 type="button"
                 className={styles.paginationControl}
-                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                onClick={() => requestPageChange(currentPage - 1)}
                 disabled={currentPage <= 1 || isLoadingUsers}
               >
                 Previous
@@ -488,17 +566,19 @@ const BodyContent = () => {
 
               {paginationItems.map((item, index) =>
                 item === "..." ? (
-                  <span key={`dots-${index}`} className={styles.paginationDots}>
+                  <span
+                    key={`dots-${index}`}
+                    className={styles.paginationDots}
+                  >
                     ...
                   </span>
                 ) : (
                   <button
                     key={item}
                     type="button"
-                    className={`${styles.paginationPage} ${
-                      item === currentPage ? styles.paginationActive : ""
-                    }`}
-                    onClick={() => setCurrentPage(item)}
+                    className={`${styles.paginationPage} ${item === currentPage ? styles.paginationActive : ""
+                      }`}
+                    onClick={() => requestPageChange(item)}
                     disabled={isLoadingUsers}
                   >
                     {item}
@@ -509,9 +589,7 @@ const BodyContent = () => {
               <button
                 type="button"
                 className={styles.paginationControl}
-                onClick={() =>
-                  setCurrentPage((page) => Math.min(totalPages, page + 1))
-                }
+                onClick={() => requestPageChange(currentPage + 1)}
                 disabled={currentPage >= totalPages || isLoadingUsers}
               >
                 Next
