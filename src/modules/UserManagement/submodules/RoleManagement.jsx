@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from "react";
 import styles from "../styles/RoleManagement.module.css";
 import Button from "../../../shared/components/Button";
 import Dropdown from "../../../shared/components/Dropdown";
-import { useConfirmationModal } from "../../../shared/components/ConfirmationModal";
+import { useConfirmationModal } from "../../../shared/components/useConfirmationModal";
+import { useInformationModal } from "../../../shared/components/InformationModal";
 import {
   moduleFileNames,
   moduleDisplayNames,
@@ -66,6 +67,7 @@ const BodyContent = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
   const { askForConfirmation, confirmationModal } = useConfirmationModal();
+  const { showInformation, informationModal } = useInformationModal();
 
   const roleNames = useMemo(() => roles.map((role) => role.roleName), [roles]);
 
@@ -259,6 +261,8 @@ const BodyContent = () => {
         lockUserManagement: isUserManagementLocked,
       });
 
+      const toModules = modules;
+
       setSavedModules(nextModules);
       setDraftModules(nextModules);
       setStatusMessage("Role modules saved.");
@@ -269,6 +273,19 @@ const BodyContent = () => {
           role.roleName === selectedRole ? { ...role, modules } : role,
         ),
       );
+
+      showInformation({
+        title: "Role modules saved",
+        message: `Updated permissions for ${selectedRole}`,
+        details: [
+          {
+            title: selectedRole,
+            lines: toModules.length
+              ? ["Permissions:", ...toModules.map((m) => `- ${m}`)]
+              : ["None"],
+          },
+        ],
+      });
     } catch (error) {
       setErrorMessage(error.message || "Unable to save role modules");
     } finally {
@@ -323,6 +340,18 @@ const BodyContent = () => {
       setIsNewRoleModalOpen(false);
       setIsPermissionEditMode(false);
       setStatusMessage("Role created successfully.");
+      showInformation({
+        title: "Role created",
+        message: `Created role ${roleName}`,
+        details: [
+          {
+            title: roleName,
+            lines: modules.length
+              ? ["Permissions:", ...modules.map((m) => `- ${m}`)]
+              : ["None"],
+          },
+        ],
+      });
     } catch (error) {
       setErrorMessage(error.message || "Unable to create role");
     } finally {
@@ -367,7 +396,14 @@ const BodyContent = () => {
                   variant="secondary"
                   size="md"
                   className={styles.discardButton}
-                  onClick={handleDiscardPermissions}
+                  onClick={() =>
+                    askForConfirmation(
+                      handleDiscardPermissions,
+                      hasUnsavedChanges
+                        ? "You have unsaved changes. Discarding would not save them."
+                        : "Exit edit mode?",
+                    )
+                  }
                   disabled={isSaving || isCreating}
                 >
                   Discard Changes
@@ -393,7 +429,10 @@ const BodyContent = () => {
                   }
 
                   if (!hasUnsavedChanges) {
-                    handleDiscardPermissions();
+                    askForConfirmation(
+                      handleDiscardPermissions,
+                      "Exit edit mode?",
+                    );
                     return;
                   }
 
@@ -471,7 +510,12 @@ const BodyContent = () => {
                       variant="primary"
                       size="sm"
                       className={styles.cancelButton}
-                      onClick={handleCancelCreateRole}
+                      onClick={() =>
+                        askForConfirmation(
+                          handleCancelCreateRole,
+                          "Cancel creating this new role? Unsaved selections will be lost.",
+                        )
+                      }
                     >
                       Cancel
                     </Button>
@@ -555,6 +599,7 @@ const BodyContent = () => {
         )}
 
         {confirmationModal}
+        {informationModal}
       </div>
     </div>
   );

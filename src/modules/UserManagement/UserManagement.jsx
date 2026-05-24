@@ -3,7 +3,8 @@ import styles from "./styles/UserManagement.module.css";
 import Button from "../../shared/components/Button";
 import Dropdown from "../../shared/components/Dropdown";
 import SearchBar from "../../shared/components/SearchBar";
-import { useConfirmationModal } from "../../shared/components/ConfirmationModal";
+import { useConfirmationModal } from "../../shared/components/useConfirmationModal";
+import { useInformationModal } from "../../shared/components/InformationModal";
 
 const AVATAR_COLORS = [
   "#d7e2ff",
@@ -105,6 +106,7 @@ const BodyContent = () => {
   const [draftRoles, setDraftRoles] = useState({});
   const [committedRoles, setCommittedRoles] = useState({});
   const { askForConfirmation, confirmationModal } = useConfirmationModal();
+  const { showInformation, informationModal } = useInformationModal();
 
   useEffect(() => {
     const fetchAllRoles = async () => {
@@ -230,13 +232,18 @@ const BodyContent = () => {
   };
 
   const handleSaveChanges = async () => {
-    const updates = users
+    const changes = users
       .filter((user) => draftRoles[user.userId] !== committedRoles[user.userId])
       .map((user) => ({
-        user_id: user.userId,
-        role: draftRoles[user.userId],
+        userId: user.userId,
+        name: user.name,
+        email: user.email,
+        fromRole: committedRoles[user.userId] ?? user.role,
+        toRole: draftRoles[user.userId] ?? user.role,
       }))
-      .filter((update) => Boolean(update.role));
+      .filter((c) => Boolean(c.toRole));
+
+    const updates = changes.map((c) => ({ user_id: c.userId, role: c.toRole }));
 
     if (!updates.length) {
       setIsEditMode(false);
@@ -267,6 +274,19 @@ const BodyContent = () => {
         return nextRoles;
       });
       setIsEditMode(false);
+
+      showInformation({
+        title: "Role changes saved",
+        message: "The following role updates were applied:",
+        details: changes.map((c) => ({
+          title: c.name,
+          lines: [
+            `User: ${c.email}`,
+            `Initial role: ${c.fromRole}`,
+            `New role: ${c.toRole}`,
+          ],
+        })),
+      });
     } catch (error) {
       setErrorMessage(error.message || "Unable to save role changes");
     } finally {
@@ -319,7 +339,14 @@ const BodyContent = () => {
                     className={styles.discardButton}
                     variant="secondary"
                     size="md"
-                    onClick={handleDiscardChanges}
+                    onClick={() =>
+                      askForConfirmation(
+                        handleDiscardChanges,
+                        hasUnsavedChanges
+                          ? "You have unsaved changes. Discarding would not save them."
+                          : "Exit edit mode?",
+                      )
+                    }
                     disabled={isSavingChanges}
                   >
                     Discard Changes
@@ -336,7 +363,10 @@ const BodyContent = () => {
                     }
 
                     if (!hasUnsavedChanges) {
-                      handleDiscardChanges();
+                      askForConfirmation(
+                        handleDiscardChanges,
+                        "Exit edit mode?",
+                      );
                       return;
                     }
 
@@ -482,6 +512,7 @@ const BodyContent = () => {
         </section>
 
         {confirmationModal}
+        {informationModal}
       </div>
     </div>
   );

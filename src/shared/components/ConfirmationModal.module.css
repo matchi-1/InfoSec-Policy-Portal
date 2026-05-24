@@ -19,6 +19,14 @@
   padding: 1rem;
 }
 
+.title {
+  margin: 0 0 0.45rem;
+  font-size: 1rem;
+  line-height: 1.3;
+  font-weight: 700;
+  color: #253142;
+}
+
 .message {
   margin: 0;
   font-size: 0.92rem;
@@ -31,6 +39,39 @@
   display: flex;
   justify-content: flex-end;
   gap: 0.55rem;
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.detailItem {
+  padding: 0.75rem 0.5rem;
+  border: 1px solid #e7edf5;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+}
+
+.detailTitle {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #233043;
+}
+
+.detailList {
+  margin: 0.35rem 0 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.25rem;
+}
+
+.detailLine {
+  font-size: 0.84rem;
+  line-height: 1.35;
+  color: #566577;
 }
 
 @media (max-width: 640px) {
