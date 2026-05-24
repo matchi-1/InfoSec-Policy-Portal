@@ -269,7 +269,7 @@ const BodyContent = () => {
 
                     <div className={styles.searchBarContainer}>
                         <SearchBar
-                            placeholder="Search documents..."
+                            placeholder="Search by title, author, or reviewer..."
                             value={docSearch}
                             onChange={setDocSearch}
                         />
@@ -337,11 +337,21 @@ const BodyContent = () => {
                                             </div>
 
                                             <div className={styles.documentMetaLine}>
-                                                {doc.authoredBy ? `By ${doc.authorName}` : "No author"}
+                                                {doc.authorName ? `Authored by: ${doc.authorName}` : "No author"}
+                                            </div>
+
+                                            <div className={styles.documentMetaLine}>
+                                                {doc.reviewerName ? `Reviewed by: ${doc.reviewerName}` : "No reviewer"}
                                             </div>
 
                                             <div className={`${styles.documentMetaLine} ${styles.documentUpdatedLine}`}>
-                                                {doc.lastUpdated ? `Upd ${new Date(doc.lastUpdated).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}` : "No update date"}
+                                                {doc.lastUpdated
+                                                    ? `Upd ${new Date(doc.lastUpdated).toLocaleDateString("en-US", {
+                                                        year: "numeric",
+                                                        month: "2-digit",
+                                                        day: "2-digit",
+                                                    })}`
+                                                    : "No update date"}
                                             </div>
                                         </div>
                                     </div>
