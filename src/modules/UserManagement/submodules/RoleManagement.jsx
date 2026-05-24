@@ -55,6 +55,7 @@ const BodyContent = ({ moduleFileNames }) => {
   );
   const [isNewRoleModalOpen, setIsNewRoleModalOpen] = useState(false);
   const [newRoleName, setNewRoleName] = useState("");
+  const [isPermissionEditMode, setIsPermissionEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
@@ -87,6 +88,7 @@ const BodyContent = ({ moduleFileNames }) => {
 
   const isAdminRole = selectedRoleMeta?.roleName === "Admin";
   const impactedUsers = selectedRoleMeta?.userCount ?? 0;
+  const canEditPermissions = isPermissionEditMode || isNewRoleModalOpen;
 
   useEffect(() => {
     const fetchRoles = async () => {
@@ -151,6 +153,7 @@ const BodyContent = ({ moduleFileNames }) => {
 
         setSavedModules(nextModules);
         setDraftModules(nextModules);
+        setIsPermissionEditMode(false);
       } catch (error) {
         setErrorMessage(error.message || "Unable to load role details");
       }
@@ -169,15 +172,16 @@ const BodyContent = ({ moduleFileNames }) => {
 
   const handleRoleChange = (nextRole) => {
     setStatusMessage("");
+    setIsPermissionEditMode(false);
     setSelectedRole(nextRole);
   };
 
   const handleStartCreateRole = () => {
     setStatusMessage("");
     setErrorMessage("");
+    setIsPermissionEditMode(false);
     const createRoleModules = createDefaultModuleState(moduleNames);
     setDraftModules(createRoleModules);
-    setSavedModules(createRoleModules);
     setNewRoleName("");
     setIsNewRoleModalOpen(true);
   };
@@ -188,6 +192,21 @@ const BodyContent = ({ moduleFileNames }) => {
     setStatusMessage("");
     setErrorMessage("");
     setDraftModules(savedModules);
+    setIsPermissionEditMode(false);
+  };
+
+  const handleStartEditPermissions = () => {
+    setStatusMessage("");
+    setErrorMessage("");
+    setDraftModules(savedModules);
+    setIsPermissionEditMode(true);
+  };
+
+  const handleDiscardPermissions = () => {
+    setDraftModules(savedModules);
+    setStatusMessage("");
+    setErrorMessage("");
+    setIsPermissionEditMode(false);
   };
 
   // Precompute stable toggle handlers so we don't create a new lambda per render
@@ -199,15 +218,6 @@ const BodyContent = ({ moduleFileNames }) => {
     });
     return map;
   }, [moduleNames, setDraftModules]);
-
-  const handleDiscard = () => {
-    if (isNewRoleModalOpen) {
-      handleCancelCreateRole();
-      return;
-    }
-
-    setDraftModules(savedModules);
-  };
 
   const handleSave = async () => {
     if (!selectedRole) {
@@ -251,6 +261,7 @@ const BodyContent = ({ moduleFileNames }) => {
       setSavedModules(nextModules);
       setDraftModules(nextModules);
       setStatusMessage("Role modules saved.");
+      setIsPermissionEditMode(false);
 
       setRoles((currentRoles) =>
         currentRoles.map((role) =>
@@ -309,6 +320,7 @@ const BodyContent = ({ moduleFileNames }) => {
       setSelectedRole(roleName);
       setNewRoleName("");
       setIsNewRoleModalOpen(false);
+      setIsPermissionEditMode(false);
       setStatusMessage("Role created successfully.");
     } catch (error) {
       setErrorMessage(error.message || "Unable to create role");
@@ -329,121 +341,210 @@ const BodyContent = ({ moduleFileNames }) => {
           </p>
         </header>
 
-        <section className={styles.workspace}>
-          <aside className={styles.configCard}>
-            {!isNewRoleModalOpen ? (
-              <>
-                <div className={styles.configHeader}>
-                  <h3>Select Configuration</h3>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className={styles.newButton}
-                    onClick={handleStartCreateRole}
-                  >
-                    New
-                  </Button>
-                </div>
-
-                <Dropdown
-                  className={styles.roleDropdown}
-                  value={selectedRole}
-                  options={roleNames}
-                  onChange={handleRoleChange}
-                  ariaLabel="Select role configuration"
-                />
-
-                <p className={styles.helperText}>
-                  {selectedRole ? (
-                    <>
-                      Modifying permissions for the{" "}
-                      <strong>{selectedRole}</strong> role. These changes will
-                      propagate to {impactedUsers} active users.
-                    </>
-                  ) : (
-                    "Create your first role to start configuring module access."
-                  )}
-                </p>
-              </>
-            ) : (
-              <>
-                <div className={styles.modalHeader}>
-                  <h4>Creating New Role</h4>
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    className={styles.cancelButton}
-                    onClick={handleCancelCreateRole}
-                  >
-                    Cancel
-                  </Button>
-                </div>
-
-                <input
-                  type="text"
-                  value={newRoleName}
-                  onChange={(event) => setNewRoleName(event.target.value)}
-                  className={styles.modalInput}
-                  placeholder="Enter role name"
-                />
-
-                <p className={styles.modalCopy}>
-                  New roles use the selected module access from this workspace.
-                  Choose modules on the right, then create the role.
-                </p>
-              </>
-            )}
-          </aside>
-
-          <div className={styles.permissionsCard}>
-            <div className={styles.permissionsHeader}>
-              <span>Module</span>
-              <span>Access</span>
+        <section
+          className={`${styles.workspaceShell} ${canEditPermissions ? styles.workspaceShellEditing : ""}`}
+        >
+          <div className={styles.workspaceToolbar}>
+            <div className={styles.modeNotice}>
+              <span
+                className={`${styles.modeBadge} ${canEditPermissions ? styles.modeBadgeEditing : styles.modeBadgeReadonly}`}
+              >
+                {canEditPermissions ? "Editing" : "Read Only"}
+              </span>
+              <span className={styles.modeDescription}>
+                {isNewRoleModalOpen
+                  ? "Create a role, choose modules, then save the new configuration."
+                  : canEditPermissions
+                    ? `Editing permissions for ${selectedRole || "the selected role"}. Save when you are done.`
+                    : "Select a role, then press Edit to unlock the table."}
+              </span>
             </div>
 
-            <div className={styles.permissionsBody}>
-              {isLoading && (
-                <div className={styles.permissionsRow}>
-                  <div className={styles.moduleName}>Loading roles...</div>
-                  <div />
-                </div>
+            <div className={styles.actionsBar}>
+              {!isNewRoleModalOpen && isPermissionEditMode && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  className={styles.discardButton}
+                  onClick={handleDiscardPermissions}
+                  disabled={isSaving || isCreating}
+                >
+                  Discard Changes
+                </Button>
               )}
 
-              {!isLoading &&
-                moduleNames.map((moduleName) => {
-                  const isHome = moduleName === "Home";
-                  const isForcedAdminUM =
-                    isUserManagementLocked && moduleName === "User Management";
-                  const checked =
-                    isHome ||
-                    isForcedAdminUM ||
-                    Boolean(draftModules[moduleName]);
-                  const disabled =
-                    (!selectedRole && !isNewRoleModalOpen) ||
-                    isForcedAdminUM ||
-                    isHome;
+              <Button
+                variant="primary"
+                size="md"
+                className={styles.saveButton}
+                onClick={() => {
+                  if (isNewRoleModalOpen) {
+                    askForConfirmation(
+                      handleCreateRole,
+                      "Create this role with selected module access?",
+                    );
+                    return;
+                  }
 
-                  return (
-                    <div key={moduleName} className={styles.permissionsRow}>
-                      <div className={styles.moduleName}>
-                        {moduleLabelsByName[moduleName] ?? moduleName}
-                      </div>
+                  if (!isPermissionEditMode) {
+                    handleStartEditPermissions();
+                    return;
+                  }
 
-                      <label className={styles.checkboxCell}>
-                        <input
-                          type="checkbox"
-                          checked={checked}
-                          onChange={toggleHandlers[moduleName]}
-                          aria-label={`Access permission for ${moduleName}`}
-                          disabled={disabled}
-                        />
-                        <span className={styles.checkboxVisual} />
-                      </label>
-                    </div>
-                  );
-                })}
+                  if (!hasUnsavedChanges) {
+                    handleDiscardPermissions();
+                    return;
+                  }
+
+                  askForConfirmation(handleSave, "Save role module changes?");
+                }}
+                disabled={
+                  isSaving ||
+                  isCreating ||
+                  (!selectedRole && !isNewRoleModalOpen)
+                }
+              >
+                {isNewRoleModalOpen
+                  ? isCreating
+                    ? "Creating..."
+                    : "Save Role"
+                  : isPermissionEditMode
+                    ? isSaving
+                      ? "Saving..."
+                      : "Save Role"
+                    : "Edit"}
+              </Button>
             </div>
           </div>
+
+          <section className={styles.workspace}>
+            <aside className={styles.configCard}>
+              {!isNewRoleModalOpen ? (
+                <>
+                  <div className={styles.configHeader}>
+                    <h3>Select Configuration</h3>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className={styles.newButton}
+                      onClick={handleStartCreateRole}
+                    >
+                      New
+                    </Button>
+                  </div>
+
+                  <Dropdown
+                    className={styles.roleDropdown}
+                    value={selectedRole}
+                    options={roleNames}
+                    onChange={handleRoleChange}
+                    ariaLabel="Select role configuration"
+                  />
+
+                  <p className={styles.helperText}>
+                    {selectedRole ? (
+                      canEditPermissions ? (
+                        <>
+                          Modifying permissions for the{" "}
+                          <strong>{selectedRole}</strong> role. These changes
+                          will propagate to {impactedUsers} active users.
+                        </>
+                      ) : (
+                        <>
+                          Viewing permissions for the{" "}
+                          <strong>{selectedRole}</strong> role. Press Edit to
+                          make changes. This role currently affects{" "}
+                          {impactedUsers} active users.
+                        </>
+                      )
+                    ) : (
+                      "Create your first role to start configuring module access."
+                    )}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <div className={styles.modalHeader}>
+                    <h4>Creating New Role</h4>
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      className={styles.cancelButton}
+                      onClick={handleCancelCreateRole}
+                    >
+                      Cancel
+                    </Button>
+                  </div>
+
+                  <input
+                    type="text"
+                    value={newRoleName}
+                    onChange={(event) => setNewRoleName(event.target.value)}
+                    className={styles.modalInput}
+                    placeholder="Enter role name"
+                  />
+
+                  <p className={styles.modalCopy}>
+                    New roles use the selected module access from this
+                    workspace. Choose modules on the right, then create the
+                    role.
+                  </p>
+                </>
+              )}
+            </aside>
+
+            <div className={styles.permissionsCard}>
+              <div className={styles.permissionsHeader}>
+                <span>Module</span>
+                <span>Access</span>
+              </div>
+
+              <div className={styles.permissionsBody}>
+                {isLoading && (
+                  <div className={styles.permissionsRow}>
+                    <div className={styles.moduleName}>Loading roles...</div>
+                    <div />
+                  </div>
+                )}
+
+                {!isLoading &&
+                  moduleNames.map((moduleName) => {
+                    const isHome = moduleName === "Home";
+                    const isForcedAdminUM =
+                      isUserManagementLocked &&
+                      moduleName === "User Management";
+                    const checked =
+                      isHome ||
+                      isForcedAdminUM ||
+                      Boolean(draftModules[moduleName]);
+                    const disabled =
+                      (!selectedRole && !isNewRoleModalOpen) ||
+                      !canEditPermissions ||
+                      isForcedAdminUM ||
+                      isHome;
+
+                    return (
+                      <div key={moduleName} className={styles.permissionsRow}>
+                        <div className={styles.moduleName}>
+                          {moduleLabelsByName[moduleName] ?? moduleName}
+                        </div>
+
+                        <label className={styles.checkboxCell}>
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={toggleHandlers[moduleName]}
+                            aria-label={`Access permission for ${moduleName}`}
+                            disabled={disabled}
+                          />
+                          <span className={styles.checkboxVisual} />
+                        </label>
+                      </div>
+                    );
+                  })}
+              </div>
+            </div>
+          </section>
         </section>
 
         {(errorMessage || statusMessage) && (
@@ -451,52 +552,6 @@ const BodyContent = ({ moduleFileNames }) => {
             {errorMessage || statusMessage}
           </p>
         )}
-
-        <footer className={styles.actionsBar}>
-          <Button
-            variant="secondary"
-            size="md"
-            className={styles.discardButton}
-            onClick={handleDiscard}
-            disabled={
-              isSaving ||
-              isCreating ||
-              (!isNewRoleModalOpen && !hasUnsavedChanges)
-            }
-          >
-            {isNewRoleModalOpen ? "Cancel" : "Discard Changes"}
-          </Button>
-
-          <Button
-            variant="primary"
-            size="md"
-            className={styles.saveButton}
-            onClick={() =>
-              askForConfirmation(
-                isNewRoleModalOpen ? handleCreateRole : handleSave,
-                isNewRoleModalOpen
-                  ? "Create this role with selected module access?"
-                  : "Save role module changes?",
-              )
-            }
-            disabled={
-              isSaving ||
-              isCreating ||
-              (isNewRoleModalOpen
-                ? !newRoleName.trim() ||
-                  getSelectedModules(draftModules).length === 0
-                : !selectedRole || !hasUnsavedChanges)
-            }
-          >
-            {isNewRoleModalOpen
-              ? isCreating
-                ? "Creating..."
-                : "Save Role"
-              : isSaving
-                ? "Saving..."
-                : "Save Role"}
-          </Button>
-        </footer>
 
         {confirmationModal}
       </div>

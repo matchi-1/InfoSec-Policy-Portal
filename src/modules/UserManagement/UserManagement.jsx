@@ -99,6 +99,7 @@ const BodyContent = () => {
   const [isLoadingUsers, setIsLoadingUsers] = useState(false);
   const [isSavingChanges, setIsSavingChanges] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [isEditMode, setIsEditMode] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState("");
   const [draftRoles, setDraftRoles] = useState({});
@@ -184,7 +185,9 @@ const BodyContent = () => {
         return true;
       }
 
-      const currentRole = draftRoles[user.userId] ?? user.role;
+      const currentRole = isEditMode
+        ? (draftRoles[user.userId] ?? user.role)
+        : (committedRoles[user.userId] ?? user.role);
 
       return (
         user.name.toLowerCase().includes(normalizedSearch) ||
@@ -192,7 +195,7 @@ const BodyContent = () => {
         currentRole.toLowerCase().includes(normalizedSearch)
       );
     });
-  }, [draftRoles, searchTerm, users]);
+  }, [committedRoles, draftRoles, isEditMode, searchTerm, users]);
 
   const hasUnsavedChanges = useMemo(
     () =>
@@ -214,6 +217,18 @@ const BodyContent = () => {
     }));
   };
 
+  const handleEnterEditMode = () => {
+    setErrorMessage("");
+    setDraftRoles({ ...committedRoles });
+    setIsEditMode(true);
+  };
+
+  const handleDiscardChanges = () => {
+    setDraftRoles({ ...committedRoles });
+    setErrorMessage("");
+    setIsEditMode(false);
+  };
+
   const handleSaveChanges = async () => {
     const updates = users
       .filter((user) => draftRoles[user.userId] !== committedRoles[user.userId])
@@ -224,6 +239,7 @@ const BodyContent = () => {
       .filter((update) => Boolean(update.role));
 
     if (!updates.length) {
+      setIsEditMode(false);
       return;
     }
 
@@ -250,6 +266,7 @@ const BodyContent = () => {
         });
         return nextRoles;
       });
+      setIsEditMode(false);
     } catch (error) {
       setErrorMessage(error.message || "Unable to save role changes");
     } finally {
@@ -269,148 +286,200 @@ const BodyContent = () => {
             View users, search accounts, and update assigned access roles.
           </p>
         </header>
-
-        <div className={styles.searchRow}>
-          <SearchBar value={searchTerm} onChange={setSearchTerm} />
-        </div>
-
         <section
-          className={styles.tableCard}
-          aria-label="User management table"
+          className={`${styles.managementPanel} ${isEditMode ? styles.managementPanelEditing : ""}`}
         >
-          <div className={styles.tableHeader} role="row">
-            <span>User</span>
-            <span>Access Level</span>
-          </div>
+          <div className={styles.panelTop}>
+            <div className={styles.modeNotice}>
+              <span
+                className={`${styles.modeBadge} ${isEditMode ? styles.modeBadgeEditing : styles.modeBadgeReadonly}`}
+              >
+                {isEditMode ? "Editing" : "Read Only"}
+              </span>
+              <span className={styles.modeDescription}>
+                {isEditMode
+                  ? "Update user roles, then save or discard your changes."
+                  : "Press Edit Roles/Permissions to unlock the table and controls."}
+              </span>
+            </div>
 
-          <div className={styles.tableBody}>
-            {isLoadingUsers && (
-              <div className={styles.tableRow} role="row">
-                <div className={styles.userCell} role="cell">
-                  <div className={styles.userInfo}>
-                    <strong>Loading users...</strong>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!isLoadingUsers && filteredUsers.length === 0 && (
-              <div className={styles.tableRow} role="row">
-                <div className={styles.userCell} role="cell">
-                  <div className={styles.userInfo}>
-                    <strong>No users found</strong>
-                    <span>Try changing your search or page.</span>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {!isLoadingUsers &&
-              filteredUsers.map((user) => (
-                <div className={styles.tableRow} role="row" key={user.userId}>
-                  <div className={styles.userCell} role="cell">
-                    <div
-                      className={styles.avatar}
-                      style={{ backgroundColor: user.avatarColor }}
-                      aria-hidden="true"
-                    >
-                      {user.initials}
-                    </div>
-
-                    <div className={styles.userInfo}>
-                      <strong>{user.name}</strong>
-                      <span>{user.email}</span>
-                    </div>
-                  </div>
-
-                  <div className={styles.roleCell} role="cell">
-                    <Dropdown
-                      className={styles.roleDropdown}
-                      value={draftRoles[user.userId] ?? user.role}
-                      options={roleOptions}
-                      onChange={(nextRole) =>
-                        handleRoleChange(user.userId, nextRole)
-                      }
-                      ariaLabel={`Access level for ${user.name}`}
-                    />
-                  </div>
-                </div>
-              ))}
-          </div>
-        </section>
-
-        <footer className={styles.footerBar}>
-          <p className={styles.footerMeta}>
-            {formatUserCount(filteredUsers.length, totalUsers)}
-          </p>
-
-          <div className={styles.pagination} aria-label="Pagination">
-            <button
-              type="button"
-              className={styles.paginationControl}
-              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
-              disabled={currentPage <= 1 || isLoadingUsers}
-            >
-              Previous
-            </button>
-
-            {paginationItems.map((item, index) =>
-              item === "..." ? (
-                <span key={`dots-${index}`} className={styles.paginationDots}>
-                  ...
+            <div className={styles.actionsBar}>
+              <div className={styles.saveCluster}>
+                <span className={styles.saveHint}>
+                  {errorMessage
+                    ? errorMessage
+                    : isEditMode && hasUnsavedChanges
+                      ? "Unsaved changes detected"
+                      : isEditMode
+                        ? "Editing enabled"
+                        : "Click Edit Roles/Permissions to make changes"}
                 </span>
-              ) : (
-                <button
-                  key={item}
-                  type="button"
-                  className={`${styles.paginationPage} ${item === currentPage ? styles.paginationActive : ""
-                    }`}
-                  onClick={() => setCurrentPage(item)}
-                  disabled={isLoadingUsers}
+                {isEditMode && (
+                  <Button
+                    className={styles.discardButton}
+                    variant="secondary"
+                    size="lg"
+                    onClick={handleDiscardChanges}
+                    disabled={isSavingChanges}
+                  >
+                    Discard Changes
+                  </Button>
+                )}
+                <Button
+                  className={styles.saveButton}
+                  variant="primary"
+                  size="lg"
+                  onClick={() => {
+                    if (!isEditMode) {
+                      handleEnterEditMode();
+                      return;
+                    }
+
+                    if (!hasUnsavedChanges) {
+                      handleDiscardChanges();
+                      return;
+                    }
+
+                    askForConfirmation(
+                      handleSaveChanges,
+                      "Save user role updates for selected user/s?",
+                    );
+                  }}
+                  disabled={isSavingChanges}
                 >
-                  {item}
-                </button>
-              ),
-            )}
-
-            <button
-              type="button"
-              className={styles.paginationControl}
-              onClick={() =>
-                setCurrentPage((page) => Math.min(totalPages, page + 1))
-              }
-              disabled={currentPage >= totalPages || isLoadingUsers}
-            >
-              Next
-            </button>
+                  {isEditMode
+                    ? isSavingChanges
+                      ? "Saving..."
+                      : "Save Changes"
+                    : "Edit"}
+                </Button>
+              </div>
+            </div>
           </div>
-        </footer>
 
-        <div className={styles.actionsBar}>
-          <div className={styles.saveCluster}>
-            <span className={styles.saveHint}>
-              {errorMessage
-                ? errorMessage
-                : hasUnsavedChanges
-                  ? "Unsaved changes detected"
-                  : "All changes saved"}
-            </span>
-            <Button
-              className={styles.saveButton}
-              variant="primary"
-              size="lg"
-              onClick={() =>
-                askForConfirmation(
-                  handleSaveChanges,
-                  "Save user role updates for selected user/s?",
-                )
-              }
-              disabled={!hasUnsavedChanges || isSavingChanges}
-            >
-              {isSavingChanges ? "Saving..." : "Save Changes"}
-            </Button>
+          <div className={styles.searchRow}>
+            <SearchBar value={searchTerm} onChange={setSearchTerm} />
           </div>
-        </div>
+
+          <section
+            className={styles.tableCard}
+            aria-label="User management table"
+          >
+            <div className={styles.tableHeader} role="row">
+              <span>User</span>
+              <span>Access Level</span>
+            </div>
+
+            <div className={styles.tableBody}>
+              {isLoadingUsers && (
+                <div className={styles.tableRow} role="row">
+                  <div className={styles.userCell} role="cell">
+                    <div className={styles.userInfo}>
+                      <strong>Loading users...</strong>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!isLoadingUsers && filteredUsers.length === 0 && (
+                <div className={styles.tableRow} role="row">
+                  <div className={styles.userCell} role="cell">
+                    <div className={styles.userInfo}>
+                      <strong>No users found</strong>
+                      <span>Try changing your search or page.</span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {!isLoadingUsers &&
+                filteredUsers.map((user) => (
+                  <div className={styles.tableRow} role="row" key={user.userId}>
+                    <div className={styles.userCell} role="cell">
+                      <div
+                        className={styles.avatar}
+                        style={{ backgroundColor: user.avatarColor }}
+                        aria-hidden="true"
+                      >
+                        {user.initials}
+                      </div>
+
+                      <div className={styles.userInfo}>
+                        <strong>{user.name}</strong>
+                        <span>{user.email}</span>
+                      </div>
+                    </div>
+
+                    <div className={styles.roleCell} role="cell">
+                      {isEditMode ? (
+                        <Dropdown
+                          className={styles.roleDropdown}
+                          value={draftRoles[user.userId] ?? user.role}
+                          options={roleOptions}
+                          onChange={(nextRole) =>
+                            handleRoleChange(user.userId, nextRole)
+                          }
+                          ariaLabel={`Access level for ${user.name}`}
+                        />
+                      ) : (
+                        <span className={styles.roleValue}>
+                          {committedRoles[user.userId] ?? user.role}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+            </div>
+          </section>
+
+          <footer className={styles.footerBar}>
+            <p className={styles.footerMeta}>
+              {formatUserCount(filteredUsers.length, totalUsers)}
+            </p>
+
+            <div className={styles.pagination} aria-label="Pagination">
+              <button
+                type="button"
+                className={styles.paginationControl}
+                onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+                disabled={currentPage <= 1 || isLoadingUsers}
+              >
+                Previous
+              </button>
+
+              {paginationItems.map((item, index) =>
+                item === "..." ? (
+                  <span key={`dots-${index}`} className={styles.paginationDots}>
+                    ...
+                  </span>
+                ) : (
+                  <button
+                    key={item}
+                    type="button"
+                    className={`${styles.paginationPage} ${
+                      item === currentPage ? styles.paginationActive : ""
+                    }`}
+                    onClick={() => setCurrentPage(item)}
+                    disabled={isLoadingUsers}
+                  >
+                    {item}
+                  </button>
+                ),
+              )}
+
+              <button
+                type="button"
+                className={styles.paginationControl}
+                onClick={() =>
+                  setCurrentPage((page) => Math.min(totalPages, page + 1))
+                }
+                disabled={currentPage >= totalPages || isLoadingUsers}
+              >
+                Next
+              </button>
+            </div>
+          </footer>
+        </section>
 
         {confirmationModal}
       </div>
