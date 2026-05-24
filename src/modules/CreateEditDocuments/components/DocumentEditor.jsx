@@ -63,7 +63,7 @@ function BodyContent({ doc, onBack }) {
 
 
     // const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
-    const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : dayjs());
+    const [selectDate, setSelectDate] = useState(doc.lastReviewed ? dayjs(doc.lastReviewed) : dayjs());
 
     const [showConfModal, setShowConfModal] = useState(false);
 
@@ -257,10 +257,7 @@ function BodyContent({ doc, onBack }) {
     const isSaveValid =
         doc?.id &&
         currTitle?.trim() &&
-        currDesc?.trim() &&
         selectDate &&
-        currTags?.length > 0 &&
-        sections?.length > 0 &&
         authoredBy &&
         reviewedBy &&
         JSON.parse(localStorage.getItem("user"))?.user_id;
@@ -680,7 +677,7 @@ function BodyContent({ doc, onBack }) {
                                     onClick={() => { setViewingPDF(false) }}>Close PDF</button>
                                 )
                             }
-                            {fileName != "null" ? (
+                            { fileName !== "null" ? (
                                 <button className={styles.pdfChip}>
                                     <p>{fileName}</p>
                                     <img
@@ -752,7 +749,7 @@ function BodyContent({ doc, onBack }) {
                                                     <div>
                                                         <input type="text" autoFocus value={sectionTitleTemp} onChange={(e) => { setSectionTitleTemp(e.target.value) }} onClick={(e) => e.stopPropagation()}
                                                             onKeyDown={(e) => { e.stopPropagation(); }}
-                                                            onMouseDown={(e) => { stopPropagation(); }}
+                                                            onMouseDown={(e) => { e.stopPropagation(); }}
                                                             onBlur={() => {
                                                                 const newSections = sections.map((sect) => {
                                                                     if (sect.id === sectionTitleEditID) {

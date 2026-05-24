@@ -47,15 +47,15 @@
 }
 
 /* Thin blue scrollbar */
-.documents::-webkit-scrollbar{
+.documents::-webkit-scrollbar {
   width: 0.35rem;
 }
 
-.documents::-webkit-scrollbar-track{
+.documents::-webkit-scrollbar-track {
   background: transparent;
 }
 
-.documents::-webkit-scrollbar-thumb{
+.documents::-webkit-scrollbar-thumb {
   background-color: var(--primary-blue);
   border-radius: 999px;
 }
@@ -449,6 +449,10 @@
   flex: 1;
 }
 
+.viewBtnDisabled {
+  cursor: not-allowed;
+}
+
 .pdfChip {
   flex: 1;
   display: flex;
@@ -492,16 +496,16 @@
   font-weight: 600;
 }
 
-.buttonsContainer > p:hover {
+.buttonsContainer>p:hover {
   text-decoration: underline;
   cursor: pointer;
 }
 
-.buttonsContainer > p > span {
+.buttonsContainer>p>span {
   visibility: hidden;
 }
 
-.buttonsContainer > p:hover > span {
+.buttonsContainer>p:hover>span {
   visibility: visible;
 }
 
@@ -1399,12 +1403,12 @@
     width: 100%;
   }
 
-  .descButtons{
+  .descButtons {
     display: flex;
     flex-direction: row;
   }
 
-  .titleHeader{
+  .titleHeader {
     flex-direction: column;
   }
 
@@ -1416,7 +1420,7 @@
   }
 
   .tagsContainer,
-  .buttonsContainer{
+  .buttonsContainer {
     width: 100%;
     height: 100%;
     /* padding-bottom: 1.5rem; */
@@ -1505,12 +1509,12 @@
     align-items: center;
   }
 
-  .dropdownContainer p{
+  .dropdownContainer p {
     width: 100%;
     text-align: left;
   }
 
-  .titleDropdowns{
+  .titleDropdowns {
     padding: 0;
   }
 
@@ -1538,7 +1542,7 @@
     flex: 1;
   }
 
-  .tagsContainer button{
+  .tagsContainer button {
     padding: 0.3rem 0.3rem;
   }
 
@@ -1619,7 +1623,8 @@
 }
 
 .headerDetailsToggle,
-.saveBtn, .saveBtnDisabled {
+.saveBtn,
+.saveBtnDisabled {
   appearance: none;
   border: 1px solid #d8e2ef;
   background: #ffffff;
@@ -1633,7 +1638,6 @@
   gap: 0.6rem;
 
   font: inherit;
-  cursor: pointer;
 
   border-radius: 0.3rem;
 
@@ -1644,11 +1648,17 @@
     transform 160ms ease;
 }
 
+.saveBtn,
+.headerDetailsToggle {
+  cursor: pointer;
+}
+
 .saveBtn {
   gap: 0.4rem;
   background: var(--primary-green);
   border: var(--primary-green);
   color: white;
+  cursor: pointer;
   /* border: 1px solid #d8efea; */
 }
 
@@ -1657,6 +1667,7 @@
   background: var(--line-soft);
   border: var(--line-soft);
   color: white;
+  cursor: not-allowed;
   /* border: 1px solid #d8efea; */
 }
 
@@ -2002,7 +2013,7 @@
   backdrop-filter: blur(10px);
 
   animation:
-    toastSlideIn 0.28s cubic-bezier(.2,.8,.2,1),
+    toastSlideIn 0.28s cubic-bezier(.2, .8, .2, 1),
     toastFadeOut 0.28s ease 2.7s forwards;
 }
 
@@ -2014,11 +2025,9 @@
 
   border-radius: 999px;
 
-  background: linear-gradient(
-    to bottom,
-    var(--primary-blue),
-    var(--primary-blue-2)
-  );
+  background: linear-gradient(to bottom,
+      var(--primary-blue),
+      var(--primary-blue-2));
 }
 
 .toastAlertContent {
@@ -2076,13 +2085,13 @@
 */
 
 .dropdownArrow {
-    transition:
-        transform 0.25s ease,
-        opacity 0.2s ease;
-    transform: rotate(0deg);
-    will-change: transform;
+  transition:
+    transform 0.25s ease,
+    opacity 0.2s ease;
+  transform: rotate(0deg);
+  will-change: transform;
 }
 
 .dropdownArrowOpen {
-    transform: rotate(180deg);
+  transform: rotate(180deg);
 }
