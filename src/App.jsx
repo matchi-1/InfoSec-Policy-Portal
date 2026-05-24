@@ -379,11 +379,22 @@ function App() {
       setActiveSubModule(null);
       loadMainModule(moduleId);
     }
+
+    // On small screens, selecting a module closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
   };
 
-  const handleSubModuleClick = (submoduleId) => {
-    setActiveSubModule(submoduleId);
-    loadSubModule(submoduleId);
+  const handleSubModuleClick = (submodule) => {
+    setActiveSubModule(submodule);
+
+    // On small screens, selecting a submodule closes the full-screen menu
+    if (isCompactSidebar) {
+      setIsSidebarOpen(false);
+    }
   };
 
   // IMPORTANT: FOR EDITING AND ADDING NEW MODULES
