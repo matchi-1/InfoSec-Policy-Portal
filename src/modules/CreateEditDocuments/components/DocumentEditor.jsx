@@ -66,6 +66,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     const [showAddTagConfirmModal, setShowAddTagConfirmModal] = useState(false);
     const [tagToast, setTagToast] = useState(null);
     const tagToastTimerRef = useRef(null);
+    const [showPdfReplacementToast, setShowPdfReplacementToast] = useState(false);
 
     // const [currentMarkdown, setCurrentMarkdown] = useState("")
     // const [initialMarkdown, setInitialMarkdown] = useState("")
@@ -425,8 +426,15 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             authoredBy: doc.authoredBy || "",
             reviewedBy: doc.reviewedBy || "",
             pdfFileName: doc.pretty_pdf_filename ?? "null",
+            pdfFilename: doc.pdf_filename ?? "null",
         };
     }, [doc])
+
+    useEffect(() => {
+        setFileToUpload(null);
+        setFileName(doc.pretty_pdf_filename ?? "null");
+        setFileNameTemp("null");
+    }, [doc.id]);
 
     const hasUnsavedChanges = () => {
         if (!initialDocRef.current) return false;
@@ -481,7 +489,20 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     };
 
     const hasChanges = hasUnsavedChanges();
-    const canSave = isSaveValid && hasChanges;
+
+    const hasRemovedExistingPdfWithoutReplacement =
+        doc?.id !== "new" &&
+        initialDocRef.current?.pdfFileName &&
+        initialDocRef.current.pdfFileName !== "null" &&
+        fileName === "null" &&
+        fileNameTemp === "null" &&
+        !fileToUpload;
+
+
+    const canSave =
+        isSaveValid &&
+        hasChanges &&
+        !hasRemovedExistingPdfWithoutReplacement;
 
     useEffect(() => {
         setHasUnsavedModuleChanges?.(hasUnsavedChanges());
@@ -540,6 +561,15 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         };
     }, [isPdfFullscreenOpen]);
 
+
+    const showPdfReplacementRequiredToast = () => {
+        setShowPdfReplacementToast(true);
+
+        setTimeout(() => {
+            setShowPdfReplacementToast(false);
+        }, 3000);
+    };
+
     return (
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
@@ -593,24 +623,44 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                         </button> */}
                         {canSave ? (
                             <button
+                                type="button"
                                 className={styles.saveBtn}
-                                onClick={() => { setShowConfModal(true) }}>
+                                onClick={() => {
+                                    setShowConfModal(true);
+                                }}
+                            >
                                 <img src="/icons/save-green.png" />
                                 <p>Save</p>
                             </button>
                         ) : (
                             <button
+                                type="button"
                                 className={styles.saveBtnDisabled}
-                                aria-label="Complete all required fields before saving"
-                                title="Complete all required fields before saving"
-                            // onClick={() => { setShowConfModal(true) }}
+                                aria-label={
+                                    hasRemovedExistingPdfWithoutReplacement
+                                        ? "Upload a replacement PDF before saving"
+                                        : !isSaveValid
+                                            ? "Complete all required fields before saving"
+                                            : "No changes to save"
+                                }
+                                title={
+                                    hasRemovedExistingPdfWithoutReplacement
+                                        ? "Upload a replacement PDF before saving"
+                                        : !isSaveValid
+                                            ? "Complete all required fields before saving"
+                                            : "No changes to save"
+                                }
+                                disabled={!hasRemovedExistingPdfWithoutReplacement}
+                                onClick={() => {
+                                    if (hasRemovedExistingPdfWithoutReplacement) {
+                                        showPdfReplacementRequiredToast();
+                                    }
+                                }}
                             >
                                 <img src="/icons/save-green.png" />
                                 <p>Save</p>
                             </button>
-                        )
-
-                        }
+                        )}
                         {/* <button
                             className={styles.saveBtn}
                             onClick={() => { setShowConfModal(true) }}>
@@ -987,7 +1037,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                     )}
                                 </>
                             )}
-                            { currentFileName !== "null" ? (
+                            {currentFileName !== "null" ? (
                                 <button className={styles.pdfChip}>
                                     <div>
                                         <img src="/icons/pdf.png" alt="" className={styles.actionIcon} />
@@ -1415,9 +1465,13 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                     </div>
                 )
             }
-            {showUploadModal &&
-                <PDFUploadModal setShowUploadModal={setShowUploadModal} setFile={setFileToUpload} setFileNameTemp={setFileNameTemp} />
-            }
+            {showUploadModal && (
+                <PDFUploadModal
+                    setShowUploadModal={setShowUploadModal}
+                    setFile={setFileToUpload}
+                    setFileNameTemp={setFileNameTemp}
+                />
+            )}
             {showConfModal &&
                 <div className={styles.confModalOverlay}>
                     <div className={styles.confModal}>
@@ -1442,6 +1496,11 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                 className={styles.confirmBtn}
                                 onClick={async () => {
                                     setShowConfModal(false)
+
+                                    if (hasRemovedExistingPdfWithoutReplacement) {
+                                        showPdfReplacementRequiredToast();
+                                        return;
+                                    }
 
                                     const data = new FormData()
 
@@ -1469,7 +1528,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
 
                                     setShowSaveToast(true);
                                     setTimeout(() => {
-                                        setShowDeleteToast(false);
+                                        setShowSaveToast(false);
                                     }, 1000);
 
                                     setHasUnsavedModuleChanges?.(false);
@@ -1617,13 +1676,12 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                     className={styles.cancelBtn}
                                     onClick={() => setShowFileDeleteModal(false)}
                                 >
-                                    Stay
+                                    Cancel
                                 </button>
 
                                 <button
                                     className={styles.deleteBtn}
                                     onClick={() => {
-                                        // save filename before deleting
                                         setDeletedFile(currentFileName);
 
                                         setShowRemoveToast(true);
@@ -1743,6 +1801,20 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                 </div>
             )
             }
+
+            {showPdfReplacementToast && (
+                <div className={styles.toastAlert}>
+                    <div className={styles.toastAlertContent}>
+                        <p className={styles.toastAlertTitle}>
+                            Replacement PDF Required
+                        </p>
+
+                        <p className={styles.toastAlertText}>
+                            You removed the existing PDF. Please upload a new PDF before saving this document.
+                        </p>
+                    </div>
+                </div>
+            )}
 
             {showRemoveToast && (
                 <div className={styles.toastAlert}>
