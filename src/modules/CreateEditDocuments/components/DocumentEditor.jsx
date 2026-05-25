@@ -403,6 +403,13 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     const [showRemoveToast, setShowRemoveToast] = useState(false);
     const [deletedFile, setDeletedFile] = useState("");
 
+    const currentFileName =
+        fileNameTemp !== "null"
+            ? fileNameTemp
+            : fileName !== "null" && fileName !== deletedFile
+                ? fileName
+                : "null";
+
     const initialDocRef = useRef(null)
 
 
@@ -433,8 +440,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : "";
         };
 
-        const currentPdfName =
-            fileNameTemp !== "null" ? fileNameTemp : fileName;
+        const currentPdfName = fileName !== currentFileName
 
         const titleChanged =
             normalize(currTitle) !== normalize(initialDocRef.current.title);
@@ -981,11 +987,11 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                     )}
                                 </>
                             )}
-                            {fileName !== "null" || fileNameTemp !== "null" ? (
+                            { currentFileName !== "null" ? (
                                 <button className={styles.pdfChip}>
                                     <div>
                                         <img src="/icons/pdf.png" alt="" className={styles.actionIcon} />
-                                        <p>{fileName !== "null" ? fileName : fileNameTemp}</p>
+                                        <p>{currentFileName}</p>
                                     </div>
                                     <img
                                         src="/icons/close-blue.png" alt="" className={styles.actionIcon}
@@ -1618,7 +1624,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                     className={styles.deleteBtn}
                                     onClick={() => {
                                         // save filename before deleting
-                                        setDeletedFile(fileNameTemp !== "null" ? fileNameTemp : fileName);
+                                        setDeletedFile(currentFileName);
 
                                         setShowRemoveToast(true);
 
@@ -1626,6 +1632,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                             setShowRemoveToast(false);
                                         }, 2500);
 
+                                        // setFileName("null");
                                         setFileName("null");
                                         setFileNameTemp("null");
                                         setFileToUpload(null);
