@@ -104,7 +104,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         }
 
         const tagAlreadyExists = controlTags?.some(
-            (tag) => tag.tag_content?.trim().toLowerCase() === cleanedTag.toLowerCase()
+            (tag) => tag.tag_content?.trim() === cleanedTag
         );
 
         if (tagAlreadyExists) {
