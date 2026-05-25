@@ -433,10 +433,24 @@ function App() {
 
     if (Number.isNaN(date.getTime())) return "";
 
+    const now = new Date();
+
+    const isToday =
+      date.getDate() === now.getDate() &&
+      date.getMonth() === now.getMonth() &&
+      date.getFullYear() === now.getFullYear();
+
+    if (isToday) {
+      return new Intl.DateTimeFormat("en-US", {
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      }).format(date);
+    }
+
     return new Intl.DateTimeFormat("en-US", {
-      hour: "numeric",
-      minute: "2-digit",
-      hour12: true,
+      month: "short",
+      day: "numeric",
     }).format(date);
   };
 
