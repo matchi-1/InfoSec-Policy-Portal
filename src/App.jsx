@@ -35,6 +35,9 @@ function App() {
   const [rolePermissions, setRolePermissions] = useState([]);
   const [notifToast, setNotifToast] = useState(null);
   const notifToastTimerRef = useRef(null);
+  const lastNotifToastAtRef = useRef(
+    localStorage.getItem("last_notif_toast_at") || "",
+  );
   const lastShownNotifToastKeyRef = useRef(
     localStorage.getItem("last_shown_notif_toast_key"),
   );
@@ -369,11 +372,24 @@ function App() {
 
       setHasNotification(hasUnreadNotif);
 
-      // Same condition as the icon change:
-      // if polling fetched notifications and there is an unread/new one,
-      // show the disappearing toast.
-      if (hasUnreadNotif && latestNotif) {
+      const lastToastTime = lastNotifToastAtRef.current
+        ? new Date(lastNotifToastAtRef.current).getTime()
+        : 0;
+
+      const latestNotifTime = latestNotif?.created_at
+        ? new Date(latestNotif.created_at).getTime()
+        : 0;
+
+      // Show toast only if this latest notification has never triggered a toast before
+      if (
+        hasUnreadNotif &&
+        latestNotif &&
+        latestNotifTime > lastToastTime
+      ) {
         showNotifToast(latestNotif);
+
+        lastNotifToastAtRef.current = latestNotif.created_at;
+        localStorage.setItem("last_notif_toast_at", latestNotif.created_at);
       }
     } catch (error) {
       console.error("fetchNotifs error:", error);
