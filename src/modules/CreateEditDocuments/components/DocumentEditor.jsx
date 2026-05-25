@@ -941,7 +941,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                                     setCurrReviewerName("");
                                                 }}
                                             >
-                                               <p> None </p>
+                                                <p> None </p>
                                             </div>
                                             {userList.map((user) => {
                                                 return (
