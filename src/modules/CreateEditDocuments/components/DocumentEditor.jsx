@@ -861,7 +861,12 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                             )}
                         </div>
                         <div className={styles.tagsContainer}>
-                            <button onClick={() => setShowTagsDropdown(!showTagsDropdown)}>
+                            <button onClick={() => {
+                                setShowTagsDropdown(!showTagsDropdown)
+                                setShowAuthoredDropdown(false);
+                                setShowReviewedDropdown(false);
+                            }}
+                            >
                                 <div className={styles.chipsContainer}>
                                     {currTags.length > 0 ?
                                         currTags.map((tag) => {
@@ -955,6 +960,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                             setShowAuthoredDropdown(!showAuthoredDropdown);
                                             setShowReviewedDropdown(false);
                                             setShowDateDropdown(false);
+                                            setShowTagsDropdown(false);
                                         }}>
                                         <p>{authoredBy ? currAuthorName : "Select Author"}</p>
                                         {/* <img
@@ -1005,6 +1011,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                             setShowReviewedDropdown(!showReviewedDropdown);
                                             setShowAuthoredDropdown(false);
                                             setShowDateDropdown(false);
+                                            setShowTagsDropdown(false);
                                         }}>
                                         <p>{reviewedBy ? currReviewerName : "Select Reviewer"}</p>
                                         <img
@@ -1041,6 +1048,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                         // setShowDateDropdown(!showDateDropdown);
                                         setShowAuthoredDropdown(false);
                                         setShowReviewedDropdown(false);
+                                        setShowTagsDropdown(false);
                                     }}>
                                         <CustomDatePicker
                                             format="MM / DD / YYYY"
