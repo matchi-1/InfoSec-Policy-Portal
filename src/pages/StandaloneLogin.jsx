@@ -64,33 +64,6 @@ export default function StandaloneLogin() {
   const [resetSendingCode, setResetSendingCode] = useState(false);
   const [resetResendSeconds, setResetResendSeconds] = useState(0);
 
-
-
-  /*const isNewPassSame = async (newPass) => {
-    console.log("checking password");
-    console.log("EMAIL" + resetData.valid_email);
-    console.log("NEW PASS INPUTTED: " + newPass);
-
-    const res = await fetch("http://127.0.0.1:8000/check-password/", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: resetData.valid_email,
-        password: newPass,
-      }),
-    });
-
-    const result = await res.json();
-
-    if (result.success) {
-      console.log("MATCHED WITH PASS");
-      return true;
-    } else {
-      console.log("NOT MAECHRC WITH PASS");
-      return false;
-    }
-  };
-*/
   const handleChange = (e) => {
     const { name, value } = e.target;
     setCredentials((prev) => ({ ...prev, [name]: value.trim() }));
@@ -150,7 +123,7 @@ export default function StandaloneLogin() {
         return;
       }
 
-      const response = await axios.post("http://127.0.0.1:8000/login/", {
+      const response = await axios.post(`${backendBaseUrl}/login/`, {
         email: credentials.email,
         password: credentials.password,
       });

@@ -59,7 +59,7 @@ function App() {
     const fetchRolePermissions = async () => {
       try {
         const resp = await fetch(
-          `http://127.0.0.1:8000/roles/${encodeURIComponent(
+          `${backend_base_url}/roles/${encodeURIComponent(
             user.role.role_name,
           )}/permissions/`,
           { credentials: "include" },
@@ -152,17 +152,8 @@ function App() {
           setActiveSubModule(storedSubModule);
       }
     } else {
-      // DEV: allow app without login
-      setUser({
-        first_name: "Jeffrey",
-        last_name: "Kawabata",
-        user_id: "EMP-0001",
-        employee_id: "EMP-0001",
-        role: { role_name: "Admin", permissions: "All" },
-      });
-
-      // IMPORTANT: don't redirect
-      // navigate("/login", { replace: true });
+      
+      navigate("/login", { replace: true });
     }
   }, []);
 

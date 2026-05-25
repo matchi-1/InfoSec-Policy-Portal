@@ -4,6 +4,10 @@ import { useState } from "react";
 import Popup from "reactjs-popup";
 import "reactjs-popup/dist/index.css";
 
+export const API_BASE = (
+  import.meta.env.VITE_BACKEND_API_BASE || "http://localhost:8000"
+).replace(/\/$/, "");
+
 const BodyContent = ({ employee_id }) => {
   const storedUser = JSON.parse(localStorage.getItem("user"));
   const { first_name, last_name, email, status, type } = storedUser || {};
@@ -70,7 +74,7 @@ const BodyContent = ({ employee_id }) => {
     if (!isPassChanged) {
       try {
         console.log("new pass " + newPassword);
-        const res = await fetch("http://127.0.0.1:8000/reset-password/", {
+        const res = await fetch(`${API_BASE}/reset-password/`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -94,7 +98,7 @@ const BodyContent = ({ employee_id }) => {
 
   const checkPassword = async () => {
     console.log("checking password");
-    const res = await fetch("http://127.0.0.1:8000/check-password/", {
+    const res = await fetch(`${API_BASE}/check-password/`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
