@@ -2469,6 +2469,20 @@
   text-align: left;
 }
 
+.resetSavedBtn {
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding-inline: 0.65rem;
+  white-space: nowrap;
+}
+
+.resetSavedBtn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
 @media (max-width: 768px) {
   .pdfFullscreenBtn,
   .pdfFullscreenBtnDisabled {

@@ -449,7 +449,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             return parsedDate.isValid() ? parsedDate.format("YYYY-MM-DD") : "";
         };
 
-        const currentPdfName = fileName !== currentFileName
+        const currentPdfName = currentFileName;
 
         const titleChanged =
             normalize(currTitle) !== normalize(initialDocRef.current.title);
@@ -490,6 +490,8 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     };
 
     const hasChanges = hasUnsavedChanges();
+    const isCreateMode = doc?.id === "new";
+    const canResetToLastSaved = !isCreateMode && hasChanges;
 
     const hasRemovedExistingPdfWithoutReplacement =
         doc?.id !== "new" &&
@@ -594,6 +596,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         setFileToUpload(null);
         setFileName(doc.pretty_pdf_filename ?? "null");
         setFileNameTemp("null");
+        setDeletedFile("");
 
         setViewingPDF(false);
         setIsPdfFullscreenOpen(false);
@@ -667,12 +670,17 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                 {isHeaderCollapsed ? "Hidden" : "Shown"}
                             </span>
                         </button> */}
-                        {hasChanges && (
+                        {!isCreateMode && (
                             <button
                                 type="button"
-                                className={styles.headerDetailsToggle}
+                                className={`${styles.headerDetailsToggle} ${styles.resetSavedBtn}`}
                                 onClick={handleResetToLastSaved}
-                                title="Reset all changes to the last saved version"
+                                title={
+                                    canResetToLastSaved
+                                        ? "Reset all changes to the last saved version"
+                                        : "No changes to reset"
+                                }
+                                disabled={!canResetToLastSaved}
                             >
                                 Reset to Last Saved
                             </button>
