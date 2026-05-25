@@ -35,6 +35,9 @@ function App() {
   const [rolePermissions, setRolePermissions] = useState([]);
   const [notifToast, setNotifToast] = useState(null);
   const notifToastTimerRef = useRef(null);
+  const lastShownNotifToastKeyRef = useRef(
+    localStorage.getItem("last_shown_notif_toast_key"),
+  );
   const [hasUnsavedModuleChanges, setHasUnsavedModuleChanges] = useState(false);
   const [pendingNavigation, setPendingNavigation] = useState(null);
 
@@ -231,9 +234,28 @@ function App() {
     };
   }, []);
 
+  const getNotifToastKey = (notif) => {
+    return String(
+      notif?.id ||
+      notif?.notification_id ||
+      notif?.created_at ||
+      "",
+    );
+  };
+
 
   const showNotifToast = (notif) => {
     if (!notif) return;
+
+    const notifToastKey = getNotifToastKey(notif);
+
+    // Prevent showing the same notification toast repeatedly on every poll
+    if (!notifToastKey || lastShownNotifToastKeyRef.current === notifToastKey) {
+      return;
+    }
+
+    lastShownNotifToastKeyRef.current = notifToastKey;
+    localStorage.setItem("last_shown_notif_toast_key", notifToastKey);
 
     setNotifToast({
       id: notif.id,
