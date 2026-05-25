@@ -81,13 +81,11 @@
 .titleDropdowns {
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
   align-items: flex-start;
   gap: 0.5rem;
   min-width: 0;
   width: 100%;
   height: fit-content;
-  /* border: 1px solid red; */
 }
 
 .title {
@@ -95,8 +93,6 @@
   min-width: 0;
   width: 100%;
   height: fit-content;
-  /* flex-direction: row; */
-  /* border: 1px solid red; */
 }
 
 .title>p {
@@ -113,7 +109,6 @@
   display: flex;
   align-items: center;
   gap: 0.55rem;
-  /* flex-wrap: wrap; */
   flex-direction: row;
 }
 
@@ -150,12 +145,10 @@
 
 .titleEditor input,
 .descText textarea {
-  /* appearance: none; */
   background: transparent;
   padding: 0;
   margin: 0;
   flex: 1;
-  /* width: 100%; */
 }
 
 .titleEditor input {
@@ -171,14 +164,6 @@
   resize: none;
   overflow: scroll;
   color: black;
-  /* padding: 0.65rem 0.75rem; */
-  /* border: 1px solid var(--line-strong);
-  border-radius: 0.35rem;
-  outline: none;
-  font: inherit;
-  color: var(--text-main);
-  background: #fff;
-  box-sizing: border-box; */
 }
 
 .descText textarea::-webkit-scrollbar,
@@ -204,8 +189,6 @@
 }
 
 .titleEditor input:focus {
-  /* border-color: var(--primary-blue-2);
-  box-shadow: 0 0 0 2px rgba(71, 119, 186, 0.12); */
   appearance: none;
   border: 1px solid var(--primary-blue);
   outline: none;
@@ -215,11 +198,8 @@
 .descButtons {
   display: flex;
   flex-direction: column;
-  /* justify-content: space-between; */
-  /* align-items: flex-start; */
   gap: 0.85rem;
   width: 40%;
-  /* border: 1px solid red; */
 }
 
 .descContainer {
@@ -237,7 +217,6 @@
 }
 
 .descText {
-  /* flex: 1; */
   width: 100%;
   margin: 0;
   min-height: 2.85rem;
@@ -264,30 +243,11 @@
 }
 
 .dropdowns {
-  /* display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  width: min(19.5rem, 100%);
-  min-width: 0;
-  flex-shrink: 0; */
-
-  /* width: 100%; */
   display: flex;
   flex-direction: column;
-  /* border: 1px solid red; */
   width: 100%;
   gap: 0.5rem;
-  /* align-items: flex-start; */
 }
-
-/* .dropdownContainer {
-  display: grid;
-  grid-template-columns: 6.5rem minmax(0, 1fr);
-  align-items: center;
-  gap: 0.55rem;
-  position: relative;
-  min-width: 0;
-} */
 
 .dropdownContainer {
   font-size: 0.85rem;
@@ -301,24 +261,17 @@
   user-select: none;
   scrollbar-width: thin;
   width: 100%;
-
-  /* scrollbar-width: thin; */
-  /* scrollbar-color: #94a9c6a8 transparent; */
-  /* border: 1px solid red; */
 }
 
 .dropdownContainer>p {
   margin: 0;
   color: var(--primary-blue);
-  /* font-size: 0.94rem; */
   font-weight: 500;
   text-transform: capitalize;
   white-space: nowrap;
   padding-right: 0.5rem;
   width: 50%;
   text-align: right;
-  /* align-self: flex-end; */
-  /* border: 1px solid red; */
 }
 
 .dropdownWrapper {
@@ -329,8 +282,6 @@
 .dropDownSection,
 .dropDownSectionSelected {
   width: 100%;
-  /* max-width: 15rem; */
-  /* min-width: 0; */
   min-height: 1.9rem;
   display: flex;
   align-items: center;
@@ -359,9 +310,6 @@
 .dropDownSectionSelected>p {
   margin: 0;
   flex: 1;
-  /* min-width: 0;
-  max-width: 100%; */
-  /* width: 100%; */
   color: var(--primary-blue);
   font-size: 0.80rem;
   white-space: nowrap;
@@ -380,28 +328,13 @@
   flex-shrink: 0;
 }
 
-/* .dropDownSection::after {
-  content: "⌄";
-  color: var(--primary-blue);
-  font-size: 0.95rem;
-  line-height: 1;
-  transform: translateY(-1px);
-} */
 
 .dropdownList {
   position: absolute;
-  /* top: 105%; */
-  /* left: 0; */
-  /* right: 0; */
-
   top: 105%;
-  /* left: 0; */
   right: 0;
   z-index: 99;
-  /* z-index: 99; */
   width: 100%;
-  /* max-width: 15rem; */
-
   background: #fff;
   border: 1px solid #d3ddeb;
   border-radius: 0.55rem;
@@ -421,11 +354,8 @@
 
 .buttonsContainer {
   display: flex;
-  /* align-items: center; */
-  /* align-content: flex-end; */
   justify-content: flex-end;
   gap: 0.45rem;
-  /* flex-wrap: wrap; */
   flex-shrink: 0;
   width: 100%;
 }
@@ -433,8 +363,6 @@
 .buttonsContainer>button,
 .pdfChip {
   appearance: none;
-  /* border: none; */
-  /* flex: 1; */
   border-radius: 0.4rem;
   min-height: 1.9rem;
   padding: 0 0.95rem;
@@ -711,20 +639,15 @@
 .policySectionTitle input,
 .policySubnavItem input {
   display: flex;
-  /* height: 1.9rem; */
-  /* min-width: 12rem; */
   width: min-content;
   flex: 1;
   padding: 0;
   margin: 0;
   min-width: 0;
-  /* border: 1px solid #94A9C6; */
   color: #1b3b6f;
   border-radius: 0.3rem;
   outline: none;
   font: inherit;
-  /* color: #1b3b6f; */
-  /* background: #fff; */
   appearance: none;
   border: none;
   background: transparent;
@@ -900,24 +823,6 @@
   min-width: 0;
   line-height: 1.25;
 }
-
-/* .policySubnavItem input {
-  width: 100%;
-  min-width: 0;
-  height: 1.9rem;
-  padding: 0 0.55rem;
-  border: 1px solid #94A9C6;
-  border-radius: 0.3rem;
-  outline: none;
-  font: inherit;
-  color: #1b3b6f;
-  background: #fff;
-} */
-
-/* .policySubnavItem input:focus {
-  border-color: #4777ba;
-  box-shadow: 0 0 0 2px rgba(71, 119, 186, 0.12);
-} */
 
 .policySubnavItem button {
   appearance: none;
@@ -1228,25 +1133,15 @@
 
 .SectionCreateButton button:hover,
 .SubsectionCreateButton button:hover {
-  /* background: #f5fffe;
-  border-color: #0b8f8f; */
   filter: brightness(130%);
   transition: ease-in 0.2s;
-  /* text-decoration: underline; */
 }
-
-/* .SectionCreateButton p {
-  border: 1px solid red;
-  /* align-items: bottom; */
-/* vertical-align: bottom; 
-} */
 
 .SectionCreateButton img,
 .SubsectionCreateButton img {
   width: 1.2rem;
   height: 1.2rem;
   flex-shrink: 0;
-  /* border: 1px solid red; */
 }
 
 /* =========================
@@ -1257,7 +1152,6 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  /* gap: 0.8rem; */
   max-width: 100%;
   min-width: 50%;
 }
@@ -1280,7 +1174,6 @@
   cursor: pointer;
   width: 100%;
   text-align: center;
-  /* border: 1px solid red; */
 }
 
 .tagChips {
@@ -1295,7 +1188,6 @@
   font-size: 0.65rem;
   font-weight: 600;
   cursor: pointer;
-  /* border: 1px solid red; */
 }
 
 .tagChips img {
@@ -1304,17 +1196,6 @@
   flex-shrink: 0;
 }
 
-/* .tagsContainer p {
-  margin: 0;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  background: var(--soft-blue);
-  color: var(--primary-blue);
-  font-size: 0.65rem;
-  font-weight: 600; 
-  cursor: pointer;
-} */
-
 .tagsContainer button {
   display: flex;
   align-items: center;
@@ -1322,7 +1203,6 @@
   justify-content: space-between;
   overflow-x: auto;
   gap: 0.2rem;
-  /* margin-right: 1.5rem; */
   appearance: none;
   border: none;
   background: none;
@@ -1341,13 +1221,11 @@
   flex-direction: column;
   position: absolute;
   z-index: 100;
-  /* margin-top: 2.3rem; */
   top: 105%;
   width: 100%;
   border: 1px solid #d3ddeb;
   border-radius: 0.3rem;
   background: #fff;
-  /* padding: 0.85rem; */
   padding: 0 0.8rem;
   box-shadow: 0 8px 18px rgba(29, 60, 110, 0.1);
   animation: smooth-appear 0.3s ease;
@@ -1458,7 +1336,6 @@
 
   .titleDropdowns,
   .descButtons {
-    /* flex-direction: column; */
     width: 100%;
   }
 
@@ -1482,30 +1359,16 @@
   .buttonsContainer {
     width: 100%;
     height: 100%;
-    /* padding-bottom: 1.5rem; */
-    /* border: 1px solid red; */
   }
 
   .titleDropdowns {
     padding-bottom: 1rem;
   }
 
-  /* .dropdowns {
-    width: 100%;
-    border: 1px solid red;
-  } */
-
   .dropdownContainer p {
     width: min-content;
     gap: 1rem;
-    /* border: 1px solid red; */
   }
-
-  /* .buttonsContainer {
-    flex-direction: column;
-    align-self: flex-start;
-    align-items: flex-start;
-  } */
 
   .policyPanel {
     flex-direction: column;
@@ -1594,7 +1457,6 @@
     margin: 0;
   }
 
-  /* .buttonsContainer button  */
   .pdfChip,
   .viewBtnDisabled,
   .uploadBtn {
@@ -1737,7 +1599,6 @@
   border: var(--primary-green);
   color: white;
   cursor: pointer;
-  /* border: 1px solid #d8efea; */
 }
 
 .saveBtnDisabled {
@@ -1746,7 +1607,6 @@
   border: var(--line-soft);
   color: white;
   cursor: not-allowed;
-  /* border: 1px solid #d8efea; */
 }
 
 .saveBtn p,
@@ -1766,10 +1626,6 @@
   background: #f5f9ff;
   border-color: #94A9C6;
 }
-
-/* .saveBtn:hover {
-  border-color: white;
-} */
 
 .headerDetailsToggle:active,
 .saveBtn:active,
@@ -1835,7 +1691,6 @@
 }
 
 .backDocuBtn:hover {
-  /* color: var(--primary-blue); */
   text-decoration: underline;
 }
 
@@ -1845,12 +1700,6 @@
   flex-shrink: 0;
   align-self: center;
 }
-
-/* .saveBtn {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-} */
 
 .saveBtn img,
 .saveBtnDisabled img {
@@ -1968,8 +1817,6 @@
 
   font-size: 1.05rem;
   font-weight: 700;
-  /* text-align: center;
-  border: 1px solid red; */
   color: var(--primary-blue);
 }
 

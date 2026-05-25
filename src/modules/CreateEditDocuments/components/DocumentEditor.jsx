@@ -4,16 +4,10 @@ import { highlightText } from "../../../utils/highlightText";
 import PDFUploadModal from "./PDFUploadModal.jsx"
 import { MDXEditor, headingsPlugin, quotePlugin, thematicBreakPlugin, toolbarPlugin, listsPlugin, linkPlugin, imagePlugin, tablePlugin, markdownShortcutPlugin } from '@mdxeditor/editor';
 import { BlockTypeSelect, InsertThematicBreak, ListsToggle, UndoRedo, BoldItalicUnderlineToggles, InsertImage, InsertTable } from "@mdxeditor/editor";
-// import DatePicker from "react-datepicker";
-// import "react-datepicker/dist/react-datepicker.css";
 import dayjs from "dayjs";
 import CustomDatePicker from "../../../shared/components/CustomDatePicker.jsx";
 import '@mdxeditor/editor/style.css'
 import { useNavigate } from "react-router-dom";
-
-
-// TEMPORARY vvvvv DUMMY DATA FOR CONTORL TAGS 
-// import { controlTags } from "../data/controlTags.js";
 import { initial, set } from "lodash";
 
 
@@ -68,12 +62,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     const tagToastTimerRef = useRef(null);
     const [showPdfReplacementToast, setShowPdfReplacementToast] = useState(false);
 
-    // const [currentMarkdown, setCurrentMarkdown] = useState("")
-    // const [initialMarkdown, setInitialMarkdown] = useState("")
     const [isHeaderCollapsed, setIsHeaderCollapsed] = useState(false);
-
-
-    // const [selectDate, setSelectDate] = useState(doc.lastReviewed ? new Date(doc.lastReviewed) : new Date());
     const [selectDate, setSelectDate] = useState(doc.lastReviewed ? dayjs(doc.lastReviewed) : dayjs());
     const normalizeDate = (d) => d ? new Date(d).toISOString() : ""
 
@@ -290,19 +279,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         });
     };
 
-    // useEffect(() => {
-    //     if (tagQuery == "") {
-    //         setFilteredTags(controlTags)
-    //     } else {
-    //         const filteredData = controlTags.filter(item => {
-    //             return Object.values(item)
-    //                 .join('')
-    //                 .toLowerCase()
-    //                 .includes(tagQuery.toLowerCase());
-    //         });
-    //         setFilteredTags(filteredData);
-    //     }
-    // }, [tagQuery])
     useEffect(() => {
         if (!controlTags) return;
 
@@ -328,10 +304,8 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
 
     useEffect(() => {
         console.log("(debug) activesubid changing, activesub is now now: ", activeSub)
-        // setInitialMarkdown((activeSub && activeSub.content) ? activeSub.content : "")
     }, [activeSub?.id])
 
-    // render content from a string (supports headings-ish + bullets)
     const renderContent = (text = "") => {
         const lines = String(text).split("\n");
 
@@ -362,31 +336,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             );
         });
     };
-
-    // // if nothing matches, show a simple empty state
-    // if (filteredSections.length === 0 && isDocumentSelected) {
-    //     return (
-    //         <div className={styles.policyAccordion}>
-    //             <div className={styles.policyNoResults}>
-    //                 <p>No matches found.</p>
-    //                 <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
-    //                     Try searching by section title, subsection title, or any phrase inside the content.
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     );
-    // } else if (!isDocumentSelected) {
-    //     return (
-    //         <div className={styles.policyAccordion}>
-    //             <div className={styles.policyNoResults}>
-    //                 <p>No document selected yet.</p>
-    //                 <p style={{ opacity: 0.7, fontSize: "0.85rem" }}>
-    //                     Try choosing a document from the left panel to view its sections and content here.
-    //                 </p>
-    //             </div>
-    //         </div>
-    //     );
-    // }
 
     const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
@@ -649,27 +598,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                         >
                             {isHeaderCollapsed ? "↓" : "↑"}
                         </button>
-                        {/* <button
-                            type="button"
-                            className={`${styles.headerDetailsToggle} ${isHeaderCollapsed ? styles.headerDetailsToggleCollapsed : ""
-                                }`}
-                            onClick={() => setIsHeaderCollapsed((prev) => !prev)}
-                            aria-expanded={!isHeaderCollapsed}
-                            aria-controls="document-details-panel"
-                        >
-                            <span className={styles.headerDetailsLabel}>Document details</span>
-
-                            <span className={styles.headerDetailsSwitch}>
-                                <span
-                                    className={`${styles.headerDetailsKnob} ${isHeaderCollapsed ? styles.headerDetailsKnobCollapsed : ""
-                                        }`}
-                                />
-                            </span>
-
-                            <span className={styles.headerDetailsState}>
-                                {isHeaderCollapsed ? "Hidden" : "Shown"}
-                            </span>
-                        </button> */}
+                        
                         {!isCreateMode && (
                             <button
                                 type="button"
@@ -725,12 +654,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                 <p>Save</p>
                             </button>
                         )}
-                        {/* <button
-                            className={styles.saveBtn}
-                            onClick={() => { setShowConfModal(true) }}>
-                            <img src="/icons/save-green.png" />
-                            <p>Save</p>
-                        </button> */}
                     </div>
                 </div>
             </div>
@@ -832,9 +755,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                         value={currDescTemp}
                                         onChange={(e) => {
                                             setCurrDescTemp(e.target.value);
-
-                                            // e.target.style.height = "auto";
-                                            // e.target.style.height = `${e.target.scrollHeight}px`;
                                         }}
                                         rows={3}
                                     />
@@ -898,10 +818,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                         />
                                     ) : ""
                                     }
-                                    {/* <img
-                                        src="/icons/down-gray.png" alt="collapse tag"
-                                        onClick={() => setShowTagsDropdown(!showTagsDropdown)}
-                                    /> */}
                                     <img
                                         className={`${styles.dropdownArrow} ${showTagsDropdown ? styles.dropdownArrowOpen : ""
                                             }`}
@@ -963,14 +879,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                             setShowTagsDropdown(false);
                                         }}>
                                         <p>{authoredBy ? currAuthorName : "Select Author"}</p>
-                                        {/* <img
-                                            src={
-                                                doc.authoredBy === ""
-                                                    ? "/icons/down.png"
-                                                    : "/icons/down-white.png"
-                                            }
-                                            alt="Down Icon"
-                                        /> */}
                                         <img
                                             className={`${styles.dropdownArrow} ${showAuthoredDropdown ? styles.dropdownArrowOpen : ""
                                                 }`}
@@ -1064,18 +972,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                                 }
                                             }}
                                         />
-                                        {/* <p>{selectDate.toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
-                                    <img
-                                        src={"/icons/down-white.png"}
-                                        alt="Down Icon"
-                                    /> */}
                                     </div>
-                                    {/* {showDateDropdown && (
-                                    <div className={styles.dropdownList}>
-                                        <DatePicker showIcon popperPlacement="bottom" selected={selectDate} onChange={(date) => setSelectDate(date)} />
-                                        <button onClick={() => { setShowDateDropdown(false) }}>ok</button>
-                                    </div>
-                                )} */}
                                 </div>
                             </div>
                         </div>
@@ -1130,7 +1027,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                             )}
                         </div>
                     </div>
-                    {/* // FOR DUMMY DATA STYLING DONT FORGET TO UNCOMMENT TODO: -harley */}
                 </div>
             </div>
 
@@ -1282,7 +1178,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                                                 className={`${styles.policySubnavItem} ${isActive ? styles.policySubnavItemActive : ""
                                                                     }`}
                                                                 onClick={() => {
-                                                                    // setInitialMarkdown(activeSub?.content);
                                                                     setActiveSubBySection((old) => ({
                                                                         ...old,
                                                                         [section.id]: sub.id,
@@ -1447,16 +1342,10 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                                         </h3>
 
                                                         <div className={styles.policyContentText}>
-                                                            {/* <ul className={styles.policyBulletList}>
-                                                                {activeSub ? renderContent(activeSub.content) : null}
-                                                            </ul> */}
                                                             <MDXEditor
-                                                                // key={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
                                                                 key={activeSub?.id}
                                                                 contentEditableClassName="prose"
                                                                 placeholder="Write information here!"
-                                                                // markdown={sections[openSectionId]?.subsections[activeSubId]?.content ?? ""}
-                                                                // markdown={sections.find((sect)=>sect.id===openSectionId)?.subsections?.find((subsect)=>subsect.id===activeSubId).content ?? ""}
                                                                 markdown={activeSub?.content ?? ""}
                                                                 onChange={(md) => {
                                                                     console.log("(debug) markdown: ", md)
@@ -1613,6 +1502,8 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                     </div>
                 </div>
             }
+
+            {/* MODALS */}
             {showTagModal && (
                 <div className={styles.confModalOverlay}>
                     <div className={`${styles.confModal} ${styles.tagInputModal}`}>

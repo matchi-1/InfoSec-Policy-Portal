@@ -20,8 +20,6 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
     const [isReviewerOpen, setIsReviewerOpen] = useState(false);
     const [isTagOpen, setIsTagOpen] = useState(false);
 
-    // local state so delete works in UI for dummy data
-    // const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
     const [dbDocs, setDbDocs] = useState([]);
     useEffect(() => {
         const fetchDocuments = async () => {
@@ -62,21 +60,6 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
             setActiveSubModule(docTitle);
         }
     };
-
-    // const handleDeleteDoc = (doc) => {
-    //     const confirmed = window.confirm(
-    //         `Are you sure you want to delete "${doc.title}"?`
-    //     );
-
-    //     if (!confirmed) return;
-
-    //     setDbDocs((prev) => prev.filter((d) => d.id !== doc.id));
-
-    //     if (selectedDocId === doc.id) {
-    //         setSelectedDocId(null);
-    //         if (setActiveSubModule) setActiveSubModule(null);
-    //     }
-    // };
 
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [docToDelete, setDocToDelete] = useState(null);

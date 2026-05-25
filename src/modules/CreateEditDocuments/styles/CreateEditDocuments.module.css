@@ -37,19 +37,10 @@
   border-radius: 0.5rem;
   background-color: white;
   padding: 1rem 1rem;
-  /* box-shadow: 0rem 0.2rem 0.1rem rgba(162, 162, 162, 0.1); */
   display: flex;
   flex-direction: column;
-  /* align-items: center; */
-  /* justify-content: center; */
-  /* min-width: 40rem; */
   min-height: 30rem;
 }
-
-/* .bodyContentContainer {
-  scrollbar-width: thin;
-  scrollbar-color: var(--primary-blue) transparent;
-} */
 
 .documentsListView {
   width: 100%;
@@ -97,7 +88,6 @@
 }
 
 .searchBarContainer {
-  /* padding: 0.75rem; */
   width: 100%;
   max-width: 20rem;
   display: flex;
@@ -107,12 +97,9 @@
 .searchFilterCreate {
   display: flex;
   flex-direction: row;
-  /* flex-wrap: wrap; */
   width: 100%;
   height: fit-content;
   gap: 0.75rem;
-  /* align-items: baseline; */
-  /* flex-shrink: 0; */
 }
 
 .filterCreateWrap {
@@ -121,7 +108,6 @@
   flex-direction: row;
   gap: 0.3rem;
   justify-content: space-between;
-  /* height: fit-content; */
 }
 
 .filtersWrapper {
@@ -138,8 +124,6 @@
   justify-content: flex-start;
   align-items: stretch;
   flex-direction: column;
-  /* margin-right: 1rem; */
-  /* border-radius: 0.25rem; */
   color: var(--primary-blue);
   gap: 0.25rem;
   cursor: pointer;
@@ -148,10 +132,6 @@
   user-select: none;
   scrollbar-width: thin;
   position: relative;
-
-  /* scrollbar-width: thin; */
-  /* scrollbar-color: #94a9c6a8 transparent; */
-  /* border: 1px solid red; */
 }
 
 .filterOptionsContainer::-webkit-scrollbar {
@@ -227,7 +207,6 @@
 .filterOptions,
 .activeFilter {
   padding: 0.4rem 0.5rem 0.4rem 0.5rem;
-  /* border-bottom: #bccce2 0.5px solid; */
 }
 
 .filterOptions:hover {
@@ -248,12 +227,7 @@
   cursor: pointer;
   font-size: 1rem;
   user-select: none;
-  /* height: fit-content; */
   font-size: 0.75rem;
-  /* border: 1px solid red; */
-  /* margin-left: auto; */
-  /* margin-top: 1rem; */
-  /* text-align: center; */
   font-weight: 500;
   gap: 0.2rem;
   align-self: flex-end;
@@ -263,7 +237,6 @@
   width: 0.8rem;
   height: 0.8rem;
   align-self: center;
-  /* margin-right: 0.5rem; */
 }
 
 .createButton p {
@@ -280,8 +253,6 @@
   border: 1px solid var(--light-grey-lines);
   border-radius: 0.5rem;
   overflow: auto;
-  /* justify-content: center; */
-  /* align-items: center; */
   scrollbar-color: #94a9c6a8 transparent;
   scrollbar-width: thin;
 }
@@ -314,7 +285,6 @@
   border-collapse: collapse;
   font-size: 0.9rem;
   margin: 0 0.5rem;
-  /* border: 1px solid red; */
 }
 
 .documentTable thead th {
@@ -339,7 +309,6 @@
 
 .documentTable th,
 .documentTable td {
-  /* border: transparent; */
   padding: 1rem;
   text-align: left;
   animation: smooth-appear 0.3s ease;
@@ -358,6 +327,7 @@
 .selectedRow {
   background-color: #e0f7fa;
 }
+
 /*
   DROPDOWN ARROW
 */
@@ -380,7 +350,6 @@
 
 @media (max-width: 1100px) {
   .searchBarContainer {
-    /* justify-content: flex-end; */
     align-self: flex-end;
   }
 
@@ -414,7 +383,6 @@
   .documentTable thead tr th{
     font-size: 0.7rem;
     padding: 1rem 0.6rem;
-    /* text-align: center; */
   }
 
   .documentTable thead tr th {
@@ -426,10 +394,6 @@
 }
 
 @media (max-width: 500px) {
-  /* .searchBarContainer {
-    align-self: center;
-  } */
-
   .headerSection .pageLabel,
   .headerSection .pageDescription {
     font-size: 0.6rem;
@@ -522,8 +486,6 @@
 
   font-size: 1.05rem;
   font-weight: 700;
-  /* text-align: center;
-  border: 1px solid red; */
   color: var(--primary-blue);
 }
 
@@ -576,15 +538,6 @@
 .cancelBtn:hover {
   background: #ebf1f8;
 }
-
-/* .confirmBtn {
-  background: var(--primary-green);
-  color: white;
-}
-
-.confirmBtn:hover {
-  background: #086868;
-} */
 
 .deleteBtn {
   color: white;
