@@ -459,7 +459,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: transparent;
+  background: var(--primary-blue);
   border: 2px solid var(--primary-blue);
   flex-direction: row;
   overflow: hidden;
@@ -478,8 +478,12 @@
     overflow: hidden;
     text-overflow: ellipsis;
     text-align: left;
-    color: var(--primary-blue);
+    color: white;
     font-weight: 700;
+  }
+
+  img {
+    filter: brightness(0) invert(1);
   }
 }
 
@@ -494,9 +498,16 @@
 }
 
 .viewBtn,
-.uploadBtn {
+.uploadBtn,
+.pdfChip {
   background: var(--primary-blue);
   color: #fff;
+}
+
+.uploadBtn {
+  background: transparent;
+  border: 2px solid var(--primary-blue);
+  color: var(--primary-blue);
 }
 
 .buttonsContainer>p {
