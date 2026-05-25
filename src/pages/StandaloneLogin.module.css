@@ -641,7 +641,7 @@
   position: absolute;
   left: 50%;
   bottom: calc(100% + 0.6rem);
-  transform: translateX(-50%);
+  /*transform: translateX(-50%); */
   width: max-content;
   max-width: min(16rem, 70vw);
   padding: 0.7rem 0.85rem;
