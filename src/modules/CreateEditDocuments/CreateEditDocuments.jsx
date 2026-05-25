@@ -14,9 +14,11 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
 
     const [selectedAuthor, setSelectedAuthor] = useState("");
     const [selectedReviewer, setSelectedReviewer] = useState("");
+    const [selectedTag, setSelectedTag] = useState("");
 
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [isReviewerOpen, setIsReviewerOpen] = useState(false);
+    const [isTagOpen, setIsTagOpen] = useState(false);
 
     // local state so delete works in UI for dummy data
     // const [dbDocs, setDbDocs] = useState(policyDocumentsDb?.documents ?? []);
@@ -38,6 +40,20 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
 
     const uniqueReviewers = useMemo(() => {
         return [...new Set(dbDocs.map((doc) => doc.reviewerName).filter(Boolean))].sort();
+    }, [dbDocs]);
+
+    const uniqueTags = useMemo(() => {
+        const tags = [
+            ...new Set(
+                dbDocs.flatMap((doc) =>
+                    (doc.tags || []).map((tag) => tag.tag_content)
+                )
+            )
+        ].sort();
+
+        console.log("Unique Tags:", tags);
+
+        return tags;
     }, [dbDocs]);
 
     const handleSelectDoc = (docId, docTitle) => {
@@ -124,10 +140,14 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
             const matchesReviewer =
                 !selectedReviewer || doc.reviewerName === selectedReviewer;
 
+            const matchesTag =
+                !selectedTag || doc.tagName === selectedTag;
+
             return (
                 matchesSearch &&
                 matchesAuthor &&
-                matchesReviewer
+                matchesReviewer &&
+                matchesTag
             );
         });
 
@@ -210,6 +230,7 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
                                         onClick={() => {
                                             setIsAuthOpen(!isAuthOpen);
                                             setIsReviewerOpen(false);
+                                            setIsTagOpen(false);
                                         }}
                                     >
                                         <div><p>{selectedAuthor || "All Authors"}</p></div>
@@ -270,6 +291,7 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
                                         onClick={() => {
                                             setIsReviewerOpen(!isReviewerOpen);
                                             setIsAuthOpen(false);
+                                            setIsTagOpen(false);
                                         }}
                                     >
                                         <div><p>{selectedReviewer || "All Reviewers"}</p></div>
@@ -313,6 +335,67 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
                                                     }}
                                                 >
                                                     {reviewer}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={styles.filterContainer}>
+                                    <h2>Filter by Tag</h2>
+                                    <div
+                                        className={
+                                            selectedTag !== ""
+                                                ? styles.activeSelectedOption
+                                                : styles.selectedOption
+                                        }
+                                        onClick={() => {
+                                            setIsTagOpen(!isTagOpen);
+                                            setIsAuthOpen(false);
+                                            setIsReviewerOpen(false);
+                                        }}
+                                    >
+                                        <div><p>{selectedTag || "All Tags"}</p></div>
+                                        <div>
+                                            <img
+                                                className={`${styles.dropdownArrow} ${isTagOpen ? styles.dropdownArrowOpen : ""
+                                                    }`}
+                                                src={
+                                                    selectedTag !== ""
+                                                        ? "/icons/down-white.png"
+                                                        : "/icons/down.png"
+                                                }
+                                                alt="Down Icon"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {isTagOpen && (
+                                        <div className={styles.filterOptionsContainer}>
+                                            <div
+                                                className={styles.filterOptions}
+                                                onClick={() => {
+                                                    setSelectedTag("");
+                                                    setIsTagOpen(false);
+                                                }}
+                                            >
+                                                All Tags
+                                            </div>
+
+                                            {uniqueTags.map((tag, index) => (
+                                                <div
+                                                    className={
+                                                        selectedTag === tag
+                                                            ? styles.activeFilter
+                                                            : styles.filterOptions
+                                                    }
+                                                    key={index}
+                                                    onClick={() => {
+                                                        setSelectedTag(tag);
+                                                        setIsTagOpen(false);
+                                                    }}
+                                                >
+                                                    {tag}
                                                 </div>
                                             ))}
                                         </div>
