@@ -447,8 +447,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         currTitle?.trim() &&
         selectDate &&
         authoredBy &&
-        reviewedBy &&
-        currentFileName!=="null" &&
+        currentFileName !== "null" &&
         JSON.parse(localStorage.getItem("user"))?.user_id;
 
     const canSave =
@@ -598,7 +597,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                         >
                             {isHeaderCollapsed ? "↓" : "↑"}
                         </button>
-                        
+
                         {!isCreateMode && (
                             <button
                                 type="button"
@@ -935,6 +934,15 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                     </div>
                                     {showReviewedDropdown && (
                                         <div className={styles.dropdownList}>
+                                            <div
+                                                className={styles.filterOptions}
+                                                onClick={() => {
+                                                    setShowReviewedDropdown(false);
+                                                    setCurrReviewerName("");
+                                                }}
+                                            >
+                                               <p> None </p>
+                                            </div>
                                             {userList.map((user) => {
                                                 return (
                                                     <p onClick={() => {
