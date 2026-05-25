@@ -116,9 +116,9 @@ export default function StandaloneLogin() {
         console.log("lock lifts at " + lock_date.toString());
         setLoginMessageType("error");
         setLoginError(
-          `* Too many failed login attempts. Please try again in ${Math.ceil(
+          `Too many failed login attempts. Please try again in ${Math.ceil(
             (lock_date - new Date()) / 1000
-          )} seconds. *`
+          )} seconds.`
         );
         return;
       }
@@ -164,7 +164,7 @@ export default function StandaloneLogin() {
         const { message } = err.response.data;
         console.error("Login failed:", message);
         setLoginMessageType("error");
-        setLoginError("* " + message + " *");
+        setLoginError(message);
       } else {
         console.error("Login error:", err);
         alert("Something went wrong. Please try again.");
@@ -175,7 +175,7 @@ export default function StandaloneLogin() {
   const handleChangePassword = async () => {
     if (!isResetFormReady) {
       setLoginMessageType("error");
-      setLoginError(`* ${resetFormDisabledReason || "Please fill up all the forms"} *`);
+      setLoginError(`${resetFormDisabledReason || "Please fill up all the forms"}`);
       return;
     }
 
@@ -205,7 +205,7 @@ export default function StandaloneLogin() {
         setView("login");
       } else {
         setLoginMessageType("error");
-        setLoginError(`* ${result.message || "Something went wrong."} *`);
+        setLoginError(`${result.message || "Something went wrong."}`);
       }
     } catch (err) {
       const msg =
@@ -214,7 +214,7 @@ export default function StandaloneLogin() {
         "Something went wrong. Please try again.";
 
       setLoginMessageType("error");
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
     }
   };
 
@@ -264,7 +264,7 @@ export default function StandaloneLogin() {
 
   const handleSendRegisterCode = async () => {
     if (!isRegisEmailValid) {
-      setLoginError("* Please enter a valid email address first *");
+      setLoginError("Please enter a valid email address first");
       return false;
     }
 
@@ -286,7 +286,7 @@ export default function StandaloneLogin() {
           resp.data.cooldown_seconds || REGISTER_CODE_COOLDOWN_SECONDS,
         );
         setLoginMessageType("success");
-        setLoginError("* Verification code sent. Please check your email. *");
+        setLoginError("Verification code sent. Please check your email.");
         return true;
       }
 
@@ -298,7 +298,7 @@ export default function StandaloneLogin() {
         "Failed to send verification code.";
       
       setLoginMessageType("error");
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
       return false;
     } finally {
       setRegisSendingCode(false);
@@ -320,7 +320,7 @@ export default function StandaloneLogin() {
         return true;
       }
       setLoginMessageType("error");
-      setLoginError(`* ${resp.data.message || "Invalid verification code"} *`);
+      setLoginError(`${resp.data.message || "Invalid verification code"}`);
       return false;
     } catch (err) {
       const msg =
@@ -329,7 +329,7 @@ export default function StandaloneLogin() {
         "Invalid verification code.";
       
       setLoginMessageType("error");
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
       return false;
     }
   };
@@ -347,7 +347,7 @@ export default function StandaloneLogin() {
       }
 
       setLoginMessageType("error");
-      setLoginError(`* ${resp.data.message || "Invalid verification code"} *`);
+      setLoginError(`${resp.data.message || "Invalid verification code"}`);
       return false;
     } catch (err) {
       const msg =
@@ -356,7 +356,7 @@ export default function StandaloneLogin() {
         "Invalid verification code.";
 
       setLoginMessageType("error");
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
       return false;
     }
   };
@@ -374,14 +374,14 @@ export default function StandaloneLogin() {
       regis_code: "DEV-BYPASS",
     }));
     setLoginMessageType("success");
-    setLoginError("* Dev bypass enabled for email verification. *");
+    setLoginError("Dev bypass enabled for email verification.");
   };
 
 
   const handleRegisterDetailsSubmit = async () => {
     if (!isRegisDetailsReady) {
       setLoginMessageType("error");
-      setLoginError(`* ${detailsDisabledReason || "Please fill up all the forms"} *`);
+      setLoginError(`${detailsDisabledReason || "Please fill up all the forms"}`);
       return;
     }
 
@@ -395,7 +395,7 @@ export default function StandaloneLogin() {
   const handleFinalRegisterSubmit = async () => {
     if (!isRegisVerificationReady) {
       setLoginMessageType("error");
-      setLoginError(`* ${verifyDisabledReason || "Please enter the verification code"} *`);
+      setLoginError(`${verifyDisabledReason || "Please enter the verification code"}`);
       return;
     }
 
@@ -417,7 +417,7 @@ export default function StandaloneLogin() {
         setLoginError("");
         navigate("/");
       } else {
-        setLoginError(`* ${resp.data.message || "Registration failed"} *`);
+        setLoginError(`${resp.data.message || "Registration failed"}`);
       }
     } catch (err) {
       const msg =
@@ -425,7 +425,7 @@ export default function StandaloneLogin() {
         err?.response?.data?.detail ||
         "Something went wrong. Please try again.";
 
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
     }
   };
 
@@ -469,7 +469,7 @@ export default function StandaloneLogin() {
   const handleSendResetCode = async () => {
     if (!isResetEmailValid) {
       setLoginMessageType("error");
-      setLoginError("* Please enter a valid email address first *");
+      setLoginError("Please enter a valid email address first");
       return false;
     }
 
@@ -491,7 +491,7 @@ export default function StandaloneLogin() {
         );
 
         setLoginMessageType("success");
-        setLoginError("* Verification code sent. Please check your email. *");
+        setLoginError("Verification code sent. Please check your email.");
 
         return true;
       }
@@ -504,7 +504,7 @@ export default function StandaloneLogin() {
         "Failed to send verification code.";
 
       setLoginMessageType("error");
-      setLoginError(`* ${msg} *`);
+      setLoginError(`${msg}`);
       return false;
     } finally {
       setResetSendingCode(false);
@@ -679,7 +679,7 @@ export default function StandaloneLogin() {
                     if (forgotStep === "email") {
                       if (!isResetEmailReady) {
                         setLoginMessageType("error");
-                        setLoginError(`* ${resetEmailDisabledReason || "Please enter your email address"} *`);
+                        setLoginError(`${resetEmailDisabledReason || "Please enter your email address"}`);
                         return;
                       }
 
@@ -704,7 +704,7 @@ export default function StandaloneLogin() {
                         </p>
 
 
-                        <div style={{ width: "80%", alignSelf: "center" }}>
+                        <div className={styles.responsiveInputWrap}>
                           <input
                           
                           type="email"
@@ -765,7 +765,7 @@ export default function StandaloneLogin() {
                           within 10 minutes, then set your new password.
                         </p>
 
-                        <div style = {{width:"50%", alignSelf:"center" }}>
+                        <div className={styles.codeInputWrap}>
                         
                         <input
                           type="text"
@@ -1140,7 +1140,7 @@ export default function StandaloneLogin() {
                           confirm your email address.
                         </p>
 
-                        <div style={{ width: "70%", alignSelf: "center" }}>
+                        <div className={styles.codeInputWrap}>
                           <input
                           type="text"
                           placeholder="Enter verification code"

@@ -41,6 +41,7 @@
   flex-direction: column;
   border-radius: clamp(0.85rem, 2vw, 1.25rem);
   overflow: hidden;
+  isolation: isolate;
   background: rgba(255, 255, 255, 0.82);
   border: 1px solid rgba(255, 255, 255, 0.55);
   box-shadow:
@@ -51,6 +52,7 @@
 
 .login-tabs {
   display: grid;
+  overflow: hidden;
   grid-template-columns: 1fr 1fr;
   background: #f3f7fc;
   border-bottom: 1px solid rgba(32, 76, 139, 0.08);
@@ -95,10 +97,12 @@
   align-items: stretch;
   justify-content: center;
   min-width: 0;
+  min-height: 0;
 }
 
 .login-card {
   width: min(100%, 52rem);
+  background-clip: padding-box;
   min-height: clamp(24rem, 62vh, 30rem);
   padding: clamp(1.15rem, 3vw, 2.25rem);
   display: flex;
@@ -149,6 +153,7 @@
 
 .login-info-form {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -163,6 +168,7 @@
 .regis-info-form,
 .code-form {
   width: 100%;
+  min-width: 0;
   display: flex;
   flex-direction: column;
 }
@@ -418,6 +424,17 @@
   border-color: #d8e1ec !important;
   color: #8c9bb0 !important;
   cursor: not-allowed;
+}
+
+
+.responsiveInputWrap,
+.codeInputWrap {
+  width: min(100%, 28rem);
+  align-self: center;
+}
+
+.codeInputWrap {
+  width: min(100%, 20rem);
 }
 
 
@@ -915,8 +932,27 @@
     padding: 1.35rem 0.9rem 1.15rem;
   }
 
-  .login-info-form {
+  .login-info-form,
+  .reset-form,
+  .regis-form,
+  .forgotEmailPanel,
+  .forgotResetPanel,
+  .registerVerifyPanel,
+  .resetPasswordFields {
     width: 100%;
+  }
+
+  .responsiveInputWrap,
+  .codeInputWrap {
+    width: 100%;
+  }
+
+  .verifyEmailText {
+    text-align: center;
+  }
+
+  .login-options {
+    justify-content: center;
   }
 
   .rowHeader,
@@ -943,38 +979,69 @@
   }
 
   .tooltip {
-    left: auto;
-    right: 0;
+    /*left: auto;
+    right: 0;*/
     transform: none;
     max-width: min(14rem, 78vw);
+  }
+}
+
+
+/* Phones: stack compact rows earlier so name/password fields do not squeeze */
+@media (max-width: 560px) {
+  .rowHeader,
+  .rowHeaderEqual {
+    display: none;
+  }
+
+  .splitRow,
+  .splitRowEqual,
+  .linkRow {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+
+  .login-card input[type="text"],
+  .login-card input[type="email"],
+  .login-card input[type="password"] {
+    font-size: 16px;
+  }
+
+  .forgotEmailPanel,
+  .forgotResetPanel,
+  .registerVerifyPanel {
+    gap: 0.75rem;
   }
 }
 
 /* Very narrow phones */
 @media (max-width: 480px) {
   .login-container {
-    padding: 0;
-    align-items: stretch;
+    padding: clamp(0.75rem, 4vw, 1rem);
+    align-items: center;
   }
 
   .login-wrapper {
-    width: 100%;
-    min-height: 100vh;
-    min-height: 100dvh;
-    border-radius: 0;
-    border-left: 0;
-    border-right: 0;
+    width: min(100%, 28rem);
+    min-height: auto;
+    max-height: calc(100dvh - 1.5rem);
+    border-radius: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    overflow: hidden;
   }
 
   .login-bottom {
     align-items: stretch;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .login-card {
     width: 100%;
     min-height: auto;
-    flex: 1;
-    padding: 1.1rem 0.85rem 1.25rem;
+    flex: initial;
+    padding: 1.1rem 0.95rem 1.25rem;
+    justify-content: flex-start;
   }
 
   .tab {
@@ -1014,6 +1081,53 @@
 
   .password-wrapper input {
     padding-right: 2.85rem !important;
+  }
+
+  .login-card input[type="text"],
+  .login-card input[type="email"],
+  .login-card input[type="password"] {
+    height: 3.15rem;
+    margin-bottom: 0.85rem;
+  }
+
+  .button-back-container {
+    gap: 0.75rem;
+  }
+
+  .verifyButtonStack {
+    gap: 0.8rem;
+  }
+
+  .resendRow {
+    margin-block: 0;
+  }
+}
+
+
+@media (max-width: 360px) {
+  .login-container {
+    padding: 0.6rem;
+  }
+
+  .login-card {
+    padding-inline: 0.75rem;
+  }
+
+  .login-card h2 {
+    font-size: 1.35rem;
+  }
+
+  .tab {
+    font-size: 0.88rem;
+  }
+
+  .verifyEmailText,
+  .login-error {
+    font-size: 0.82rem;
+  }
+
+  .tooltip {
+    max-width: calc(100vw - 2rem);
   }
 }
 
