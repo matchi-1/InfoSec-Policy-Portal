@@ -292,6 +292,13 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
     setHasUnsavedModuleChanges?.(false);
   };
 
+  const handleResetPermissions = () => {
+    setDraftModules(savedModules);
+    setStatusMessage("");
+    setErrorMessage("");
+    setHasUnsavedModuleChanges?.(false);
+  };
+
   const toggleHandlers = useMemo(() => {
     const map = {};
 
@@ -464,16 +471,18 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
         </header>
 
         <section
-          className={`${styles.workspaceShell} ${canEditPermissions ? styles.workspaceShellEditing : ""
-            }`}
+          className={`${styles.workspaceShell} ${
+            canEditPermissions ? styles.workspaceShellEditing : ""
+          }`}
         >
           <div className={styles.workspaceToolbar}>
             <div className={styles.modeNotice}>
               <span
-                className={`${styles.modeBadge} ${canEditPermissions
-                  ? styles.modeBadgeEditing
-                  : styles.modeBadgeReadonly
-                  }`}
+                className={`${styles.modeBadge} ${
+                  canEditPermissions
+                    ? styles.modeBadgeEditing
+                    : styles.modeBadgeReadonly
+                }`}
               >
                 {canEditPermissions ? "Editing" : "Read Only"}
               </span>
@@ -482,8 +491,9 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
                 {isNewRoleModalOpen
                   ? "Create a role, choose modules, then save the new configuration."
                   : canEditPermissions
-                    ? `Editing permissions for ${selectedRole || "the selected role"
-                    }. Save when you are done.`
+                    ? `Editing permissions for ${
+                        selectedRole || "the selected role"
+                      }. Save when you are done.`
                     : "Select a role, then press Edit to unlock the table."}
               </span>
             </div>
@@ -537,6 +547,21 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
                       disabled={isSaving || isCreating}
                     >
                       Cancel
+                    </Button>
+
+                    <Button
+                      variant="secondary"
+                      size="md"
+                      className={styles.discardButton}
+                      onClick={() =>
+                        askForConfirmation(
+                          handleResetPermissions,
+                          "You have unsaved changes. Resetting will revert them to the last saved state. Continue?",
+                        )
+                      }
+                      disabled={isSaving || isCreating}
+                    >
+                      Reset
                     </Button>
 
                     <Button

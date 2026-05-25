@@ -280,6 +280,12 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
     setHasUnsavedModuleChanges?.(false);
   };
 
+  const handleResetChanges = () => {
+    setDraftRoles({ ...committedRoles });
+    setErrorMessage("");
+    setHasUnsavedModuleChanges?.(false);
+  };
+
   const requestPageChange = (targetPage) => {
     const safeTargetPage = Math.min(Math.max(targetPage, 1), totalPages);
 
@@ -380,16 +386,18 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
         </header>
 
         <section
-          className={`${styles.managementPanel} ${isEditMode ? styles.managementPanelEditing : ""
-            }`}
+          className={`${styles.managementPanel} ${
+            isEditMode ? styles.managementPanelEditing : ""
+          }`}
         >
           <div className={styles.panelTop}>
             <div className={styles.modeNotice}>
               <span
-                className={`${styles.modeBadge} ${isEditMode
+                className={`${styles.modeBadge} ${
+                  isEditMode
                     ? styles.modeBadgeEditing
                     : styles.modeBadgeReadonly
-                  }`}
+                }`}
               >
                 {isEditMode ? "Editing" : "Read Only"}
               </span>
@@ -429,6 +437,21 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
                         disabled={isSavingChanges}
                       >
                         Cancel
+                      </Button>
+
+                      <Button
+                        className={styles.discardButton}
+                        variant="secondary"
+                        size="md"
+                        onClick={() =>
+                          askForConfirmation(
+                            handleResetChanges,
+                            "You have unsaved changes. Resetting will revert them to the last saved state. Continue?",
+                          )
+                        }
+                        disabled={isSavingChanges}
+                      >
+                        Reset
                       </Button>
 
                       <Button
@@ -513,11 +536,7 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
 
               {!isLoadingUsers &&
                 filteredUsers.map((user) => (
-                  <div
-                    className={styles.tableRow}
-                    role="row"
-                    key={user.userId}
-                  >
+                  <div className={styles.tableRow} role="row" key={user.userId}>
                     <div className={styles.userCell} role="cell">
                       <div
                         className={styles.avatar}
@@ -572,18 +591,16 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
 
               {paginationItems.map((item, index) =>
                 item === "..." ? (
-                  <span
-                    key={`dots-${index}`}
-                    className={styles.paginationDots}
-                  >
+                  <span key={`dots-${index}`} className={styles.paginationDots}>
                     ...
                   </span>
                 ) : (
                   <button
                     key={item}
                     type="button"
-                    className={`${styles.paginationPage} ${item === currentPage ? styles.paginationActive : ""
-                      }`}
+                    className={`${styles.paginationPage} ${
+                      item === currentPage ? styles.paginationActive : ""
+                    }`}
                     onClick={() => requestPageChange(item)}
                     disabled={isLoadingUsers}
                   >
