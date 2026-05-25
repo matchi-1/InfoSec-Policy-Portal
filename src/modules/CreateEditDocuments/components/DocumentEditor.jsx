@@ -388,14 +388,6 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     //     );
     // }
 
-    const isSaveValid =
-        doc?.id &&
-        currTitle?.trim() &&
-        selectDate &&
-        authoredBy &&
-        reviewedBy &&
-        JSON.parse(localStorage.getItem("user"))?.user_id;
-
     const [showFileDeleteModal, setShowFileDeleteModal] = useState(false);
     const [showBackConfirmModal, setShowBackConfirmModal] = useState(false);
     const [showClearTagsModal, setShowClearTagsModal] = useState(false);
@@ -501,6 +493,14 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         fileNameTemp === "null" &&
         !fileToUpload;
 
+    const isSaveValid =
+        doc?.id &&
+        currTitle?.trim() &&
+        selectDate &&
+        authoredBy &&
+        reviewedBy &&
+        currentFileName!=="null" &&
+        JSON.parse(localStorage.getItem("user"))?.user_id;
 
     const canSave =
         isSaveValid &&

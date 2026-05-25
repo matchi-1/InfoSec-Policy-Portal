@@ -141,7 +141,10 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
                 !selectedReviewer || doc.reviewerName === selectedReviewer;
 
             const matchesTag =
-                !selectedTag || doc.tagName === selectedTag;
+                !selectedTag ||
+                (doc.tags || []).some(
+                    (tag) => tag.tag_content === selectedTag
+                );
 
             return (
                 matchesSearch &&
@@ -156,7 +159,7 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
             const db = new Date(b.lastUpdated || 0);
             return db - da;
         });
-    }, [dbDocs, docSearch, selectedAuthor, selectedReviewer]);
+    }, [dbDocs, docSearch, selectedAuthor, selectedReviewer, selectedTag]);
 
     const selectedDoc = useMemo(() => {
         if (selectedDocId === "new") {
@@ -194,6 +197,13 @@ const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
                 <DocumentEditor
                     doc={selectedDoc}
                     onBack={() => {
+                        setIsAuthOpen(false);
+                        setIsReviewerOpen(false);
+                        setIsTagOpen(false);
+
+                        setSelectedAuthor("");
+                        setSelectedReviewer("");
+                        setSelectedTag("");
                         setSelectedDocId(null);
                     }}
                     setHasUnsavedModuleChanges={setHasUnsavedModuleChanges}
