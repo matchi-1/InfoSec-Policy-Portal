@@ -101,6 +101,7 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
   const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE;
 
   const [users, setUsers] = useState([]);
+  const [userDirectory, setUserDirectory] = useState({});
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
@@ -128,7 +129,9 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
         }
 
         const payload = await resp.json();
-        const rawRoles = Array.isArray(payload) ? payload : payload.data ?? [];
+        const rawRoles = Array.isArray(payload)
+          ? payload
+          : (payload.data ?? []);
 
         const nextRoleOptions = rawRoles.map((role) => ({
           label: role.role_name,
@@ -160,7 +163,9 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
 
         const payload = await resp.json();
 
-        const rawUsers = Array.isArray(payload) ? payload : payload.data ?? [];
+        const rawUsers = Array.isArray(payload)
+          ? payload
+          : (payload.data ?? []);
         const normalizedUsers = rawUsers.map(normalizeUser);
 
         const nextTotalPages =
@@ -175,18 +180,32 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
         setTotalPages(nextTotalPages);
         setTotalUsers(nextTotalUsers);
 
-        const roleMap = Object.fromEntries(
-          normalizedUsers.map((user) => [user.userId, user.role]),
-        );
+        setUserDirectory((current) => {
+          const nextDirectory = { ...current };
+
+          normalizedUsers.forEach((user) => {
+            nextDirectory[user.userId] = user;
+          });
+
+          return nextDirectory;
+        });
 
         setDraftRoles((current) => ({
           ...current,
-          ...roleMap,
+          ...Object.fromEntries(
+            normalizedUsers
+              .filter((user) => current[user.userId] === undefined)
+              .map((user) => [user.userId, user.role]),
+          ),
         }));
 
         setCommittedRoles((current) => ({
           ...current,
-          ...roleMap,
+          ...Object.fromEntries(
+            normalizedUsers
+              .filter((user) => current[user.userId] === undefined)
+              .map((user) => [user.userId, user.role]),
+          ),
         }));
       } catch (error) {
         setErrorMessage(error.message || "Unable to load users");
@@ -207,8 +226,8 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
       }
 
       const currentRole = isEditMode
-        ? draftRoles[user.userId] ?? user.role
-        : committedRoles[user.userId] ?? user.role;
+        ? (draftRoles[user.userId] ?? user.role)
+        : (committedRoles[user.userId] ?? user.role);
 
       return (
         user.name.toLowerCase().includes(normalizedSearch) ||
@@ -220,10 +239,10 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
 
   const hasUnsavedChanges = useMemo(
     () =>
-      users.some(
-        (user) => draftRoles[user.userId] !== committedRoles[user.userId],
+      Object.keys(draftRoles).some(
+        (userId) => draftRoles[userId] !== committedRoles[userId],
       ),
-    [committedRoles, draftRoles, users],
+    [committedRoles, draftRoles],
   );
 
   useEffect(() => {
@@ -261,12 +280,6 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
     setHasUnsavedModuleChanges?.(false);
   };
 
-  const discardCurrentPageChanges = () => {
-    setDraftRoles({ ...committedRoles });
-    setErrorMessage("");
-    setHasUnsavedModuleChanges?.(false);
-  };
-
   const requestPageChange = (targetPage) => {
     const safeTargetPage = Math.min(Math.max(targetPage, 1), totalPages);
 
@@ -274,32 +287,25 @@ const BodyContent = ({ setHasUnsavedModuleChanges }) => {
       return;
     }
 
-    if (isEditMode && hasUnsavedChanges) {
-      askForConfirmation(
-        () => {
-          discardCurrentPageChanges();
-          setCurrentPage(safeTargetPage);
-        },
-        `You have unsaved role changes on this page. Changing pages will discard those changes. Continue to page ${safeTargetPage}?`,
-      );
-
-      return;
-    }
-
     setCurrentPage(safeTargetPage);
   };
 
   const handleSaveChanges = async () => {
-    const changes = users
-      .filter((user) => draftRoles[user.userId] !== committedRoles[user.userId])
-      .map((user) => ({
-        userId: user.userId,
-        name: user.name,
-        email: user.email,
-        fromRole: committedRoles[user.userId] ?? user.role,
-        toRole: draftRoles[user.userId] ?? user.role,
-      }))
-      .filter((change) => Boolean(change.toRole));
+    const changes = Object.entries(draftRoles)
+      .filter(([, nextRole]) => Boolean(nextRole))
+      .filter(([userId, nextRole]) => nextRole !== committedRoles[userId])
+      .map(([userId, nextRole]) => {
+        const user =
+          userDirectory[userId] ?? users.find((item) => item.userId === userId);
+
+        return {
+          userId,
+          name: user?.name ?? "Unknown User",
+          email: user?.email ?? "",
+          fromRole: committedRoles[userId] ?? user?.role ?? "Unassigned",
+          toRole: nextRole,
+        };
+      });
 
     const updates = changes.map((change) => ({
       user_id: change.userId,
