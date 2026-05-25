@@ -84,6 +84,7 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
     const [currAuthorName, setCurrAuthorName] = useState(doc.authoredBy ? doc.authorName : null)
     const [currReviewerName, setCurrReviewerName] = useState(doc.reviewedBy ? doc.reviewerName : null)
     const [userList, setUserList] = useState([]);
+    const [showResetToast, setShowResetToast] = useState(false);
 
     const showTagToast = (title, message) => {
         setTagToast({ title, message });
@@ -570,6 +571,51 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
         }, 3000);
     };
 
+    const handleResetToLastSaved = () => {
+        setCurrTitle(doc.title);
+        setCurrTitleTemp(null);
+        setEditingTitle(false);
+
+        setCurrDesc(doc.details);
+        setCurrDescTemp(null);
+        setEditingDesc(false);
+
+        setSections(structuredClone(doc.sections ?? []));
+
+        setCurrTags(doc.tags ? structuredClone(doc.tags) : []);
+
+        setAuthoredBy(doc.authoredBy ?? null);
+        setReviewedBy(doc.reviewedBy ?? null);
+        setCurrAuthorName(doc.authoredBy ? doc.authorName : null);
+        setCurrReviewerName(doc.reviewedBy ? doc.reviewerName : null);
+
+        setSelectDate(doc.lastReviewed ? dayjs(doc.lastReviewed) : dayjs());
+
+        setFileToUpload(null);
+        setFileName(doc.pretty_pdf_filename ?? "null");
+        setFileNameTemp("null");
+
+        setViewingPDF(false);
+        setIsPdfFullscreenOpen(false);
+
+        setShowAuthoredDropdown(false);
+        setShowReviewedDropdown(false);
+        setShowDateDropdown(false);
+        setShowTagsDropdown(false);
+
+        setSectionTitleEditID(null);
+        setSectionTitleTemp(null);
+        setSubTitleEditID(null);
+        setSubTitleTemp(null);
+
+        setHasUnsavedModuleChanges?.(false);
+
+        setShowResetToast(true);
+        setTimeout(() => {
+            setShowResetToast(false);
+        }, 2500);
+    };
+
     return (
         <div className={styles.documents}>
             <div className={styles.headerCollapseBar}>
@@ -621,6 +667,16 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
                                 {isHeaderCollapsed ? "Hidden" : "Shown"}
                             </span>
                         </button> */}
+                        {hasChanges && (
+                            <button
+                                type="button"
+                                className={styles.headerDetailsToggle}
+                                onClick={handleResetToLastSaved}
+                                title="Reset all changes to the last saved version"
+                            >
+                                Reset to Last Saved
+                            </button>
+                        )}
                         {canSave ? (
                             <button
                                 type="button"
@@ -1787,6 +1843,20 @@ function BodyContent({ doc, onBack, setHasUnsavedModuleChanges }) {
             )}
 
             {/* TOASTS */}
+            {showResetToast && (
+                <div className={styles.toastAlert}>
+                    <div className={styles.toastAlertContent}>
+                        <p className={styles.toastAlertTitle}>
+                            Draft Reset
+                        </p>
+
+                        <p className={styles.toastAlertText}>
+                            The document was restored to the last saved version.
+                        </p>
+                    </div>
+                </div>
+            )}
+
             {showSaveToast && (
                 <div className={styles.toastAlert}>
                     <div className={styles.toastAlertContent}>
