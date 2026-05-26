@@ -4,9 +4,6 @@ import SearchBar from "../../shared/components/SearchBar";
 import DocumentEditor from "./components/DocumentEditor";
 import { highlightText } from "../../utils/highlightText";
 
-// DB-like dummy source
-import { policyDocumentsDb } from "./data/policyDocumentsDb";
-
 const BodyContent = ({ setActiveSubModule, setHasUnsavedModuleChanges }) => {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [selectedDocId, setSelectedDocId] = useState(null);
