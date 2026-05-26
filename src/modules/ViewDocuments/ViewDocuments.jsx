@@ -6,9 +6,6 @@ import { highlightText } from "../../utils/highlightText";
 import FilterPopup from "../../shared/components/FilterPopup";
 
 
-//  DB-like dummy source
-import { policyDocumentsDb } from "./data/policyDocumentsDb";
-
 const BodyContent = () => {
     const backend_base_url = import.meta.env.VITE_BACKEND_API_BASE
     const [selectedDocId, setSelectedDocId] = useState(null);
@@ -43,9 +40,6 @@ const BodyContent = () => {
     };
 
     const [docFilters, setDocFilters] = useState(emptyDocFilters);
-
-    // DB docs (full objects) dummy data vv
-    // const dbDocs = useMemo(() => policyDocumentsDb?.documents ?? [], []);
 
     const handleSelectDoc = (docId) => {
         setSelectedDocId(docId);
