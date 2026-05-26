@@ -11,7 +11,7 @@
 
   /* size variables */
   --header-navi-height: 4rem;
-  --footer-kinetiq-height: 4rem;
+  --footer-infosec-height: 4rem;
   --sidebar-icons-width: 4rem;
   --sidebar-desc-width: 12rem;
   --sidebar-desc-item-width: 10.7rem;
@@ -396,23 +396,23 @@ img {
   background-color: var(--light-grey-lines);
 }
 
-.sidebar-kinetiq-footer,
-.sidebar-kinetiq-footer-desc {
+.sidebar-infosec-footer,
+.sidebar-infosec-footer-desc {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--footer-kinetiq-height);
+  height: var(--footer-infosec-height);
   width: 100%;
   border-top: 1px solid var(--light-grey-lines);
 }
 
-.sidebar-kinetiq-footer-desc {
+.sidebar-infosec-footer-desc {
   justify-content: flex-start;
   font-size: 0.8rem;
   color: var(--light-grey-text);
 }
 
-.sidebar-kinetiq-footer img {
+.sidebar-infosec-footer img {
   height: 1.5rem;
   width: 1.5rem;
 }
@@ -922,7 +922,7 @@ img {
 
   .sidebar-icons-container .sidebar-main-menu-container,
   .sidebar-icons-container .sidebar-module-icons,
-  .sidebar-icons-container .sidebar-kinetiq-footer {
+  .sidebar-icons-container .sidebar-infosec-footer {
     display: none;
   }
 
@@ -938,7 +938,7 @@ img {
 
   .shell-container.sidebar-open .sidebar-icons-container .sidebar-main-menu-container,
   .shell-container.sidebar-open .sidebar-icons-container .sidebar-module-icons,
-  .shell-container.sidebar-open .sidebar-icons-container .sidebar-kinetiq-footer {
+  .shell-container.sidebar-open .sidebar-icons-container .sidebar-infosec-footer {
     display: flex;
   }
 

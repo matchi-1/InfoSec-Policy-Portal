@@ -779,12 +779,13 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                    className={`sidebar-submodule-empty-container ${
+                      isMainModuleCollapsed &&
                       isSidebarOpen &&
                       activeModule === module.id
-                      ? "opened"
-                      : ""
-                      }`}
+                        ? "opened"
+                        : ""
+                    }`}
                   >
                     {/* submodules - only show if this module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -804,7 +805,7 @@ function App() {
             })}
           </div>
 
-          <div className="sidebar-kinetiq-footer">
+          <div className="sidebar-infosec-footer">
             <img
               src={"public/icons/InfoSecLogo.png"}
               alt={"InfoSec Logo"}
@@ -848,12 +849,13 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                    className={`sidebar-submodule-empty-container ${
+                      isMainModuleCollapsed &&
                       isSidebarOpen &&
                       activeModule === module.id
-                      ? "opened"
-                      : ""
-                      }`}
+                        ? "opened"
+                        : ""
+                    }`}
                   >
                     {/* Submodules - only show if the main module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -878,7 +880,7 @@ function App() {
             })}
           </div>
 
-          <div className="sidebar-kinetiq-footer-desc">
+          <div className="sidebar-infosec-footer-desc">
             <p>InfoSec Department</p>
           </div>
         </div>
@@ -887,8 +889,9 @@ function App() {
         <div className="header-body-container">
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
-              className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
-                }`}
+              className={`header-tabs-container ${
+                !showUserProfile && activeModule ? "visible" : "hidden"
+              }`}
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
@@ -917,8 +920,9 @@ function App() {
               {/*<SearchBar />*/}
               <img
                 className="notif-icon"
-                src={`/icons/Notification-${hasNotification ? "active-" : ""
-                  }logo.png`}
+                src={`/icons/Notification-${
+                  hasNotification ? "active-" : ""
+                }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
                   setNotifOpen(!notifOpen);
@@ -934,7 +938,7 @@ function App() {
                     "last_notif_open",
                     new Date().toISOString(),
                   );
-                }}//to be replaecd by func for setting notifs as read
+                }} //to be replaecd by func for setting notifs as read
               ></img>
               {notifToast && !notifOpen && (
                 <div className="notif-toast">
@@ -987,7 +991,9 @@ function App() {
                             {getNotificationActionLabel(notif)}
                           </p>
 
-                          <span className={`notif-title-pill ${getNotificationVariantClass(notif)}`}>
+                          <span
+                            className={`notif-title-pill ${getNotificationVariantClass(notif)}`}
+                          >
                             {getNotificationTarget(notif)}
                           </span>
                         </div>

@@ -43,7 +43,7 @@
   position: relative;
 }
 
-.usrprofile .password-kinetiq-container {
+.usrprofile .password-infosec-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
@@ -325,7 +325,7 @@
     width: 100% !important;
   }
 
-  .usrprofile .password-kinetiq-container {
+  .usrprofile .password-infosec-container {
     align-items: center!important;
     flex-direction: column !important;
     gap: 2rem;
@@ -377,7 +377,7 @@
     display: none!important;
   }
 
-  .usrprofile .password-kinetiq-container {
+  .usrprofile .password-infosec-container {
     width: 100% !important;
     margin: 0rem !important;
   }

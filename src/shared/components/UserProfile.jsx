@@ -137,7 +137,7 @@ const BodyContent = ({ employee_id }) => {
           </div>
         </div>
       </div>
-      <div className="password-kinetiq-container">
+      <div className="password-infosec-container">
         <div className="password-section">
           <h3>Change Password</h3>
           <div className="password-input-error-container">
@@ -353,9 +353,9 @@ const BodyContent = ({ employee_id }) => {
                 /*Array.isArray(permissions)
                   ? permissions.join(", ")
                   : permissions*/
-                permissions.split(',').map((perm, i, arr) => {
-                  const [main, sub] = perm.split('/')
-                  return sub ? sub : main + (i < arr.length - 1 ? ', ' : '')
+                permissions.split(",").map((perm, i, arr) => {
+                  const [main, sub] = perm.split("/");
+                  return sub ? sub : main + (i < arr.length - 1 ? ", " : "");
                 })
               }
             </p>
@@ -375,7 +375,7 @@ const BodyContent = ({ employee_id }) => {
             <div className="content">{popupContent}</div>
             <div className="actions">
               {popupContent ===
-                "Are you sure you want to change your password?" ? (
+              "Are you sure you want to change your password?" ? (
                 <>
                   <button
                     className="confirm-btn"
