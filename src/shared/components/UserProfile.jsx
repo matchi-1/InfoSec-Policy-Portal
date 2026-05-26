@@ -1,3 +1,7 @@
+// DEV ONLY: This JSX file is originally from our past project and is currently not in use in this one.
+// It may be used in the future for a user profile page where employees can view and edit their personal information
+// and change their password.
+
 import React from "react";
 import "./UserProfile.css";
 import { useState } from "react";
@@ -375,7 +379,7 @@ const BodyContent = ({ employee_id }) => {
             <div className="content">{popupContent}</div>
             <div className="actions">
               {popupContent ===
-              "Are you sure you want to change your password?" ? (
+                "Are you sure you want to change your password?" ? (
                 <>
                   <button
                     className="confirm-btn"

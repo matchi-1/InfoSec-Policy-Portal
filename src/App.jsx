@@ -152,7 +152,7 @@ function App() {
           setActiveSubModule(storedSubModule);
       }
     } else {
-      
+
       navigate("/login", { replace: true });
     }
   }, []);
@@ -779,13 +779,12 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${
-                      isMainModuleCollapsed &&
-                      isSidebarOpen &&
-                      activeModule === module.id
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                        isSidebarOpen &&
+                        activeModule === module.id
                         ? "opened"
                         : ""
-                    }`}
+                      }`}
                   >
                     {/* submodules - only show if this module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -849,13 +848,12 @@ function App() {
                   </div>
 
                   <div
-                    className={`sidebar-submodule-empty-container ${
-                      isMainModuleCollapsed &&
-                      isSidebarOpen &&
-                      activeModule === module.id
+                    className={`sidebar-submodule-empty-container ${isMainModuleCollapsed &&
+                        isSidebarOpen &&
+                        activeModule === module.id
                         ? "opened"
                         : ""
-                    }`}
+                      }`}
                   >
                     {/* Submodules - only show if the main module is active */}
                     {filteredModuleFileNames[module.id] &&
@@ -889,9 +887,8 @@ function App() {
         <div className="header-body-container">
           <div className={`header-navi ${isSidebarOpen ? "squished" : ""}`}>
             <div
-              className={`header-tabs-container ${
-                !showUserProfile && activeModule ? "visible" : "hidden"
-              }`}
+              className={`header-tabs-container ${!showUserProfile && activeModule ? "visible" : "hidden"
+                }`}
             >
               <img
                 src={`/icons/header-module-icons/${moduleFileNames[activeModule]}.png`}
@@ -920,9 +917,8 @@ function App() {
               {/*<SearchBar />*/}
               <img
                 className="notif-icon"
-                src={`/icons/Notification-${
-                  hasNotification ? "active-" : ""
-                }logo.png`}
+                src={`/icons/Notification-${hasNotification ? "active-" : ""
+                  }logo.png`}
                 alt="Notificaton-Logo"
                 onClick={() => {
                   setNotifOpen(!notifOpen);
