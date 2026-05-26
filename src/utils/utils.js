@@ -32,7 +32,7 @@ export const formatDate = (dateString, includeTime = true) => {
   export const formatPhoneNumber = (phone) => {
     if (!phone) return '—';
     
-    // This is a simple implementation - customize based on your country's phone format
+    // simple phone format
     const cleaned = phone.replace(/\D/g, '');
     
     if (cleaned.length === 10) {
